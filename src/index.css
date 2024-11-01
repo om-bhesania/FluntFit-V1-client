@@ -3,16 +3,21 @@
 @tailwind utilities;
 
 body {
-  @apply bg-background;
+  @apply bg-background overflow-x-hidden font-body;
 }
 header {
   @apply !max-w-[1340px] mx-auto px-4;
+}
+.dash-header header {
+  @apply !max-w-[1340px] mx-auto px-4 !justify-center;
+}
+section {
+  @apply my-12;
 }
 
 body::-webkit-scrollbar {
   width: 10px;
 }
-
 body::-webkit-scrollbar-track {
   @apply bg-background;
 }
@@ -45,4 +50,11 @@ body::-webkit-scrollbar-thumb:hover {
 /* Handle on hover */
 .tablee::-webkit-scrollbar-thumb:hover {
   @apply bg-primary/40;
+}
+
+.swiper-pagination-bullet.swiper-pagination-bullet-active{
+  @apply bg-background;
+}
+.swiper-pagination-bullet:not(.swiper-pagination-bullet-active){
+  @apply !bg-primary !opacity-50;
 }

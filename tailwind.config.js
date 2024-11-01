@@ -14,6 +14,7 @@ export default {
         secondary: "#fafcfb ",
         accent: "#3c5451 ",
         background: "#fafcfb ",
+        danger: "#ff0000",
       },
       container: {
         center: true,
@@ -25,6 +26,11 @@ export default {
           lg: "1024px",
           xl: "1280px",
         },
+      },
+      fontFamily: {
+        body: ["Montserrat", "sans-serif"],
+        heading: ["Charm", "cursive"],
+        secondary: ["Slabo", 'serif'],
       },
     },
   },

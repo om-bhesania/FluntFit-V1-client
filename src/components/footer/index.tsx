@@ -5,7 +5,7 @@ import Logo from "../Logo";
 
 const index: React.FC = () => {
   return (
-    <footer className="bg-primary text-secondary py-8 pb-2">
+    <footer className="bg-black text-secondary py-8 pb-2">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-start">
           <div className="mb-6 md:mb-0 flex items-start gap-4">
@@ -97,7 +97,7 @@ const index: React.FC = () => {
             {new Date().getFullYear() === 2024
               ? new Date().getFullYear()
               : `2021 - ${new Date().getFullYear()}`}{" "}
-            FlauntFit
+            <Link to={'/'}>FlauntFit</Link>
           </p>
         </div>
       </div>

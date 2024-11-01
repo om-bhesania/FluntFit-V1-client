@@ -23,7 +23,7 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
           <Button
             variant="bordered"
             color="primary"
-            onClick={() => navigate("/dashboard/add-product")}
+            onClick={() => navigate("/dashboard/add-products")}
           >
             <PlusIcon size={15} /> Add Product
           </Button>

@@ -172,7 +172,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   });
   const navigate = useNavigate();
   return (
-    <div className={`${!isEdit ? "p-6 container" : "pb-3"}`}>
+    <div className="w-full container">
       <div className=" text-end w-full">
         <Button
           variant="flat"

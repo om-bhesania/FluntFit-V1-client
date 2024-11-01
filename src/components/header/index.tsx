@@ -1,4 +1,5 @@
 import {
+  Button,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -7,14 +8,26 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
+import { motion } from "framer-motion";
+import { Search, ShoppingCart } from "lucide-react";
 import { useState } from "react";
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Login } from "../../pages/auth/login";
+import CartDrawer from "./CartDrawer";
+import GlobalSearch from "./../globalSearch/GlobalSearch";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null); // Track the active menu item
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
   const menuItems = ["Men's Wear", "All Collections", "Dashboard"];
 
   const handleItemClick = (index: any) => {
@@ -22,6 +35,7 @@ function Header() {
   };
 
   const navigate = useNavigate();
+
   return (
     <Navbar
       isBordered
@@ -75,9 +89,30 @@ function Header() {
       </NavbarContent>
 
       {/* Login Button */}
-      <NavbarContent className="!basis-0 !grow-0">
+      <NavbarContent className="!basis-0 !grow-0 !relative flex items-center gap-1.5">
+        <div className="flex items-center">
+          <Button
+            isIconOnly
+            variant="light"
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className={`${
+              isSearchOpen ? "text-primary md:mr-1" : "text-foreground md:-mr-3"
+            }`}
+          >
+            <Search />
+          </Button>
+
+          <GlobalSearch
+            isSearchOpen={isSearchOpen}
+            toggleSearch={toggleSearch}
+          />
+        </div>
+        <Button isIconOnly variant="light" onClick={toggleDrawer}>
+          <ShoppingCart />
+        </Button>
         <Login variant="solid" color="primary" />
       </NavbarContent>
+      <CartDrawer isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
 
       {/* Mobile Menu */}
       <NavbarMenu>
