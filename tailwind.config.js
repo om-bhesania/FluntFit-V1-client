@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#845526 ",
+        primary: "#845526",
         secondary: "#fafcfb ",
         accent: "#3c5451 ",
         background: "#fafcfb ",
@@ -30,7 +30,7 @@ export default {
       fontFamily: {
         body: ["Montserrat", "sans-serif"],
         heading: ["Charm", "cursive"],
-        secondary: ["Slabo", 'serif'],
+        secondary: ["Slabo", "serif"],
       },
     },
   },

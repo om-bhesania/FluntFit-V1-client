@@ -9,19 +9,6 @@ export const HomeData = [
     description: "Check out our most popular items chosen by our customers.",
     img: slider2,
   },
-  {
-    id: 2,
-    title: "Limited Time Offers",
-    description:
-      "Don't miss out on our exclusive deals available for a limited time.",
-    img: slider1,
-  },
-  {
-    id: 3,
-    title: "Staff Picks",
-    description: "Explore top picks curated by our team.",
-    img: "https://images.unsplash.com/photo-1628010149198-0e4ddb9f2ae7?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
 ];
 
 export const CategoryData = [

@@ -5,12 +5,39 @@ import SectionTitle from "../../components/section/SectionTitle";
 import HeroSlider from "../../components/slider/HeroSlider";
 import { CategoryData, HomeData, tshirts } from "../../utils/dummyData";
 import AddToCartCard from "./../../components/cards/AddToCartCard";
+import { motion } from "framer-motion";
 
 function HomeComponent() {
   return (
     <>
       <section className="hero-section -mt-6 mb-6">
-        <HeroSlider data={HomeData} slidesPerView={1} spaceBetween={30} />
+        <div className="relative w-full h-[700px]">
+          {HomeData.map((item:any) => (
+            <>
+              <motion.div className="absolute top-0 bottom-0 left-0 right-0 bg-black/20 z-[5] h-full w-full" />
+              <div className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 z-[6]">
+                <div className="font-semibold text-white text-5xl">
+                  {item.title}
+                </div>
+                <div className="font-semibold text-white text-2xl font-heading">
+                  {item.description}
+                </div>
+                <div className="mt-5">
+                  <Button variant="shadow" color={"primary"}>
+                    Shop Now
+                  </Button>
+                </div>
+              </div>
+
+              <div className="md:h-full h-[260px] w-full flex items-center justify-center overflow-hidden">
+                <img
+                  src={item.img}
+                  className="w-full h-auto object-contain object-center"
+                />
+              </div>
+            </>
+          ))}
+        </div>
       </section>
 
       <section className="half-sleeve-tshirts">
