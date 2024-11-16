@@ -1,6 +1,7 @@
-export const baseUrl = "http://localhost:3000/v1/";
+export const baseUrl =
+  "https://server-jmrsmonos-flautfits-projects.vercel.app/v1/";
 const apiUrls = {
-  baseUrl:baseUrl,
+  baseUrl: baseUrl,
   users: {
     get: "users/get",
     post: "users/post",
