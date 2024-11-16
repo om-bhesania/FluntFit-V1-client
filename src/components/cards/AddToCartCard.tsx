@@ -3,8 +3,7 @@ import { Heart, ShoppingCart } from "lucide-react";
 import React from "react";
 
 interface AddToCartCardProps {
-  title: string;
-  description?: string;
+  title: string; 
   price: number;
   imageUrl: string;
   isLogin?: boolean;

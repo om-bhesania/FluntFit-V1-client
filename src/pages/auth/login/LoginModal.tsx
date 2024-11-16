@@ -1,5 +1,4 @@
-import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import ModalComponent from "../../../components/modal/Modal";
 
@@ -16,7 +15,9 @@ export default function LoginModal({ variant, color }: any) {
   const handleOpen = () => {};
   const handleClose = () => {};
 
-  const handleSubmit = (values: { email: string; password: string }) => {};
+  const handleSubmit = (values: { email: string; password: string }) => {
+    console.log(values);
+  };
 
   return (
     <div>
@@ -30,7 +31,7 @@ export default function LoginModal({ variant, color }: any) {
             validationSchema={LoginSchema}
             onSubmit={handleSubmit}
           >
-            {({ handleSubmit, isSubmitting }) => (
+            {({ handleSubmit }) => (
               <Form onSubmit={handleSubmit} className="flex flex-col space-y-4">
                 <div className="flex flex-col">
                   <label htmlFor="email" className="text-sm font-medium mb-1">

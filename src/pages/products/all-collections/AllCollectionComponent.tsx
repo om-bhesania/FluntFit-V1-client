@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import Table from "../../../components/table/Table";
 
 interface AllCollectionComponentProps {
@@ -12,8 +11,7 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
   columns,
   data,
   loading,
-}) => {
-  const navigate = useNavigate();
+}) => { 
   return (
     <div className="container">
       <div className="mt-6">
