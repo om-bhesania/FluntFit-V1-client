@@ -1,16 +1,16 @@
+import { Button } from "@nextui-org/react";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
+  A11y,
+  Autoplay,
   Navigation,
   Pagination,
   Scrollbar,
-  A11y,
-  Autoplay,
 } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import { motion } from "framer-motion";
-import { Button } from "@nextui-org/react";
 
 interface HeroSlideData {
   title?: string;
@@ -48,8 +48,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({
         autoplay={{ delay: 10000, disableOnInteraction: false }}
         navigation={false}
         slidesPerView={slidesPerView}
-        pagination={{ clickable: true }}
-        onSlideChange={() => console.log("slide change")}
+        pagination={{ clickable: true }} 
         onSwiper={(swiper) => setSwiperInstance(swiper)}
       >
         {data.map((item, index) => (

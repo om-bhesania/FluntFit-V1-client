@@ -1,14 +1,12 @@
 import { Button, useDisclosure } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { Formik, Field, Form } from "formik";
+import EditModal from "../../../components/modal/EditModal";
 import useToast from "../../../hooks/useToast";
 import service from "../../../services/services";
 import apiUrls from "../../../utils/apiUrls";
+import { AddProducts } from "../addProduct";
 import { DeleteProductApi, EditProductApi } from "../ProductsApi";
 import AllCollectionComponent from "./AllCollectionComponent";
-import ModalComponent from "../../../components/modal/Modal";
-import { AddProducts } from "../addProduct";
-import EditModal from "../../../components/modal/EditModal";
 
 function AllCollectionController() {
   const [data, setData] = useState([]);

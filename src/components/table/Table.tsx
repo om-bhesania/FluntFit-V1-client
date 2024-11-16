@@ -1,18 +1,17 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Button, Spinner } from "@nextui-org/react";
+import type {
+  ColumnDef,
+  PaginationState,
+  Table as ReactTable,
+  Row,
+} from "@tanstack/react-table";
 import {
+  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
-  flexRender,
-} from "@tanstack/react-table";
-import type {
-  ColumnDef,
-  Row,
-  Table as ReactTable,
-  PaginationState,
 } from "@tanstack/react-table";
 import classNames from "classnames";
-import { Button, Skeleton, Spinner } from "@nextui-org/react";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -21,6 +20,7 @@ import {
   ChevronsRight,
   ChevronUpIcon,
 } from "lucide-react";
+import React, { Fragment, useEffect, useState } from "react";
 
 interface ReactTableProps<T extends object> {
   data: T[];

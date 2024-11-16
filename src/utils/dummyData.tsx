@@ -1,6 +1,5 @@
-import halfSleeve from "../assets/images/cat-halfsleeve.jpg";
 import fullSleeve from "../assets/images/cat-fullsleeve.jpg";
-import slider1 from "../assets/images/slider1.png";
+import halfSleeve from "../assets/images/cat-halfsleeve.jpg";
 import slider2 from "../assets/images/slider2.png";
 export const HomeData = [
   {

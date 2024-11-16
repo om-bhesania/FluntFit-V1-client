@@ -8,13 +8,12 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
-import { motion } from "framer-motion";
 import { Search, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Login } from "../../pages/auth/login";
-import CartDrawer from "./CartDrawer";
 import GlobalSearch from "./../globalSearch/GlobalSearch";
+import CartDrawer from "./CartDrawer";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

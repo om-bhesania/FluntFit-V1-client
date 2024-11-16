@@ -1,4 +1,3 @@
-import React from "react";
 
  
 const Tooltip = ({ content, trigger }:any) => {

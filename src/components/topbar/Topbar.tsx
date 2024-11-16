@@ -1,6 +1,5 @@
 import clsx from "clsx";
-import { motion } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const TopBar = () => {
   const [isVisible, setIsVisible] = useState(true);

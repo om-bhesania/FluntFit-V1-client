@@ -4,23 +4,18 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
-  useDisclosure
+  useDisclosure,
 } from "@nextui-org/react";
 import { ModalComponentProps } from "../../utils/interfaces";
 
 const EditModal: React.FC<ModalComponentProps> = ({
   title,
   bodyContent,
-  footerButtons = [],
   isDismissable = false,
   isKeyboardDismissDisabled = true,
   triggerLabel,
   onOpen,
   onClose,
-  buttonClassName,
-  variant,
-  color,
-  data,
 }) => {
   const { isOpen, onOpen: openModal, onOpenChange } = useDisclosure();
 
@@ -52,7 +47,7 @@ const EditModal: React.FC<ModalComponentProps> = ({
         size="2xl"
       >
         <ModalContent className="max-h-[90vh] !overflow-y-auto rounded-2xl">
-          {(close) => (
+          {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
 

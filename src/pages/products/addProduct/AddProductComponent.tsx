@@ -11,8 +11,6 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import FileInput from "../../../components/fileUpload/FileInput";
-import { useNavigate } from "react-router-dom";
-import { File, PlusIcon } from "lucide-react";
 
 interface AddProductComponentProps {
   categories: { value: string; label: string }[];
@@ -34,8 +32,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   isEdit = false,
   prefilledData,
   handleSaveEdit,
-}) => {
-  console.log("prefilledData:", prefilledData);
+}) => { 
   const initialValues =
     isEdit && prefilledData
       ? {
@@ -144,8 +141,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
 
         if (!isEdit) {
           await handleSubmit(formData);
-        } else if (handleSaveEdit) {
-          console.log(formData, "formData");
+        } else if (handleSaveEdit) { 
           await handleSaveEdit(prefilledData.id, formData);
         }
 
@@ -169,19 +165,9 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         console.error("Form submission error:", error);
       }
     },
-  });
-  const navigate = useNavigate();
+  }); 
   return (
-    <div className="w-full container">
-      <div className=" text-end w-full">
-        <Button
-          variant="flat"
-          onClick={() => navigate("/dashboard/all-collections")}
-          className="mb-6 bg-accent/20 text-gray-600"
-        >
-          <File size={20} /> View All Products
-        </Button>
-      </div>
+    <div className="w-full mt-3">
       <form onSubmit={formik.handleSubmit}>
         <Card className="mb-6">
           <CardHeader>

@@ -1,12 +1,8 @@
-import React from "react";
-import { Button } from "@nextui-org/react";
 
 function SectionTitle({
   title,
   isLeft = false,
-  description,
-  viewAll,
-  url,
+  description, 
 }: {
   title: string;
   isLeft?: boolean;

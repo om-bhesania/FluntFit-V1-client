@@ -1,4 +1,3 @@
-import { Button } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart } from "lucide-react";
 import React from "react";
@@ -14,7 +13,6 @@ interface AddToCartCardProps {
 const AddToCartCard: React.FC<AddToCartCardProps> = ({
   title,
   isLogin = false,
-  description,
   price,
   imageUrl,
 }) => {

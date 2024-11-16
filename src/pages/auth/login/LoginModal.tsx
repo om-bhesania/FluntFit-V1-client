@@ -13,21 +13,14 @@ const LoginSchema = Yup.object().shape({
 });
 
 export default function LoginModal({ variant, color }: any) {
-  const handleOpen = () => {
-    console.log("Modal opened!");
-  };
-  const handleClose = () => {
-    console.log("Modal closed!");
-  };
+  const handleOpen = () => {};
+  const handleClose = () => {};
 
-  const handleSubmit = (values: { email: string; password: string }) => {
-    console.log("Form Submitted:", values);
-  };
+  const handleSubmit = (values: { email: string; password: string }) => {};
 
   return (
     <div>
       <ModalComponent
-      
         triggerLabel="Login"
         variant={variant}
         color={color}

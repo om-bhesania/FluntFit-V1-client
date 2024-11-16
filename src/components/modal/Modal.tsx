@@ -1,10 +1,10 @@
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
 import { ModalComponentProps } from "../../utils/interfaces";
@@ -13,15 +13,12 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
   title,
   bodyContent,
   footerButtons = [],
-  isDismissable = false,
-  isKeyboardDismissDisabled = true,
   triggerLabel,
   onOpen,
   onClose,
   buttonClassName,
   variant,
   color,
-  data,
 }) => {
   const { isOpen, onOpen: openModal, onOpenChange } = useDisclosure();
 

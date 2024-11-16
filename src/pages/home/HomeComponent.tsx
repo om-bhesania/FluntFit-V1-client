@@ -1,11 +1,10 @@
 import { Button } from "@nextui-org/react";
+import { motion } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
 import CategoryCard from "../../components/cards/CategoryCard";
 import SectionTitle from "../../components/section/SectionTitle";
-import HeroSlider from "../../components/slider/HeroSlider";
 import { CategoryData, HomeData, tshirts } from "../../utils/dummyData";
 import AddToCartCard from "./../../components/cards/AddToCartCard";
-import { motion } from "framer-motion";
 
 function HomeComponent() {
   return (

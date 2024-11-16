@@ -1,5 +1,3 @@
-import { Button } from "@nextui-org/react";
-import { PlusIcon } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../components/table/Table";
@@ -11,7 +9,7 @@ interface AllCollectionComponentProps {
 }
 
 const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
-  columns, 
+  columns,
   data,
   loading,
 }) => {
@@ -19,16 +17,6 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
   return (
     <div className="container">
       <div className="mt-6">
-        <div className="text-end">
-          <Button
-            variant="bordered"
-            color="primary"
-            onClick={() => navigate("/dashboard/add-products")}
-          >
-            <PlusIcon size={15} /> Add Product
-          </Button>
-        </div>
-
         <Table
           data={data}
           columns={columns}
