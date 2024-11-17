@@ -11,6 +11,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import FileInput from "../../../components/fileUpload/FileInput";
+import uploadFilesToVercel from "../../../hooks/useFileUpload";
 
 interface AddProductComponentProps {
   categories: { value: string; label: string }[];
@@ -32,7 +33,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   isEdit = false,
   prefilledData,
   handleSaveEdit,
-}) => { 
+}) => {
   const initialValues =
     isEdit && prefilledData
       ? {
@@ -119,6 +120,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
     initialValues,
     validationSchema,
     onSubmit: async (values, { resetForm, setFieldValue }) => {
+      console.log(uploadFilesToVercel(values.mediaContent));
       try {
         const formData = {
           productName: values.productName,
@@ -141,7 +143,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
 
         if (!isEdit) {
           await handleSubmit(formData);
-        } else if (handleSaveEdit) { 
+        } else if (handleSaveEdit) {
           await handleSaveEdit(prefilledData.id, formData);
         }
 
@@ -165,7 +167,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         console.error("Form submission error:", error);
       }
     },
-  }); 
+  });
   return (
     <div className="w-full mt-3">
       <form onSubmit={formik.handleSubmit}>
@@ -308,7 +310,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                     value={formik.values.sku}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    label="SKU"
+                    label="SKU / Barcode"
                     isInvalid={!!(formik.errors.sku && formik.touched.sku)}
                   />
                   <Button
