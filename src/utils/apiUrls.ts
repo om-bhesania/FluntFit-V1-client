@@ -1,5 +1,4 @@
-export const baseUrl =
-  "https://server-jmrsmonos-flautfits-projects.vercel.app/v1/";
+export const baseUrl = "https://flauntfit-v1-server.onrender.com/v1/";
 const apiUrls = {
   baseUrl: baseUrl,
   users: {
