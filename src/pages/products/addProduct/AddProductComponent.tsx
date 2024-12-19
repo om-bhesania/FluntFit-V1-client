@@ -11,7 +11,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import FileInput from "../../../components/fileUpload/FileInput";
-import uploadFilesToVercel from "../../../hooks/useFileUpload";
+import uploadFilesToImgur from "../../../hooks/useFileUpload";
 
 interface AddProductComponentProps {
   categories: { value: string; label: string }[];
@@ -23,6 +23,7 @@ interface AddProductComponentProps {
   isEdit?: boolean;
   prefilledData?: any;
   handleSaveEdit?: (updatedProduct: any, data: any) => void;
+  getFiles: (files: any) => void;
 }
 
 const AddProductComponent: React.FC<AddProductComponentProps> = ({
@@ -33,6 +34,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   isEdit = false,
   prefilledData,
   handleSaveEdit,
+  getFiles,
 }) => {
   const initialValues =
     isEdit && prefilledData
@@ -120,8 +122,15 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
     initialValues,
     validationSchema,
     onSubmit: async (values, { resetForm, setFieldValue }) => {
-      console.log(uploadFilesToVercel(values.mediaContent));
       try {
+        // Process the media content files
+        let uploadedUrls: any = [];
+        if (values.mediaContent.length > 0) {
+          uploadedUrls = await uploadFilesToImgur(values.mediaContent); // Pass empty array for currentBase64Files
+          // Optionally update the form data to include the URLs after the upload
+          setFieldValue("mediaContent", uploadedUrls); // Replace mediaContent with the uploaded URLs
+        }
+
         const formData = {
           productName: values.productName,
           productDescription: values.productDescription,
@@ -133,36 +142,36 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           salePrice: Number(values.salePrice),
           sku: values.sku,
           quantityInStock: Number(values.quantityInStock),
-          mediaContent: values.mediaContent,
+          mediaContent: uploadedUrls, // Store the uploaded URLs instead of base64 files
           sizeOptions: values.sizeOptions,
           colorOptions: values.colorOptions,
           careInstructions: values.careInstructions,
           inventoryStatus: values.inventoryStatus,
           countryOfOrigin: values.countryOfOrigin,
         };
-
+        console.log(formData);
         if (!isEdit) {
           await handleSubmit(formData);
         } else if (handleSaveEdit) {
           await handleSaveEdit(prefilledData.id, formData);
         }
 
-        // Clear specific fields after successful submission
-        setFieldValue("category", "", false);
-        setFieldValue("subcategory", "", false);
-        setFieldValue("inventoryStatus", "", false);
-        setFieldValue("mediaContent", [], false); // Clear file input
+        // // Clear specific fields after successful submission
+        // setFieldValue("category", "", false);
+        // setFieldValue("subcategory", "", false);
+        // setFieldValue("inventoryStatus", "", false);
+        // setFieldValue("mediaContent", [], false); // Clear file input
 
-        // Optionally reset all fields
-        resetForm({
-          values: {
-            ...initialValues,
-            category: "",
-            subcategory: "",
-            inventoryStatus: "",
-            mediaContent: "",
-          },
-        });
+        // // Optionally reset all fields
+        // resetForm({
+        //   values: {
+        //     ...initialValues,
+        //     category: "",
+        //     subcategory: "",
+        //     inventoryStatus: "",
+        //     mediaContent: "",
+        //   },
+        // });
       } catch (error) {
         console.error("Form submission error:", error);
       }
@@ -356,15 +365,9 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           <CardBody>
             <div className="space-y-4">
               <FileInput
-                fieldName="mediaContent"
-                setFieldValue={formik.setFieldValue}
                 onFilesChange={(files) => {
                   formik.setFieldValue("mediaContent", files);
                 }}
-                isInvalid={
-                  !!(formik.errors.mediaContent && formik.touched.mediaContent)
-                }
-                error={formik.errors.mediaContent as string}
               />
             </div>
           </CardBody>

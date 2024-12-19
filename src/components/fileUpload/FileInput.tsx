@@ -1,172 +1,153 @@
-import React, { useState, useRef } from "react";
-import { Button } from "@nextui-org/react";
-import { FileInputIcon } from "lucide-react";
+import { Button } from "@nextui-org/react"; // NextUI Button component
+import React, { useRef, useState } from "react";
+import service from "../../services/services"; // Adjust path as needed
+import apiUrls from "../../utils/apiUrls"; // Adjust path as needed
 
 interface FileInputProps {
-  onFilesChange: (files: File[]) => void;
-  setFieldValue: (field: string, value: any) => void;
-  acceptsVideos?: boolean;
-  fieldName: string;
-  isInvalid?: boolean;
-  error?: string;
+  onFilesChange: (files: string[]) => void;
 }
 
-const FileInput: React.FC<FileInputProps> = ({
-  onFilesChange,
-  setFieldValue,
-  acceptsVideos = false,
-  fieldName,
-  isInvalid,
-  error,
-}) => {
+const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const files: File[] = Array.from(event.target.files || []);
-    updateFiles(files);
+  // Function to handle file input change
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files: File[] = Array.from(e.target.files || []);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
   };
 
-  const updateFiles = (files: File[]) => {
-    const newFiles = [...selectedFiles, ...files];
-    setSelectedFiles(newFiles);
-    onFilesChange(newFiles);
-    setFieldValue(fieldName, newFiles); // Set Formik field value
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const files = Array.from(event.dataTransfer.files);
-    updateFiles(files);
-  };
-
-  const removeFile = (index: number, e: any) => {
+  // Handle drag over events
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    const newFiles = selectedFiles.filter((_, i) => i !== index);
-    setSelectedFiles(newFiles);
-    onFilesChange(newFiles);
-    setFieldValue(fieldName, newFiles); // Update Formik field value
-    resetFileInput();
+    e.stopPropagation();
   };
 
-  const removeAllFiles = (e: any) => {
+  // Handle files dropped into the drop area
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
-    setSelectedFiles([]);
-    onFilesChange([]);
-    setFieldValue(fieldName, []); // Clear Formik field value
-    resetFileInput();
+    e.stopPropagation();
+    const files: File[] = Array.from(e.dataTransfer.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
   };
 
-  const resetFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  // Remove selected file by index
+  const removeFile = (index: number) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+  };
+
+  // Convert file to base64 string
+  // const convertToBase64 = (file: File): Promise<string> => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onloadend = () => resolve(reader.result as string); // Convert to base64
+  //     reader.onerror = (error) => reject(error);
+  //   });
+  // };
+ 
+  // Function to handle form submission and file upload
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (selectedFiles.length === 0) {
+      alert("Please select files to upload.");
+      return;
     }
-  };
 
-  const isImageFile = (file: File) =>
-    /\.(jpg|jpeg|png|gif|bmp|tiff|webp)$/i.test(file.name);
-  const isVideoFile = (file: File) =>
-    /\.(mp4|avi|mov|mkv|wmv|flv|webm)$/i.test(file.name);
+    for (const file of selectedFiles) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file); // Directly append the file
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
+        // Send to backend
+        const response:any = await service({
+          method: "post",
+          url: apiUrls.products.fileUpload, // Ensure this URL is correct
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data", // Ensure content type is correct
+          },
+        });
+
+        if (response.status === 200) {
+          alert(`File "${file.name}" uploaded successfully!`);
+          console.log(response.data);
+          const uploadedUrl = response.data.data.url;
+          onFilesChange([
+            ...selectedFiles.map((file) => file.name),
+            uploadedUrl,
+          ]); // Append the new URL
+        } else {
+          alert(`Failed to upload file "${file.name}".`);
+        }
+      } catch (error) {
+        console.error(`Error uploading file "${file.name}":`, error);
+        alert(`Error uploading file "${file.name}".`);
+      }
+    }
+
+    // Clear the selected files after upload
+    setSelectedFiles([]);
   };
 
   return (
-    <div>
+    <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
       <div
-        className="p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50"
+        className="flex justify-center items-center h-40 border-2 border-dashed border-gray-300 p-4 mb-4"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
-        <label htmlFor="file-upload" className="cursor-pointer">
-          <input
-            id="file-upload"
-            type="file"
-            multiple
-            accept={acceptsVideos ? "image/*,video/*" : "image/*"}
-            onChange={handleFileChange}
-            className="hidden"
-          />
-
-          <div
-            className={`flex ${
-              selectedFiles.length > 0 ? "justify-end" : "justify-center"
-            } gap-3 mb-4`}
-          >
-            {selectedFiles.length === 0 && (
-              <FileInputIcon className="text-accent/50" />
-            )}
-            {selectedFiles.length > 4 && (
-              <Button
-                variant="solid"
-                color="danger"
-                onClick={removeAllFiles}
-                className="bg-primary text-white"
-              >
-                Remove All
-              </Button>
-            )}
-
-            <div>
-              {selectedFiles.length === 0 && acceptsVideos && (
-                <>
-                  Upload Videos or GIF by drag and drop or{" "}
-                  <span className="text-primary font-semibold">browse</span> to
-                  upload{" "}
-                </>
-              )}
-              {selectedFiles.length === 0 && !acceptsVideos && (
-                <>
-                  Drag and drop files here, or{" "}
-                  <span className="text-primary font-semibold">browse</span> to
-                  upload
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className="file-list flex flex-wrap items-center space-y-2 gap-6">
-            {selectedFiles.map((file, index) => (
-              <div
-                className="flex flex-col items-center relative w-[100px] h-[150px]"
-                key={index}
-              >
-                {isImageFile(file) && (
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    className="!w-[80px] h-[120px] mb-3 object-cover mr-2"
-                  />
-                )}
-
-                {!isImageFile(file) && acceptsVideos && isVideoFile(file) && (
-                  <video
-                    className="w-[80px] h-w-[80px] object-cover mr-2"
-                    controls
-                    src={URL.createObjectURL(file)}
-                  />
-                )}
-                <div className="truncate flex-grow break-all max-w-[100px] mt-auto">
-                  {file.name}
-                </div>
-                <Button
-                  variant="solid"
-                  color="warning"
-                  onClick={(e: any) => removeFile(index, e)}
-                  className="absolute bg-primary text-white top-[-12px] right-[12px] rounded-full h-8 min-h-8 w-5 min-w-5"
-                >
-                  &times;
-                </Button>
-              </div>
-            ))}
-          </div>
-        </label>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        <Button onClick={() => fileInputRef.current?.click()} color="primary">
+          Select Files
+        </Button>
       </div>
-      {isInvalid && <div className="text-red-500 text-xs mt-1">{error}</div>}
+
+      <div className="file-list flex flex-wrap gap-4">
+        {selectedFiles.map((file, index) => (
+          <div
+            key={index}
+            className="relative flex flex-col items-center gap-2 p-2 border border-gray-300 rounded"
+          >
+            {file.type.startsWith("image") && (
+              <img
+                src={URL.createObjectURL(file)}
+                alt={file.name}
+                className="w-24 h-24 object-cover mb-2 rounded"
+              />
+            )}
+            <span className="text-sm line-clamp-1 max-w-[150px]">
+              {file.name}
+            </span>
+            <Button
+              color="danger"
+              onClick={() => removeFile(index)}
+              className="absolute top-[-8px] right-[-8px] p-1 rounded-full"
+            >
+              &times;
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <Button
+          color="success"
+          onClick={handleSubmit}
+          disabled={selectedFiles.length === 0}
+        >
+          Upload Files
+        </Button>
+      </div>
     </div>
   );
 };

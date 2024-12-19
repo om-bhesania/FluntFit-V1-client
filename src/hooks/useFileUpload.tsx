@@ -1,12 +1,20 @@
 import service from "../services/services";
 import apiUrls from "../utils/apiUrls";
 
+// Resize image if necessary
 const resizeImage = (
   file: File,
   maxWidth: number,
-  maxHeight: number
-): Promise<string> => {
+  maxHeight: number,
+  maxSize: number = 4 * 1024 * 1024 // 4MB by default
+): Promise<File> => {
   return new Promise((resolve, reject) => {
+    // Check if the file is an image
+    if (!file.type.startsWith("image/")) {
+      reject("Invalid file type. Please upload an image.");
+      return;
+    }
+
     const img = new Image();
     const reader = new FileReader();
 
@@ -32,62 +40,79 @@ const resizeImage = (
         // Draw the resized image on the canvas
         ctx?.drawImage(img, 0, 0, width, height);
 
-        // Convert the resized image to a base64 string
-        const resizedBase64 = canvas.toDataURL(file.type);
-        resolve(resizedBase64);
+        // Compress image by reducing the quality
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const resizedFile = new File([blob], file.name, {
+                type: file.type,
+              });
+              const imageSize = blob.size;
+              if (imageSize > maxSize) {
+                reject("Image is still too large after resizing.");
+              } else {
+                resolve(resizedFile);
+              }
+            } else {
+              reject("Error in compressing image.");
+            }
+          },
+          file.type,
+          0.7
+        ); // Compress to 70% quality
       };
 
       img.onerror = (error) => reject(error);
 
-      img.src = reader.result as string;
+      // Ensure file is passed correctly as a Blob
+      const fileURL = reader.result as string;
+      img.src = fileURL;
     };
 
     reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(file);
+
+    // Ensure file is passed correctly as a Blob
+    if (file instanceof Blob) {
+      reader.readAsDataURL(file);
+    } else {
+      reject("Invalid file type passed to FileReader");
+    }
   });
 };
 
-const uploadFilesToVercel = async (files: File[]): Promise<string[]> => {
+// Upload files directly to Imgur
+const uploadFilesToImgur = async (files: File[]): Promise<string[]> => {
   const uploadedUrls: string[] = [];
-  const maxSize = 50 * 1024 * 1024; // 50MB
+  const maxSize = 4 * 1024 * 1024; // 4MB
   const maxWidth = 1024; // Resize images larger than 1024px width
   const maxHeight = 1024; // Resize images larger than 1024px height
 
   for (const file of files) {
+    // Check if the file size is larger than the max size
     if (file.size > maxSize) {
-      console.error(`File ${file.name} is too large.`);
-      continue; // Skip uploading this file
+      console.error(`Image ${file.name} is too large.`);
+      continue; // Skip uploading this image
     }
 
-    // Resize the image if it's too large
-    let base64File = await new Promise<string>((resolve, reject) => {
-      if (file.type.startsWith("image/")) {
-        resizeImage(file, maxWidth, maxHeight).then(resolve).catch(reject);
-      } else {
-        const reader = new FileReader();
-        reader.onload = () =>
-          resolve(reader.result?.toString().split(",")[1] || "");
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      }
-    });
-
     try {
+      // Resize image if it's larger than maxWidth or maxHeight
+      const resizedFile = await resizeImage(file, maxWidth, maxHeight);
+
+      // Upload the resized file to Imgur
+      const formData = new FormData();
+      formData.append("image", resizedFile);
+
       const response: any = await service({
         method: "post",
-        url: apiUrls.products.fileUpload,
-        data: {
-          file: base64File,
-          fileName: file.name,
-          contentType: file.type,
-        },
+        url: apiUrls.products.fileUpload, // Replace with your actual backend API URL
+        data: formData,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Client-ID 865426e7f41e850`, // Use your Imgur Client ID
         },
       });
 
-      console.log(response);
-      uploadedUrls.push(response?.url); // Assuming response contains a `url` field
+      uploadedUrls.push(response?.data?.link); // Assuming response contains a `link` field
     } catch (error) {
       console.error("Failed to upload file:", error);
     }
@@ -96,4 +121,4 @@ const uploadFilesToVercel = async (files: File[]): Promise<string[]> => {
   return uploadedUrls;
 };
 
-export default uploadFilesToVercel;
+export default uploadFilesToImgur;
