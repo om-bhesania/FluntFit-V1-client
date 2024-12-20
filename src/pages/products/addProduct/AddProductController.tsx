@@ -1,7 +1,6 @@
 // components/AddProduct/AddProductController.jsx
 
 import { useState } from "react";
-import uploadFilesToImgur from "../../../hooks/useFileUpload";
 import useToast from "../../../hooks/useToast";
 import { AddProductApi } from "../ProductsApi";
 import AddProductComponent from "./AddProductComponent";
@@ -15,8 +14,6 @@ const AddProductController = ({
   prefilledData?: any[];
   handleSaveEdit?: (updatedProduct: any, data: any) => void;
 }) => {
-  const [files, setFiles] = useState<any>([]);
-
   const categories = [
     { value: "Men's wear", label: "Men's wear" },
     { value: "Women's wear", label: "Women's wear" },
@@ -37,13 +34,12 @@ const AddProductController = ({
 
   const getFiles = (files: any) => {
     console.log("firstname", files);
-    setFiles(files);
   };
 
   const handleSubmit = async (values: any) => {
     try {
-      // await AddProductApi(values, notify);
-      await uploadFilesToImgur(values.mediaContent);
+      await AddProductApi(values, notify);
+      // await uploadFilesToImgur(values.mediaContent);
     } catch (error) {
       console.error("Error submitting form:", error);
     }

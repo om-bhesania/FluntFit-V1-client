@@ -34,7 +34,6 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   isEdit = false,
   prefilledData,
   handleSaveEdit,
-  getFiles,
 }) => {
   const initialValues =
     isEdit && prefilledData
@@ -157,21 +156,21 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         }
 
         // // Clear specific fields after successful submission
-        // setFieldValue("category", "", false);
-        // setFieldValue("subcategory", "", false);
-        // setFieldValue("inventoryStatus", "", false);
-        // setFieldValue("mediaContent", [], false); // Clear file input
+        setFieldValue("category", "", false);
+        setFieldValue("subcategory", "", false);
+        setFieldValue("inventoryStatus", "", false);
+        setFieldValue("mediaContent", [], false); // Clear file input
 
-        // // Optionally reset all fields
-        // resetForm({
-        //   values: {
-        //     ...initialValues,
-        //     category: "",
-        //     subcategory: "",
-        //     inventoryStatus: "",
-        //     mediaContent: "",
-        //   },
-        // });
+        // Optionally reset all fields
+        resetForm({
+          values: {
+            ...initialValues,
+            category: "",
+            subcategory: "",
+            inventoryStatus: "",
+            mediaContent: "",
+          },
+        });
       } catch (error) {
         console.error("Form submission error:", error);
       }
