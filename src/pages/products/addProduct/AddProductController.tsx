@@ -32,7 +32,7 @@ const AddProductController = ({
   };
   const { notify } = useToast();
 
-  const getFiles = (files: any) => {};
+  const getFiles = () => {};
 
   const handleSubmit = async (values: any) => {
     try {

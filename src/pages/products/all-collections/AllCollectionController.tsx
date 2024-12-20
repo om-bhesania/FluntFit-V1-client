@@ -8,7 +8,7 @@ import { AddProducts } from "../addProduct";
 import { DeleteProductApi, EditProductApi } from "../ProductsApi";
 import AllCollectionComponent from "./AllCollectionComponent";
 import { handleGenerateLabel } from "../../../utils/utils";
-import { Delete, QrCode, Trash } from "lucide-react";
+import { QrCode, Trash } from "lucide-react";
 
 function AllCollectionController() {
   const [data, setData] = useState([]);
