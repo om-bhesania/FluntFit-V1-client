@@ -11,7 +11,7 @@ function HomeComponent() {
     <>
       <section className="hero-section -mt-6 mb-6">
         <div className="relative w-full h-[700px]">
-          {HomeData.map((item:any) => (
+          {HomeData.map((item: any) => (
             <>
               <motion.div className="absolute top-0 bottom-0 left-0 right-0 bg-black/20 z-[5] h-full w-full" />
               <div className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 z-[6]">
@@ -45,7 +45,7 @@ function HomeComponent() {
             title="Popular Products"
             description="Top Picks to Turn Heads, Our Most-Loved Styles to Flaunt Your Fit"
           />
-          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(400px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-1 w-full gap-3 flex-wrap">
+          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-2 w-full gap-3 flex-wrap">
             {tshirts.map((item, index) => (
               <AddToCartCard
                 imageUrl={item.imageUrl}
@@ -88,7 +88,7 @@ function HomeComponent() {
             title="Half Sleeve T-Shirts"
             description="Top Picks to Turn Heads, Our Most-Loved Styles to Flaunt Your Fit"
           />
-          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(400px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-1 w-full gap-3 flex-wrap">
+          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-2 w-full gap-3 flex-wrap">
             {tshirts.map((item, index) => (
               <AddToCartCard
                 imageUrl={item.imageUrl}
@@ -116,7 +116,7 @@ function HomeComponent() {
             title="Full Sleeve T-Shirts"
             description="Top Picks to Turn Heads, Our Most-Loved Styles to Flaunt Your Fit"
           />
-          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(400px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-1 w-full gap-3 flex-wrap">
+          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-2 w-full gap-3 flex-wrap">
             {tshirts.map((item, index) => (
               <AddToCartCard
                 imageUrl={item.imageUrl}
@@ -143,7 +143,7 @@ function HomeComponent() {
             title="Oversized T-Shirts"
             description="Top Picks to Turn Heads, Our Most-Loved Styles to Flaunt Your Fit"
           />
-          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(400px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-1 w-full gap-3 flex-wrap">
+          <div className="grid md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(360px,1fr))] grid-cols-2 w-full gap-3 flex-wrap">
             {tshirts.map((item, index) => (
               <AddToCartCard
                 imageUrl={item.imageUrl}

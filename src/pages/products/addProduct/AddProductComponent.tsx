@@ -386,14 +386,14 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 label="Size Options"
                 variant="flat"
               />
-              <Input
+              {/* <Input
                 name="colorOptions"
                 value={formik.values.colorOptions}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 label="Color Options"
                 variant="flat"
-              />
+              /> */}
               <Select
                 onChange={(event) => {
                   const selectedValue = event.target.value;
@@ -410,7 +410,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                   </SelectItem>
                 ))}
               </Select>
-              <Input
+              {/* <Input
                 name="countryOfOrigin"
                 value={formik.values.countryOfOrigin}
                 onChange={formik.handleChange}
@@ -429,7 +429,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                     formik.touched.countryOfOrigin
                   )
                 }
-              />
+              /> */}
               <Textarea
                 name="careInstructions"
                 value={formik.values.careInstructions}

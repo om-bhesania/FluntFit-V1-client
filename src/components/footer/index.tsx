@@ -11,10 +11,10 @@ const index: React.FC = () => {
           <div className="mb-6 md:mb-0 flex items-start gap-4">
             <Logo className="h-[170px]" />
             <div className="">
-              <p className="mb-2">FlauntFit Clothing Store</p>
+              <p className="mb-2">MixBunch Clothing Store</p>
               <p className="mb-2 max-w-[450px]">
-                Discover the latest trends and styles at FlauntFit Clothing
-                Store, where fashion meets comfort. FlauntFit offers a wide
+                Discover the latest trends and styles at MixBunch Clothing
+                Store, where fashion meets comfort. MixBunch offers a wide
                 range of apparel that combines modern aesthetics with
                 unparalleled comfort, ensuring you look and feel your best every
                 day.
@@ -97,7 +97,7 @@ const index: React.FC = () => {
             {new Date().getFullYear() === 2024
               ? new Date().getFullYear()
               : `2021 - ${new Date().getFullYear()}`}{" "}
-            <Link to={'/'}>FlauntFit</Link>
+            <Link to={'/'}>MixBunch</Link>
           </p>
         </div>
       </div>

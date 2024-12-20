@@ -13,7 +13,7 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
   loading,
 }) => { 
   return (
-    <div className="container">
+    <div className="containesr max-w-[1540px]">
       <div className="mt-6">
         <Table
           data={data}

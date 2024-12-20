@@ -56,7 +56,7 @@ function Header() {
             onClick={() => navigate("/")}
             className="font-bold text-xl cursor-pointer"
           >
-            FlauntFit
+            MixBunch
           </NavbarBrand>
         </NavbarContent>
 
@@ -65,7 +65,7 @@ function Header() {
             onClick={() => navigate("/")}
             className="font-bold text-xl cursor-pointer"
           >
-            FlauntFit
+            MixBunch
           </NavbarBrand>
         </NavbarContent>
       </div>

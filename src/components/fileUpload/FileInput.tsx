@@ -46,7 +46,7 @@ const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
   //     reader.onerror = (error) => reject(error);
   //   });
   // };
- 
+
   // Function to handle form submission and file upload
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +62,7 @@ const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
         formData.append("file", file); // Directly append the file
 
         // Send to backend
-        const response:any = await service({
+        const response: any = await service({
           method: "post",
           url: apiUrls.products.fileUpload, // Ensure this URL is correct
           data: formData,
@@ -107,9 +107,12 @@ const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
           onChange={handleFileChange}
           className="hidden"
         />
-        <Button onClick={() => fileInputRef.current?.click()} color="primary">
-          Select Files
-        </Button>
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="border-0 text-base text-gray-500 cursor-pointer"
+        >
+          <span className="underline">Click Me</span> or Drag and Drop Here
+        </div>
       </div>
 
       <div className="file-list flex flex-wrap gap-4">
@@ -141,11 +144,11 @@ const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
 
       <div className="mt-4">
         <Button
-          color="success"
+          color="primary"
           onClick={handleSubmit}
           disabled={selectedFiles.length === 0}
         >
-          Upload Files
+          Submit Media
         </Button>
       </div>
     </div>

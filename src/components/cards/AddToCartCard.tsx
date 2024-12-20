@@ -38,10 +38,10 @@ const AddToCartCard: React.FC<AddToCartCardProps> = ({
       <div className="p-4 flex flex-col gap-2">
         <div className="flex flex-col">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{title}</h2>
-            <ShoppingCart className="mr-2 cursor-pointer flex-shrink-0 text-sm h-6 w-6 text-primary" />
+            <h2 className="md:text-lg text-sm font-semibold">{title}</h2>
+            <ShoppingCart className="mr-2 cursor-pointer flex-shrink-0 text-sm md:h-6 h-5 md:w-6 w-5 text-primary self-start" />
           </div>
-          <p className="text-md font-bold">₹{price.toFixed(2)}</p>
+          <p className="text-md max-sm:text-sm font-bold">₹{price.toFixed(2)}</p>
         </div>
       </div>
     </motion.div>
