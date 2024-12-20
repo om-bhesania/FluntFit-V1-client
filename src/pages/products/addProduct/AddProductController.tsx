@@ -1,6 +1,5 @@
 // components/AddProduct/AddProductController.jsx
 
-import { useState } from "react";
 import useToast from "../../../hooks/useToast";
 import { AddProductApi } from "../ProductsApi";
 import AddProductComponent from "./AddProductComponent";
