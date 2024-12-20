@@ -2,6 +2,7 @@ import { Button } from "@nextui-org/react"; // NextUI Button component
 import React, { useRef, useState } from "react";
 import service from "../../services/services"; // Adjust path as needed
 import apiUrls from "../../utils/apiUrls"; // Adjust path as needed
+import useToast from "../../hooks/useToast";
 
 interface FileInputProps {
   onFilesChange: (files: string[]) => void;
@@ -55,7 +56,7 @@ const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
       alert("Please select files to upload.");
       return;
     }
-
+const {notify} = useToast();
     for (const file of selectedFiles) {
       try {
         const formData = new FormData();
@@ -73,7 +74,6 @@ const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
 
         if (response.status === 200) {
           alert(`File "${file.name}" uploaded successfully!`);
-          console.log(response.data);
           const uploadedUrl = response.data.data.url;
           onFilesChange([
             ...selectedFiles.map((file) => file.name),
@@ -82,9 +82,8 @@ const FileInput: React.FC<FileInputProps> = ({ onFilesChange }) => {
         } else {
           alert(`Failed to upload file "${file.name}".`);
         }
-      } catch (error) {
-        console.error(`Error uploading file "${file.name}":`, error);
-        alert(`Error uploading file "${file.name}".`);
+      } catch (error) { 
+        notify(`Error uploading file "${file.name}":`, { type: "error" });
       }
     }
 

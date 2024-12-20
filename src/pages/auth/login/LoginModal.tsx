@@ -15,8 +15,8 @@ export default function LoginModal({ variant, color }: any) {
   const handleOpen = () => {};
   const handleClose = () => {};
 
-  const handleSubmit = (values: { email: string; password: string }) => {
-    console.log(values);
+  const handleSubmit = () => {
+     return
   };
 
   return (

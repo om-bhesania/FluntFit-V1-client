@@ -7,6 +7,8 @@ import apiUrls from "../../../utils/apiUrls";
 import { AddProducts } from "../addProduct";
 import { DeleteProductApi, EditProductApi } from "../ProductsApi";
 import AllCollectionComponent from "./AllCollectionComponent";
+import { handleGenerateLabel } from "../../../utils/utils";
+import { Delete, QrCode, Trash } from "lucide-react";
 
 function AllCollectionController() {
   const [data, setData] = useState([]);
@@ -24,7 +26,7 @@ function AllCollectionController() {
       });
       setData(result?.products || []);
     } catch (error) {
-      console.error("Failed to load data:", error);
+      notify("Failed to load data", { type: "error" });
     } finally {
       setLoading(false);
     }
@@ -34,8 +36,9 @@ function AllCollectionController() {
     try {
       await DeleteProductApi(id, notify);
       loadData();
+      notify("Product deleted successfully", { type: "success" });
     } catch (error) {
-      console.error("Delete failed:", error);
+      notify("Failed to delete product", { type: "error" });
     }
   };
 
@@ -62,7 +65,7 @@ function AllCollectionController() {
       loadData();
       handleClose();
     } catch (error) {
-      console.error("Edit failed:", error);
+      notify("Failed to edit product", { type: "error" });
     }
   };
 
@@ -74,24 +77,79 @@ function AllCollectionController() {
     {
       header: "Serial Number",
       accessorKey: "serialNumber",
-      cell: ({ row }: any) => row.index + 1,
+      cell: ({ table, row }: any) => {
+        const pageIndex = table.getState().pagination.pageIndex;
+        const pageSize = table.getState().pagination.pageSize;
+        const serialNumber = pageIndex * pageSize + row.index + 1;
+        return serialNumber;
+      },
+      maxWidth: 10,
     },
-    { header: "Product Name", accessorKey: "productName" },
-    { header: "Product Description", accessorKey: "productDescription" },
-    { header: "Category", accessorKey: "category" },
-    { header: "Subcategory", accessorKey: "subcategory" },
-    { header: "Product Type", accessorKey: "productType" },
-    { header: "Brand", accessorKey: "brand" },
-    { header: "Price", accessorKey: "price" },
-    { header: "Sale Price", accessorKey: "salePrice" },
+
+    {
+      header: "Product Name",
+      accessorKey: "productName",
+      cell: ({ row }: any) => row.original.productName,
+    },
+    {
+      header: "Product Description",
+      accessorKey: "productDescription",
+      cell: ({ row }: any) => row.original.productDescription,
+    },
+    {
+      header: "Category",
+      accessorKey: "category",
+      cell: ({ row }: any) => row.original.category,
+    },
+    {
+      header: "Subcategory",
+      accessorKey: "subcategory",
+      cell: ({ row }: any) => row.original.subcategory,
+    },
+    {
+      header: "Product Type",
+      accessorKey: "productType",
+      cell: ({ row }: any) => row.original.productType,
+    },
+    {
+      header: "Brand",
+      accessorKey: "brand",
+      cell: ({ row }: any) => row.original.brand,
+    },
+    {
+      header: "Price",
+      accessorKey: "price",
+      cell: ({ row }: any) => row.original.price,
+    },
+    {
+      header: "Sale Price",
+      accessorKey: "salePrice",
+      cell: ({ row }: any) =>
+        row.original.salePrice === null ? "-" : row.original.salePrice,
+    },
     { header: "SKU", accessorKey: "sku" },
-    { header: "Quantity In Stock", accessorKey: "quantityInStock" },
-    { header: "Media Content", accessorKey: "mediaContent" },
-    { header: "Size Options", accessorKey: "sizeOptions" },
-    { header: "Color Options", accessorKey: "colorOptions" },
-    { header: "Care Instructions", accessorKey: "careInstructions" },
-    { header: "Inventory Status", accessorKey: "inventoryStatus" },
-    { header: "Country of Origin", accessorKey: "countryOfOrigin" },
+    {
+      header: "Quantity In Stock",
+      accessorKey: "quantityInStock",
+      cell: ({ row }: any) => row.original.quantityInStock,
+    },
+    {
+      header: "Size Options",
+      accessorKey: "sizeOptions",
+      cell: ({ row }: any) => row.original.sizeOptions,
+    },
+
+    {
+      header: "Care Instructions",
+      accessorKey: "careInstructions",
+      cell: ({ row }: any) => row.original.careInstructions,
+    },
+    {
+      header: "Inventory Status",
+      accessorKey: "inventoryStatus",
+      cell: ({ row }: any) => row.original.inventoryStatus,
+    },
+
     {
       header: "Actions",
       accessorKey: "actions",
@@ -122,11 +180,20 @@ function AllCollectionController() {
             ]}
           />
           <Button
-            onClick={() => handleDelete(row.original.id)}
-            variant="bordered"
-            color="danger"
+            onClick={() => handleDelete(row.original._id)}
+            variant={"solid"}
+            className="bg-transparent"
+            isIconOnly
           >
-            Delete
+            <Trash className="text-danger/60" />
+          </Button>
+          <Button
+            onClick={() => handleGenerateLabel(row.original)}
+            variant={"solid"}
+            className="bg-transparent"
+            isIconOnly
+          >
+            <QrCode className="text-primary" />
           </Button>
         </div>
       ),

@@ -70,7 +70,7 @@ function HomeComponent() {
       <section className="categories-section z-10">
         <div className="container">
           <SectionTitle title="All Categories" />
-          <div className="flex items-center justify-between max-md:gap-5 w-full max-md:pb-12 h-full max-md:overflow-x-auto scroll-m-0">
+          <div className="flex items-center justify-between gap-4 w-full max-md:pb-12 h-full max-md:overflow-x-auto scroll-m-0">
             {CategoryData.map((item) => (
               <CategoryCard
                 name={item.name}

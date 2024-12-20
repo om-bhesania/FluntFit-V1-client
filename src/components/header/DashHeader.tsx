@@ -10,7 +10,8 @@ function DashHeader() {
         classNames={{
           base: "w-full",
           tabContent: "p-4 w-full",
-          tabList: "w-full",
+          tabList: "w-full overflow-visible",
+          panel: "w-full",
         }}
       >
         <Tab key="add-products" title="Add Products" className="!w-full">

@@ -14,7 +14,8 @@ const apiUrls = {
     get: "products",
     post: "products",
     put: "products",
-    delete: "products",
+    delete: "products/delete",
+    deleteAll: "products/delete-all",
     fileUpload: "upload",
   },
 };

@@ -73,7 +73,7 @@ function Table<T extends object>({
   }, [pagination, onPaginationChange]);
 
   return (
-    <div className="flex flex-col my-5">
+    <div className="flex flex-col my-5 overflow-x-auto">
       <div className="overflow-x-auto shadow-xl rounded-lg tablee">
         <div className="inline-block min-w-full py-1">
           <div className="overflow-hidden p-1 rounded-2xl">
@@ -118,7 +118,7 @@ function Table<T extends object>({
                       <Spinner size="lg" className="h-12 w-12 text-end" />
                     </td>
                   </tr>
-                ) : (
+                ) : data.length > 0 ? (
                   <>
                     {table.getRowModel().rows.map((row) => (
                       <Fragment key={row.id}>
@@ -153,6 +153,15 @@ function Table<T extends object>({
                       </Fragment>
                     ))}
                   </>
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={columns.length/2 +2}
+                      className="py-3.5 px-3 whitespace-nowrap text-end pr-[320px]"
+                    >
+                      No data found
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>

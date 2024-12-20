@@ -1,7 +1,8 @@
 // components/AddProduct/AddProductController.jsx
 
+import uploadFilesToImgur from "../../../hooks/useFileUpload";
 import useToast from "../../../hooks/useToast";
-import { AddProductApi } from "../ProductsApi";
+import { AddProductApi, DeleteAllProductsApi } from "../ProductsApi";
 import AddProductComponent from "./AddProductComponent";
 
 const AddProductController = ({
@@ -31,16 +32,21 @@ const AddProductController = ({
   };
   const { notify } = useToast();
 
-  const getFiles = (files: any) => {
-    console.log("firstname", files);
-  };
+  const getFiles = (files: any) => {};
 
   const handleSubmit = async (values: any) => {
     try {
       await AddProductApi(values, notify);
-      // await uploadFilesToImgur(values.mediaContent);
+      await uploadFilesToImgur(values.mediaContent);
     } catch (error) {
-      console.error("Error submitting form:", error);
+      notify("Error submitting form", { type: "error" });
+    }
+  };
+  const deleteAllProducts = async () => {
+    try {
+      await DeleteAllProductsApi(notify);
+    } catch (error) {
+      notify("Error deleting products", { type: "error" });
     }
   };
   return (
@@ -53,6 +59,7 @@ const AddProductController = ({
       prefilledData={prefilledData}
       handleSaveEdit={handleSaveEdit}
       getFiles={getFiles}
+      deleteAllProducts={deleteAllProducts}
     />
   );
 };

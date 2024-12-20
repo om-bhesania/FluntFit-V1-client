@@ -7,6 +7,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { ModalComponentProps } from "../../utils/interfaces";
+import { Edit } from "lucide-react";
 
 const EditModal: React.FC<ModalComponentProps> = ({
   title,
@@ -32,11 +33,12 @@ const EditModal: React.FC<ModalComponentProps> = ({
   return (
     <>
       <Button
+        isIconOnly
         onPress={handleOpen}
-        className={"bg-blue-500 text-white"}
         variant={"solid"}
+        className="bg-transparent"
       >
-        {triggerLabel}
+        <Edit className={"text-blue-500 "} />
       </Button>
 
       <Modal

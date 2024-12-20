@@ -55,6 +55,23 @@ export const DeleteProductApi = async (id: string, notify: any) => {
   }
 };
 
+export const DeleteAllProductsApi = async (notify: any) => {
+  try {
+    await service({
+      method: "delete",
+      url: apiUrls.products.deleteAll,
+    });
+    notify("Product deleted successfully", {
+      type: "success",
+    });
+  } catch (error: any) {
+    const errorMessage = error?.response?.data.messages;
+    notify(errorMessage, {
+      type: "error",
+    });
+  }
+};
+
 export const EditProductApi = async (id: string, notify: any, data: any) => {
   try {
     await service({

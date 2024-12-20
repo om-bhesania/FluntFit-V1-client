@@ -11,7 +11,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import FileInput from "../../../components/fileUpload/FileInput";
-import uploadFilesToImgur from "../../../hooks/useFileUpload";
+import useToast from "../../../hooks/useToast";
 
 interface AddProductComponentProps {
   categories: { value: string; label: string }[];
@@ -24,17 +24,18 @@ interface AddProductComponentProps {
   prefilledData?: any;
   handleSaveEdit?: (updatedProduct: any, data: any) => void;
   getFiles: (files: any) => void;
+  deleteAllProducts?: () => void;
 }
 
 const AddProductComponent: React.FC<AddProductComponentProps> = ({
   categories,
-  subcategories,
   handleSKUGeneration,
   handleSubmit,
   isEdit = false,
   prefilledData,
   handleSaveEdit,
 }) => {
+  const { notify } = useToast();
   const initialValues =
     isEdit && prefilledData
       ? {
@@ -101,11 +102,11 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
       .required("Stock quantity is required")
       .integer("Stock quantity must be an integer")
       .min(0, "Quantity cannot be negative"),
-    mediaContent: Yup.array()
-      .of(Yup.mixed().required("Image file is required"))
-      .min(1, "At least one product image is required"),
+    // mediaContent: Yup.array()
+    //   .of(Yup.mixed().required("Image file is required"))
+    //   .min(1, "At least one product image is required"),
     sizeOptions: Yup.string(),
-    colorOptions: Yup.string(),
+    // colorOptions: Yup.string(),
     careInstructions: Yup.string().max(
       500,
       "Care instructions can't exceed 500 characters"
@@ -114,7 +115,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
       ["In Stock", "Out of Stock", "Discontinued"],
       "Invalid status"
     ),
-    countryOfOrigin: Yup.string().required("Country of origin is required"),
+    // countryOfOrigin: Yup.string().required("Country of origin is required"),
   });
 
   const formik = useFormik({
@@ -125,9 +126,9 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         // Process the media content files
         let uploadedUrls: any = [];
         if (values.mediaContent.length > 0) {
-          uploadedUrls = await uploadFilesToImgur(values.mediaContent); // Pass empty array for currentBase64Files
-          // Optionally update the form data to include the URLs after the upload
-          setFieldValue("mediaContent", uploadedUrls); // Replace mediaContent with the uploaded URLs
+          // uploadedUrls = await uploadFilesToImgur(values.mediaContent);
+          delete values.mediaContent;
+          setFieldValue("mediaContent", uploadedUrls);
         }
 
         const formData = {
@@ -141,18 +142,18 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           salePrice: Number(values.salePrice),
           sku: values.sku,
           quantityInStock: Number(values.quantityInStock),
-          mediaContent: uploadedUrls, // Store the uploaded URLs instead of base64 files
+          mediaContent: values.mediaContent, // Store the uploaded URLs instead of base64 files
           sizeOptions: values.sizeOptions,
-          colorOptions: values.colorOptions,
+          // colorOptions: values.colorOptions,
           careInstructions: values.careInstructions,
           inventoryStatus: values.inventoryStatus,
-          countryOfOrigin: values.countryOfOrigin,
+          // countryOfOrigin: values.countryOfOrigin,
         };
-        console.log(formData);
+
         if (!isEdit) {
           await handleSubmit(formData);
         } else if (handleSaveEdit) {
-          await handleSaveEdit(prefilledData.id, formData);
+          await handleSaveEdit(prefilledData._id, formData);
         }
 
         // // Clear specific fields after successful submission
@@ -172,10 +173,11 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           },
         });
       } catch (error) {
-        console.error("Form submission error:", error);
+        notify("Error submitting form", { type: "error" });
       }
     },
   });
+
   return (
     <div className="w-full mt-3">
       <form onSubmit={formik.handleSubmit}>
@@ -183,6 +185,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           <CardHeader>
             <h2 className="text-lg font-semibold">Basic Information</h2>
           </CardHeader>
+          {/* <button onClick={deleteAllProducts}>Delete All</button> */}
           <CardBody>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
@@ -224,6 +227,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                   formik.setFieldValue("category", selectedValue);
                 }}
                 value={formik.values.category}
+                label="Category"
                 placeholder="Select Category"
                 aria-label="Category"
               >
@@ -233,22 +237,22 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                   </SelectItem>
                 ))}
               </Select>
-              <Select
-                onChange={(event) => {
-                  const selectedValue = event.target.value;
-                  formik.setFieldValue("subcategory", selectedValue);
-                }}
-                value={formik.values.subcategory}
-                placeholder="Select Subcategory"
-                aria-label="Subcategory"
-              >
-                {subcategories.map((subcategory) => (
-                  <SelectItem key={subcategory.value} value={subcategory.value}>
-                    {subcategory.label}
-                  </SelectItem>
-                ))}
-              </Select>
-
+              <Input
+                name="subcategory"
+                value={formik.values.productName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                label="Enter subcategory"
+                variant="flat"
+                description={
+                  formik.errors.subcategory && formik.touched.subcategory
+                    ? String(formik.errors.subcategory)
+                    : ""
+                }
+                isInvalid={
+                  !!(formik.errors.subcategory && formik.touched.subcategory)
+                }
+              />
               <Input
                 name="productType"
                 value={formik.values.productType}
