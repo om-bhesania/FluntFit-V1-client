@@ -13,8 +13,7 @@ const EditModal: React.FC<ModalComponentProps> = ({
   title,
   bodyContent,
   isDismissable = false,
-  isKeyboardDismissDisabled = true,
-  triggerLabel,
+  isKeyboardDismissDisabled = true, 
   onOpen,
   onClose,
 }) => {
