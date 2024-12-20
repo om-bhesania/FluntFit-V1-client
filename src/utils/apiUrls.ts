@@ -1,5 +1,5 @@
-// export const baseUrl = "https://MixBunch-v1-server.onrender.com/v1/";
-export const baseUrl = "http://localhost:3012/v1/";
+export const baseUrl = "https://MixBunch-v1-server.onrender.com/v1/";
+// export const baseUrl = "http://localhost:3012/v1/";
 const apiUrls = {
   baseUrl: baseUrl,
   users: {
