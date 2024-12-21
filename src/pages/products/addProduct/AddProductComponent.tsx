@@ -38,11 +38,10 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   isEdit = false,
   prefilledData,
   handleSaveEdit,
-  // deleteAllProducts,
+  // deleteAllProducts,Button
   sizeOptions,
   GSTOptions,
   InventoryOptions,
-  loading,
 }) => {
   const { notify } = useToast();
   const initialValues =
@@ -479,7 +478,6 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           color="primary"
           type="submit"
           className="mt-4 w-full"
-          // disabled={loading}
         >
           {isEdit ? "Update Product" : "Add Product"}
         </Button>

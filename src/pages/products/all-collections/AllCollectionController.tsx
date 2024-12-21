@@ -1,15 +1,14 @@
 import { Button, useDisclosure } from "@nextui-org/react";
+import { QrCode, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import EditModal from "../../../components/modal/EditModal";
 import useToast from "../../../hooks/useToast";
 import service from "../../../services/services";
 import apiUrls from "../../../utils/apiUrls";
+import { handleGenerateLabel } from "../../../utils/utils";
 import { AddProducts } from "../addProduct";
 import { DeleteProductApi, EditProductApi } from "../ProductsApi";
 import AllCollectionComponent from "./AllCollectionComponent";
-import { handleGenerateLabel } from "../../../utils/utils";
-import { QrCode, Trash } from "lucide-react";
-import { header } from "framer-motion/client";
 
 function AllCollectionController() {
   const [data, setData] = useState([]);
