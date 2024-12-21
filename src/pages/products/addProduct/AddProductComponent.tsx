@@ -17,6 +17,8 @@ interface AddProductComponentProps {
   categories: { value: string; label: string }[];
   sizeOptions: { value: string; label: string }[];
   subcategories: { value: string; label: string }[];
+  GSTOptions: { value: string; label: string }[];
+  InventoryOptions: { value: string; label: string }[];
   handleSKUGeneration: (
     setFieldValue: (field: string, value: any) => void
   ) => void;
@@ -26,6 +28,7 @@ interface AddProductComponentProps {
   handleSaveEdit?: (updatedProduct: any, data: any) => void;
   getFiles: (files: any) => void;
   deleteAllProducts?: () => void;
+  loading: boolean;
 }
 
 const AddProductComponent: React.FC<AddProductComponentProps> = ({
@@ -37,6 +40,9 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   handleSaveEdit,
   // deleteAllProducts,
   sizeOptions,
+  GSTOptions,
+  InventoryOptions,
+  loading,
 }) => {
   const { notify } = useToast();
   const initialValues =
@@ -54,11 +60,11 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           sku: prefilledData?.sku || "",
           quantityInStock: prefilledData?.quantityInStock || "",
           mediaContent: prefilledData?.mediaContent || [],
-          sizeOptions: prefilledData?.sizeOptions || "",
-          colorOptions: prefilledData?.colorOptions || "",
+          sizeOptions: prefilledData?.sizeOptions || [],
           careInstructions: prefilledData?.careInstructions || "",
           inventoryStatus: prefilledData?.inventoryStatus || "",
-          countryOfOrigin: prefilledData?.countryOfOrigin || "",
+          gst: prefilledData?.gst || "",
+          costPrice: prefilledData?.costPrice || "",
         }
       : {
           id: "",
@@ -70,14 +76,14 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           brand: "",
           price: "",
           salePrice: "",
+          costPrice: "",
+          gst: "",
           sku: "",
           quantityInStock: "",
           mediaContent: [],
-          sizeOptions: "",
-          colorOptions: "",
+          sizeOptions: [],
           careInstructions: "",
           inventoryStatus: "",
-          countryOfOrigin: "",
         };
 
   const validationSchema = Yup.object().shape({
@@ -105,22 +111,14 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
       .required("Stock quantity is required")
       .integer("Stock quantity must be an integer")
       .min(0, "Quantity cannot be negative"),
-    // mediaContent: Yup.array()
-    //   .of(Yup.mixed().required("Image file is required"))
-    //   .min(1, "At least one product image is required"),
-    sizeOptions: Yup.string(),
-    // colorOptions: Yup.string(),
+    sizeOptions: Yup.array().min(1, "At least one size option is required"),
     careInstructions: Yup.string().max(
       500,
       "Care instructions can't exceed 500 characters"
     ),
-    inventoryStatus: Yup.string().oneOf(
-      ["In Stock", "Out of Stock", "Discontinued"],
-      "Invalid status"
-    ),
-    // countryOfOrigin: Yup.string().required("Country of origin is required"),
+    inventoryStatus: Yup.string().required("Inventory status is required"),
+    gst: Yup.string().required("GST is required"),
   });
-
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -133,7 +131,6 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           delete values.mediaContent;
           setFieldValue("mediaContent", uploadedUrls);
         }
-
         const formData = {
           productName: values.productName,
           productDescription: values.productDescription,
@@ -147,21 +144,20 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           quantityInStock: Number(values.quantityInStock),
           mediaContent: values.mediaContent, // Store the uploaded URLs instead of base64 files
           sizeOptions: values.sizeOptions,
-          // colorOptions: values.colorOptions,
           careInstructions: values.careInstructions,
           inventoryStatus: values.inventoryStatus,
-          // countryOfOrigin: values.countryOfOrigin,
+          gst: values.gst,
+          costPrice: Number(values.costPrice),
         };
-
         if (!isEdit) {
           await handleSubmit(formData);
         } else if (handleSaveEdit) {
           await handleSaveEdit(prefilledData._id, formData);
         }
-
         // // Clear specific fields after successful submission
         setFieldValue("category", "", false);
-        setFieldValue("subcategory", "", false);
+        setFieldValue("gst", "", false);
+        setFieldValue("sizeOptions", "", false);
         setFieldValue("inventoryStatus", "", false);
         setFieldValue("mediaContent", [], false); // Clear file input
 
@@ -173,6 +169,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
             subcategory: "",
             inventoryStatus: "",
             mediaContent: "",
+            gst: "",
+            sizeOptions: "",
           },
         });
       } catch (error) {
@@ -196,7 +194,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 value={formik.values.productName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                label="Product Name"
+                label="Product Name *"
                 variant="flat"
                 description={
                   formik.errors.productName && formik.touched.productName
@@ -230,9 +228,12 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                   formik.setFieldValue("category", selectedValue);
                 }}
                 value={formik.values.category}
-                label="Category"
+                label="Category *"
                 placeholder="Select Category"
                 aria-label="Category"
+                isInvalid={
+                  !!(formik.errors.category && formik.touched.category)
+                }
               >
                 {categories.map((category) => (
                   <SelectItem key={category.value} value={category.value}>
@@ -245,7 +246,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 value={formik.values.subcategory}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                label="Enter subcategory"
+                label="Enter subcategory *"
                 variant="flat"
                 description={
                   formik.errors.subcategory && formik.touched.subcategory
@@ -261,7 +262,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 value={formik.values.productType}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                label="Product Type"
+                label="Product Type *"
                 variant="flat"
               />
               <Input
@@ -269,7 +270,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 value={formik.values.brand}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                label="Product Brand"
+                label="Product Brand *"
                 variant="flat"
                 labelPlacement="inside"
               />
@@ -278,7 +279,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         </Card>
         <Card className="mb-6">
           <CardHeader>
-            <h2 className="text-lg font-semibold">Pricing & Stock</h2>
+            <h2 className="text-lg font-semibold">Pricing & Stock (₹)</h2>
           </CardHeader>
           <CardBody>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -287,7 +288,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 value={formik.values.price}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                label="Price"
+                label="Selling Price *"
                 variant="flat"
                 description={
                   formik.errors.price && formik.touched.price
@@ -301,7 +302,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 value={formik.values.salePrice}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                label="Sale Price (optional)"
+                label="Sale or Discounted Price (optional)"
                 variant="flat"
                 description={
                   formik.errors.salePrice && formik.touched.salePrice
@@ -312,6 +313,39 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                   !!(formik.errors.salePrice && formik.touched.salePrice)
                 }
               />
+              <Input
+                name="costPrice"
+                value={formik.values.costPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                label="Cost Price *"
+                variant="flat"
+                description={
+                  formik.errors.costPrice && formik.touched.costPrice
+                    ? String(formik.errors.costPrice)
+                    : ""
+                }
+                isInvalid={
+                  !!(formik.errors.costPrice && formik.touched.costPrice)
+                }
+              />
+              <Select
+                onChange={(event) => {
+                  const selectedValue = event.target.value;
+                  formik.setFieldValue("gst", selectedValue);
+                }}
+                value={formik.values.category}
+                label="GST(%) *"
+                placeholder="Enter GST"
+                aria-label="GST"
+                isInvalid={!!(formik.errors.gst && formik.touched.gst)}
+              >
+                {GSTOptions.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </Select>
               <div className="">
                 <div
                   className={`${
@@ -325,7 +359,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                     value={formik.values.sku}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    label="SKU / Barcode"
+                    label="SKU / Barcode *"
                     isInvalid={!!(formik.errors.sku && formik.touched.sku)}
                   />
                   <Button
@@ -346,7 +380,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 value={formik.values.quantityInStock}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                label="Quantity in Stock"
+                label="Quantity in Stock *"
                 variant="flat"
                 description={
                   formik.errors.quantityInStock &&
@@ -385,65 +419,49 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           <CardBody>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
-                onChange={(event) => {
-                  const selectedValue = event.target.value;
-                  formik.setFieldValue("sizeOptions", selectedValue);
-                }}
-                value={formik.values.sizeOptions}
+                label="Select Size *"
                 placeholder="Select Size"
                 aria-label="Select Size"
-                label="Select Size"
+                selectionMode="multiple"
+                selectedKeys={formik.values.sizeOptions}
+                onSelectionChange={(selectedKeys) => {
+                  const selectedValues = Array.from(selectedKeys);
+                  formik.setFieldValue("sizeOptions", selectedValues);
+                }}
+                isInvalid={
+                  !!(formik.errors.sizeOptions && formik.touched.sizeOptions)
+                }
               >
-                {sizeOptions.map((status, index) => (
-                  <SelectItem key={index} value={status.value}>
+                {sizeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Select
+                onChange={(event) => {
+                  const selectedValue = event.target.value;
+                  console.log(selectedValue);
+                  formik.setFieldValue("inventoryStatus", selectedValue); // Setting the value directly
+                }}
+                value={formik.values.inventoryStatus} // Formik's current value
+                placeholder="Select Inventory Status"
+                aria-label="Inventory Status"
+                label="Inventory Status *"
+                isInvalid={
+                  !!(
+                    formik.errors.inventoryStatus &&
+                    formik.touched.inventoryStatus
+                  )
+                }
+              >
+                {InventoryOptions.map((status) => (
+                  <SelectItem key={status.value} value={status.value}>
                     {status.label}
                   </SelectItem>
                 ))}
               </Select>
-              {/* <Input
-                name="colorOptions"
-                value={formik.values.colorOptions}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Color Options"
-                variant="flat"
-              /> */}
-              <Select
-                onChange={(event) => {
-                  const selectedValue = event.target.value;
-                  formik.setFieldValue("inventoryStatus", selectedValue);
-                }}
-                value={formik.values.inventoryStatus}
-                placeholder="Select Inventory Status"
-                aria-label="Inventory Status"
-                label="Inventory Status"
-              >
-                {["In Stock", "Out of Stock", "Discontinued"].map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </Select>
-              {/* <Input
-                name="countryOfOrigin"
-                value={formik.values.countryOfOrigin}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Country of Origin"
-                variant="flat"
-                description={
-                  formik.errors.countryOfOrigin &&
-                  formik.touched.countryOfOrigin
-                    ? String(formik.errors.countryOfOrigin)
-                    : ""
-                }
-                isInvalid={
-                  !!(
-                    formik.errors.countryOfOrigin &&
-                    formik.touched.countryOfOrigin
-                  )
-                }
-              /> */}
+
               <Textarea
                 name="careInstructions"
                 value={formik.values.careInstructions}
@@ -461,6 +479,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           color="primary"
           type="submit"
           className="mt-4 w-full"
+          // disabled={loading}
         >
           {isEdit ? "Update Product" : "Add Product"}
         </Button>

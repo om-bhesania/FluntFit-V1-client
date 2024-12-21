@@ -21,22 +21,14 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
   };
 
   return (
-    <div className="mt-6">
-      <div className="flex justify-end mb-4">
-        <Button
-          onClick={handleExport}
-          variant="bordered"
-          color="primary"
-        >
-          <Download/> Export as Csv
-        </Button>
-      </div>
+    <div className="mt-6"> 
       <Table
         data={data}
         columns={columns}
         pageCount={Math.ceil(data.length / 15)}
         className="text-black"
         loading={loading}
+        handleExport={handleExport}
       />
     </div>
   );

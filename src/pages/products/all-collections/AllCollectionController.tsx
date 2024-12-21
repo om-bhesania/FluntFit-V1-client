@@ -9,6 +9,7 @@ import { DeleteProductApi, EditProductApi } from "../ProductsApi";
 import AllCollectionComponent from "./AllCollectionComponent";
 import { handleGenerateLabel } from "../../../utils/utils";
 import { QrCode, Trash } from "lucide-react";
+import { header } from "framer-motion/client";
 
 function AllCollectionController() {
   const [data, setData] = useState([]);
@@ -122,10 +123,48 @@ function AllCollectionController() {
       cell: ({ row }: any) => row.original.price,
     },
     {
+      header: "Cost Price",
+      accessorKey: "Costprice",
+      cell: ({ row }: any) => row.original.costPrice,
+    },
+    {
       header: "Sale Price",
       accessorKey: "salePrice",
       cell: ({ row }: any) =>
         row.original.salePrice === null ? "-" : row.original.salePrice,
+    },
+    {
+      header: "Profit Margin",
+      accessorKey: "Profit Margin",
+      cell: ({ row }: any) => {
+        const costPrice = row.original.costPrice;
+        const price =
+          row.original.salePrice !== null
+            ? row.original.salePrice
+            : row.original.price;
+        if (costPrice === 0) {
+          return "100%";
+        }
+        const profitMargin = ((price - costPrice) / costPrice) * 100;
+
+        return `${profitMargin.toFixed(2)}%`;
+      },
+    },
+    {
+      header: "Profit Earned",
+      accessorKey: "Profit",
+      cell: ({ row }: any) => {
+        const costPrice = row.original.costPrice;
+        const price =
+          row.original.salePrice !== null
+            ? row.original.salePrice
+            : row.original.price;
+        if (costPrice === 0) {
+          return `₹${price.toFixed(2)}`;
+        }
+        const profitEarned = price - costPrice;
+        return `₹${profitEarned.toFixed(2)}`;
+      },
     },
     { header: "SKU", accessorKey: "sku" },
     {
@@ -136,7 +175,7 @@ function AllCollectionController() {
     {
       header: "Size Options",
       accessorKey: "sizeOptions",
-      cell: ({ row }: any) => row.original.sizeOptions,
+      cell: ({ row }: any) => row.original.sizeOptions.toString(),
     },
 
     {

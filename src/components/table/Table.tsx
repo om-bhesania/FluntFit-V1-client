@@ -1,4 +1,4 @@
-import { Button, Spinner } from "@nextui-org/react";
+import { Button, Spinner, Input } from "@nextui-org/react";
 import type {
   ColumnDef,
   PaginationState,
@@ -19,6 +19,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ChevronUpIcon,
+  Download,
+  Search,
 } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 
@@ -32,6 +34,7 @@ interface ReactTableProps<T extends object> {
   onPaginationChange?: (pagination: PaginationState) => void;
   className?: string;
   loading: boolean;
+  handleExport: () => void;
 }
 
 function Table<T extends object>({
@@ -44,15 +47,25 @@ function Table<T extends object>({
   onPaginationChange,
   className,
   loading,
+  handleExport,
 }: ReactTableProps<T>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndex ?? 0,
-    pageSize: pageSize ?? 15,
+    pageSize: pageSize ?? 6, // Start pagination after 6 records
   });
   const [sorting, setSorting] = useState([{ id: "date", desc: true }]); // default sorting by "date" column in descending order
+  const [searchQuery, setSearchQuery] = useState(""); // Store global search query
+
+  // Filter data based on the search query
+  const filteredData = data.filter((item) => {
+    return Object.values(item)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+  });
 
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -74,6 +87,21 @@ function Table<T extends object>({
 
   return (
     <div className="flex flex-col my-5 overflow-x-auto">
+      <div className="mb">
+        <div className="flex items-center justify-between mb-4 w-full">
+          <Input
+            aria-label="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full max-w-[400px]"
+            placeholder="Search..."
+            startContent={<Search className="text-gray-400" />}
+          />
+          <Button onClick={handleExport} variant="bordered" color="primary">
+            <Download /> Export as Csv
+          </Button>
+        </div>
+      </div>
       <div className="overflow-x-auto shadow-xl rounded-lg tablee">
         <div className="inline-block min-w-full py-1">
           <div className="overflow-hidden p-1 rounded-2xl">
@@ -87,7 +115,7 @@ function Table<T extends object>({
                       <th
                         key={header.id}
                         className="py-3.5 px-3 text-left text-gray-600 cursor-pointer"
-                        onClick={header.column.getToggleSortingHandler()} // toggle sorting on header click
+                        onClick={header.column.getToggleSortingHandler()}
                       >
                         {header.isPlaceholder ? null : (
                           <div className="flex items-center justify-center">
@@ -112,22 +140,19 @@ function Table<T extends object>({
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={columns.length / 2}
-                      className="py-3.5 px-3 whitespace-nowrap text-end pr-[320px]"
+                      colSpan={columns.length}
+                      className="py-3.5 px-3 text-center"
                     >
-                      <Spinner size="lg" className="h-12 w-12 text-end" />
+                      <Spinner size="lg" className="h-12 w-12 text-center" />
                     </td>
                   </tr>
-                ) : data.length > 0 ? (
+                ) : filteredData.length > 0 ? (
                   <>
                     {table.getRowModel().rows.map((row) => (
                       <Fragment key={row.id}>
                         <tr
                           className={classNames(
-                            "hover:bg-gray-50 border-b-1 border-gray-500/20",
-                            {
-                              "bg-gray-200 ": row.getIsExpanded(),
-                            }
+                            "hover:bg-gray-50 border-b-1 border-gray-500/20"
                           )}
                         >
                           {row.getVisibleCells().map((cell) => (
@@ -156,8 +181,8 @@ function Table<T extends object>({
                 ) : (
                   <tr>
                     <td
-                      colSpan={columns.length/2 +2}
-                      className="py-3.5 px-3 whitespace-nowrap text-end pr-[320px]"
+                      colSpan={columns.length}
+                      className="py-3.5 px-3 text-center"
                     >
                       No data found
                     </td>
@@ -168,7 +193,9 @@ function Table<T extends object>({
           </div>
         </div>
       </div>
-      <Pagination table={table} data={data} />
+      {filteredData.length > 6 && (
+        <Pagination table={table} data={filteredData} />
+      )}
     </div>
   );
 }
@@ -179,7 +206,7 @@ function Pagination<T>({
 }: React.PropsWithChildren<{ table: ReactTable<T>; data: any }>) {
   return (
     <>
-      {data.length > 10 && (
+      {!data.length  && (
         <div className="flex items-center justify-between p-2 self-end mt-3">
           <div className="flex items-center gap-2">
             <Button

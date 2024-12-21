@@ -1,7 +1,16 @@
 // utils/csvExporter.ts
 export function exportToCSV(data: any[], fileName: string) {
-  const headers = Object.keys(data[0] || {}).join(","); // CSV headers
-  const rows = data
+  // Remove the "id" field from each row
+  const filteredData = data.map((row) => {
+    const { _id,__v, ...rest } = row; // Destructure and remove "id"
+    return rest;
+  });
+
+  // CSV headers from the keys of the first row of filtered data
+  const headers = Object.keys(filteredData[0] || {}).join(",");
+
+  // Map rows, escaping values and joining by commas
+  const rows = filteredData
     .map((row) =>
       Object.values(row)
         .map((value) => `"${value}"`) // Escape values
