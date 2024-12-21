@@ -15,6 +15,7 @@ import useToast from "../../../hooks/useToast";
 
 interface AddProductComponentProps {
   categories: { value: string; label: string }[];
+  sizeOptions: { value: string; label: string }[];
   subcategories: { value: string; label: string }[];
   handleSKUGeneration: (
     setFieldValue: (field: string, value: any) => void
@@ -34,6 +35,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   isEdit = false,
   prefilledData,
   handleSaveEdit,
+  // deleteAllProducts,
+  sizeOptions,
 }) => {
   const { notify } = useToast();
   const initialValues =
@@ -239,7 +242,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               </Select>
               <Input
                 name="subcategory"
-                value={formik.values.productName}
+                value={formik.values.subcategory}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 label="Enter subcategory"
@@ -329,7 +332,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                     onClick={() => handleSKUGeneration(formik.setFieldValue)}
                     className="py-1.5 rounded-xl"
                   >
-                    Generate SKU
+                    <span className="px-1.5 !text-xs">Generate SKU</span>
                   </Button>
                 </div>
                 <div className="text-tiny text-foreground-400">
@@ -381,14 +384,22 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           </CardHeader>
           <CardBody>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                name="sizeOptions"
+              <Select
+                onChange={(event) => {
+                  const selectedValue = event.target.value;
+                  formik.setFieldValue("sizeOptions", selectedValue);
+                }}
                 value={formik.values.sizeOptions}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Size Options"
-                variant="flat"
-              />
+                placeholder="Select Size"
+                aria-label="Select Size"
+                label="Select Size"
+              >
+                {sizeOptions.map((status, index) => (
+                  <SelectItem key={index} value={status.value}>
+                    {status.label}
+                  </SelectItem>
+                ))}
+              </Select>
               {/* <Input
                 name="colorOptions"
                 value={formik.values.colorOptions}

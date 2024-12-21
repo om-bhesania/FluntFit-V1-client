@@ -26,6 +26,13 @@ const AddProductController = ({
     { value: "Polos", label: "Polos" },
   ];
 
+  const sizeOptions = [
+    { value: "S", label: "S" },
+    { value: "M", label: "M" },
+    { value: "L", label: "L" },
+    { value: "XL", label: "XL" },
+  ];
+
   const handleSKUGeneration = (setFieldValue: any) => {
     const randomSKU = `SKU-${Math.floor(Math.random() * 100000)}`;
     setFieldValue("sku", randomSKU);
@@ -60,6 +67,7 @@ const AddProductController = ({
       handleSaveEdit={handleSaveEdit}
       getFiles={getFiles}
       deleteAllProducts={deleteAllProducts}
+      sizeOptions={sizeOptions}
     />
   );
 };
