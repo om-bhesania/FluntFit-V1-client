@@ -4,12 +4,13 @@ import {
   Menu,
   PackageSearch,
   Plus,
+  ReceiptTextIcon,
   Settings,
   ShoppingCart,
-  X
+  X,
 } from "lucide-react";
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import TopBar from "../topbar/Topbar";
 
 const menuItems = [
@@ -26,6 +27,11 @@ const menuItems = [
       { name: "Add Products", path: "/products/add-products", icon: Plus },
     ],
   },
+  {
+    name: "Invoice Generation",
+    path: "/invoice/generate",
+    icon: ReceiptTextIcon,
+  },
 ];
 
 interface LayoutProps {
@@ -37,7 +43,6 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -75,32 +80,46 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
           {menuItems.map((item) => (
             <div key={item.name}>
               <div
-                className={`flex items-center px-4 py-2 text-sm ${
+                key={item.name}
+                className={`flex items-center px-4 py-2 text-sm cursor-pointer ${
                   location.pathname === item.path
                     ? "bg-gray-800 text-white"
                     : "text-gray-400 hover:bg-gray-800 hover:text-white"
                 }`}
                 onClick={() => {
-                  if (item.path) {
-                    // If path exists, navigate to the link
+                  if (!item.dropdown && item.path) {
+                    // Navigate directly for items without dropdown
                     setIsMobileMenuOpen(false);
-                  } else {
-                    // If no path, toggle the dropdown
+                  } else if (item.dropdown) {
+                    // Toggle dropdown for items with dropdowns
                     toggleDropdown(item.name);
                   }
                 }}
               >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.name}
-                {/* Chevron Icon for dropdown */}
-                {item.dropdown && (
-                  <span className="ml-auto">
-                    {openDropdown === item.name ? (
-                      <ChevronUp className="h-4 w-4 text-white" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-white" />
+                {/* Render Link for items with path and no dropdown */}
+                {item.path && !item.dropdown ? (
+                  <Link
+                    to={item.path}
+                    className="flex items-center w-full"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <item.icon className="mr-3 h-5 w-5" />
+                    {item.name}
+                  </Link>
+                ) : (
+                  <>
+                    <item.icon className="mr-3 h-5 w-5" />
+                    {item.name}
+                    {item.dropdown && (
+                      <span className="ml-auto">
+                        {openDropdown === item.name ? (
+                          <ChevronUp className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        )}
+                      </span>
                     )}
-                  </span>
+                  </>
                 )}
               </div>
 

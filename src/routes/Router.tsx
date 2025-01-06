@@ -5,6 +5,7 @@ import Dashboard from "../pages/dasahboard/Dashboard";
 import { AddProducts } from "../pages/products/addProduct";
 import { DashAllCollection } from "../pages/products/all-collections";
 import ProtectedRoute from "../ProtectedRoutes";
+import { InvoiceGenerator } from "../pages/invoice";
 
 function Router() {
   return (
@@ -12,19 +13,17 @@ function Router() {
       <div className="app-layout !bg-transparent">
         <main className="app-content mt-6">
           <Routes>
-
             {/* Protected routes block */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Dashboard />} />
               <Route
-                path="/products/all-products" 
+                path="/products/all-products"
                 element={<DashAllCollection />}
               />
               <Route path="/products/add-products" element={<AddProducts />} />
               <Route path="/*" element={<PageNotFound />} />
+              <Route path="/invoice/generate" element={<InvoiceGenerator />} />
             </Route>
-
-    
           </Routes>
         </main>
       </div>

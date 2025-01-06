@@ -39,6 +39,7 @@ interface ReactTableProps<T extends object> {
   handleExport: () => void;
   isAddBtnVisible?: boolean;
   btnLink?: any;
+  onClick?: any;
 }
 
 function Table<T extends object>({
@@ -54,6 +55,7 @@ function Table<T extends object>({
   handleExport,
   isAddBtnVisible,
   btnLink,
+  onClick,
 }: ReactTableProps<T>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndex ?? 0,
@@ -115,7 +117,8 @@ function Table<T extends object>({
                 color="secondary"
                 className="text-primary max-md:text-xs max-md:px-1 max-md:mx-1"
               >
-                <Plus className="max-md:h-5 max-md:w-5" /> <span className="max-md:hidden">Add Product</span>
+                <Plus className="max-md:h-5 max-md:w-5" />{" "}
+                <span className="max-md:hidden">Add Product</span>
               </Button>
             )}
             <Button
@@ -124,7 +127,8 @@ function Table<T extends object>({
               color="primary"
               className="max-md:text-xs max-md:px-1 max-md:mx-1"
             >
-              <Download className="max-md:h-5 max-md:w-5" /> <span className="max-md:hidden">Export as Csv</span>
+              <Download className="max-md:h-5 max-md:w-5" />{" "}
+              <span className="max-md:hidden">Export as Csv</span>
             </Button>
           </div>
         </div>
@@ -181,6 +185,7 @@ function Table<T extends object>({
                           className={classNames(
                             "hover:bg-gray-50 border-b-1 border-gray-500/20"
                           )}
+                          onClick={() => onClick && onClick(row.original)}
                         >
                           {row.getVisibleCells().map((cell) => (
                             <td

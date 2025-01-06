@@ -43,7 +43,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   GSTOptions,
   InventoryOptions,
 }) => {
-  const { notify } = useToast(); 
+  const { notify } = useToast();
   const initialValues =
     isEdit && prefilledData
       ? {
@@ -98,6 +98,9 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
     price: Yup.number()
       .required("Price is required")
       .positive("Price must be a positive number"),
+    costPrice: Yup.number()
+      .required("Cost Price is required")
+      .positive("Cost Price must be a positive number"),
     salePrice: Yup.number()
       .nullable()
       .positive("Sale Price must be positive")
@@ -233,6 +236,11 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 isInvalid={
                   !!(formik.errors.category && formik.touched.category)
                 }
+                description={
+                  formik.errors.category && formik.touched.category
+                    ? String(formik.errors.category)
+                    : ""
+                }
               >
                 {categories.map((category) => (
                   <SelectItem key={category.value} value={category.value}>
@@ -263,6 +271,14 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 onBlur={formik.handleBlur}
                 label="Product Type *"
                 variant="flat"
+                isInvalid={
+                  !!(formik.errors.productType && formik.touched.productType)
+                }
+                description={
+                  formik.errors.productType && formik.touched.productType
+                    ? String(formik.errors.productType)
+                    : ""
+                }
               />
               <Input
                 name="brand"
@@ -272,6 +288,12 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 label="Product Brand *"
                 variant="flat"
                 labelPlacement="inside"
+                isInvalid={!!(formik.errors.brand && formik.touched.brand)}
+                description={
+                  formik.errors.brand && formik.touched.brand
+                    ? String(formik.errors.brand)
+                    : ""
+                }
               />
             </div>
           </CardBody>
@@ -338,6 +360,11 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 placeholder="Enter GST"
                 aria-label="GST"
                 isInvalid={!!(formik.errors.gst && formik.touched.gst)}
+                description={
+                  formik.errors.gst && formik.touched.gst
+                    ? String(formik.errors.gst)
+                    : ""
+                }
               >
                 {GSTOptions.map((category) => (
                   <SelectItem key={category.value} value={category.value}>
@@ -346,13 +373,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 ))}
               </Select>
               <div className="">
-                <div
-                  className={`${
-                    formik.errors.sku && formik.touched.sku
-                      ? "!border-0 !bg-danger-50"
-                      : " bg-default-100"
-                  } flex items-center gap-3 rounded-xl pr-2`}
-                >
+                <div className={`flex items-center gap-3 rounded-xl pr-2`}>
                   <Input
                     name="sku"
                     value={formik.values.sku}
@@ -360,18 +381,22 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                     onBlur={formik.handleBlur}
                     label="SKU / Barcode *"
                     isInvalid={!!(formik.errors.sku && formik.touched.sku)}
+                    description={
+                      formik.errors.sku && formik.touched.sku
+                        ? String(formik.errors.sku)
+                        : ""
+                    }
+                    endContent={
+                      <Button
+                        onClick={() =>
+                          handleSKUGeneration(formik.setFieldValue)
+                        }
+                        className="py-1.5 rounded-xl"
+                      >
+                        <span className="px-1.5 !text-xs">Generate SKU</span>
+                      </Button>
+                    }
                   />
-                  <Button
-                    onClick={() => handleSKUGeneration(formik.setFieldValue)}
-                    className="py-1.5 rounded-xl"
-                  >
-                    <span className="px-1.5 !text-xs">Generate SKU</span>
-                  </Button>
-                </div>
-                <div className="text-tiny text-foreground-400">
-                  {formik.errors.sku && formik.touched.sku
-                    ? String(formik.errors.sku as string)
-                    : ""}
                 </div>
               </div>
               <Input
@@ -430,6 +455,11 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                 isInvalid={
                   !!(formik.errors.sizeOptions && formik.touched.sizeOptions)
                 }
+                description={
+                  formik.errors.sizeOptions && formik.touched.sizeOptions
+                    ? String(formik.errors.sizeOptions)
+                    : ""
+                }
               >
                 {sizeOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
@@ -439,7 +469,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               </Select>
               <Select
                 onChange={(event) => {
-                  const selectedValue = event.target.value; 
+                  const selectedValue = event.target.value;
                   formik.setFieldValue("inventoryStatus", selectedValue); // Setting the value directly
                 }}
                 value={formik.values.inventoryStatus} // Formik's current value
@@ -451,6 +481,12 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
                     formik.errors.inventoryStatus &&
                     formik.touched.inventoryStatus
                   )
+                }
+                description={
+                  formik.errors.inventoryStatus &&
+                  formik.touched.inventoryStatus
+                    ? String(formik.errors.inventoryStatus)
+                    : ""
                 }
               >
                 {InventoryOptions.map((status) => (
