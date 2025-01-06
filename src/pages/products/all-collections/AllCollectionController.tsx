@@ -15,8 +15,7 @@ function AllCollectionController() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { notify } = useToast();
-  console.log("first");
+  const { notify } = useToast(); 
 
   const loadData = async () => {
     setLoading(true);
@@ -45,8 +44,7 @@ function AllCollectionController() {
 
   const { onOpen: openModal, onClose: closeModal } = useDisclosure();
 
-  const handleEdit = (product: any) => {
-    console.log(product);
+  const handleEdit = (product: any) => { 
     setSelectedProduct(product);
     handleOpen();
   };

@@ -43,8 +43,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   GSTOptions,
   InventoryOptions,
 }) => {
-  const { notify } = useToast();
-  console.log(prefilledData?.category);
+  const { notify } = useToast(); 
   const initialValues =
     isEdit && prefilledData
       ? {
@@ -440,8 +439,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               </Select>
               <Select
                 onChange={(event) => {
-                  const selectedValue = event.target.value;
-                  console.log(selectedValue);
+                  const selectedValue = event.target.value; 
                   formik.setFieldValue("inventoryStatus", selectedValue); // Setting the value directly
                 }}
                 value={formik.values.inventoryStatus} // Formik's current value
