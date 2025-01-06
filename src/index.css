@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-background overflow-x-hidden font-body;
+  @apply bg-transparent overflow-x-hidden font-body;
 }
 header {
   @apply !max-w-[1340px] mx-auto px-4;

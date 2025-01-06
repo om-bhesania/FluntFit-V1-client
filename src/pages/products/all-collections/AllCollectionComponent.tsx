@@ -1,7 +1,6 @@
 import React from "react";
 import Table from "../../../components/table/Table";
 import { exportToCSV } from "../../../hooks/useExportCsv";
- 
 
 interface AllCollectionComponentProps {
   columns: any[];
@@ -19,7 +18,7 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
   };
 
   return (
-    <div className="mt-6"> 
+    <div className="container mt-6"> 
       <Table
         data={data}
         columns={columns}
@@ -27,6 +26,8 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
         className="text-black"
         loading={loading}
         handleExport={handleExport}
+        isAddBtnVisible={true}
+        btnLink="/products/add-products"
       />
     </div>
   );

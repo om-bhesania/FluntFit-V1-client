@@ -44,6 +44,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   InventoryOptions,
 }) => {
   const { notify } = useToast();
+  console.log(prefilledData?.category);
   const initialValues =
     isEdit && prefilledData
       ? {
@@ -179,7 +180,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   });
 
   return (
-    <div className="w-full mt-3">
+    <div className="container">
       <form onSubmit={formik.handleSubmit}>
         <Card className="mb-6">
           <CardHeader>
@@ -477,7 +478,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           variant="shadow"
           color="primary"
           type="submit"
-          className="mt-4 w-full"
+          className="mt-4 w-full mb-6"
         >
           {isEdit ? "Update Product" : "Add Product"}
         </Button>

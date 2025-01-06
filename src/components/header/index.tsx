@@ -1,135 +1,164 @@
 import {
-  Button,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenu,
-  NavbarMenuItem,
-  NavbarMenuToggle,
-} from "@nextui-org/react";
-import { Search, ShoppingCart } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Login } from "../../pages/auth/login";
-import GlobalSearch from "./../globalSearch/GlobalSearch";
-import CartDrawer from "./CartDrawer";
+  ChevronDown,
+  ChevronUp,
+  Menu,
+  PackageSearch,
+  Plus,
+  Settings,
+  ShoppingCart,
+  X
+} from "lucide-react";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import TopBar from "../topbar/Topbar";
 
-function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(null); // Track the active menu item
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+const menuItems = [
+  {
+    name: "Products",
+    path: "",
+    icon: PackageSearch,
+    dropdown: [
+      {
+        name: "All Products",
+        path: "/products/all-products",
+        icon: ShoppingCart,
+      },
+      { name: "Add Products", path: "/products/add-products", icon: Plus },
+    ],
+  },
+];
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-  };
-  const menuItems = ["Men's Wear", "All Collections", "Dashboard"];
-
-  const handleItemClick = (index: any) => {
-    setActiveIndex(index);
-  };
-
-  const navigate = useNavigate();
-
-  return (
-    <Navbar
-      isBordered
-      isMenuOpen={isMenuOpen}
-      onMenuOpenChange={setIsMenuOpen}
-      className="!flex !items-center !justify-center !w-full"
-    >
-      {/* Mobile menu toggle and brand */}
-      <NavbarContent className="sm:hidden !basis-0 !grow-0">
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-        />
-      </NavbarContent>
-
-      {/* Brand section */}
-      <div className="">
-        <NavbarContent className="sm:hidden pr-3 !basis-0 !grow-0">
-          <NavbarBrand
-            onClick={() => navigate("/")}
-            className="font-bold text-xl cursor-pointer"
-          >
-            MixBunch
-          </NavbarBrand>
-        </NavbarContent>
-
-        <NavbarContent className="hidden sm:flex gap-4 !basis-0 !grow-0">
-          <NavbarBrand
-            onClick={() => navigate("/")}
-            className="font-bold text-xl cursor-pointer"
-          >
-            MixBunch
-          </NavbarBrand>
-        </NavbarContent>
-      </div>
-
-      {/* Desktop Menu */}
-      <NavbarContent className="hidden sm:!flex !items-center !justify-center nav-items !basis-0 !grow-0">
-        {menuItems.map((item, index) => (
-          <NavbarItem key={`${item}-${index}`} isActive={activeIndex === index}>
-            <Link
-              to={item.toLowerCase().split(" ").join("-")}
-              onClick={() => handleItemClick(index)}
-              className={`hover:text-primary ${
-                activeIndex === index ? "text-primary" : "text-foreground"
-              }`}
-            >
-              {item}
-            </Link>
-          </NavbarItem>
-        ))}
-      </NavbarContent>
-
-      {/* Login Button */}
-      <NavbarContent className="!basis-0 !grow-0 !relative flex items-center gap-1.5">
-        <div className="flex items-center">
-          <Button
-            isIconOnly
-            variant="light"
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className={`${
-              isSearchOpen ? "text-primary md:mr-1" : "text-foreground md:-mr-3"
-            }`}
-          >
-            <Search />
-          </Button>
-
-          <GlobalSearch
-            isSearchOpen={isSearchOpen}
-            toggleSearch={toggleSearch}
-          />
-        </div>
-        <Button isIconOnly variant="light" onClick={toggleDrawer}>
-          <ShoppingCart />
-        </Button>
-        <Login variant="solid" color="primary" />
-      </NavbarContent>
-      <CartDrawer isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
-
-      {/* Mobile Menu */}
-      <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              className="w-full"
-              to={item.toLowerCase().split(" ").join("-")}
-              onClick={() => handleItemClick(index)}
-              color={activeIndex === index ? "primary" : "foreground"}
-            >
-              {item}
-            </Link>
-          </NavbarMenuItem>
-        ))}
-      </NavbarMenu>
-    </Navbar>
-  );
+interface LayoutProps {
+  children: React.ReactNode;
+  isLogin?: boolean;
 }
 
-export { Header };
+const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
+  const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const toggleDropdown = (menuName: string) => {
+    setOpenDropdown((prev) => (prev === menuName ? null : menuName));
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100 dark:bg-gray-900">
+      {/* Mobile menu button */}
+      <button
+        onClick={toggleMobileMenu}
+        className="fixed top-4 left-4 z-40 md:hidden p-2 rounded-md bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+      >
+        {isMobileMenuOpen ? (
+          <X className="h-6 w-6" aria-hidden="true" />
+        ) : (
+          <Menu className="h-6 w-6" aria-hidden="true" />
+        )}
+      </button>
+
+      {/* Sidebar */}
+      <div
+        className={`fixed inset-y-0 left-0 transform ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex md:h-screen md:w-64 flex-col bg-gray-900 z-30`}
+      >
+        {/* Title Section */}
+        <div className="flex h-16 items-center justify-center border-b border-gray-800">
+          <span className="text-xl font-bold text-white">MixBunch</span>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto py-4">
+          {menuItems.map((item) => (
+            <div key={item.name}>
+              <div
+                className={`flex items-center px-4 py-2 text-sm ${
+                  location.pathname === item.path
+                    ? "bg-gray-800 text-white"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                }`}
+                onClick={() => {
+                  if (item.path) {
+                    // If path exists, navigate to the link
+                    setIsMobileMenuOpen(false);
+                  } else {
+                    // If no path, toggle the dropdown
+                    toggleDropdown(item.name);
+                  }
+                }}
+              >
+                <item.icon className="mr-3 h-5 w-5" />
+                {item.name}
+                {/* Chevron Icon for dropdown */}
+                {item.dropdown && (
+                  <span className="ml-auto">
+                    {openDropdown === item.name ? (
+                      <ChevronUp className="h-4 w-4 text-white" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-white" />
+                    )}
+                  </span>
+                )}
+              </div>
+
+              {/* Dropdown */}
+              {item?.dropdown && openDropdown === item.name && (
+                <div className="pl-6 mb-2 space-y-1">
+                  {item.dropdown.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      to={subItem.path}
+                      className={`flex items-center px-4 p-2 text-xs ${
+                        location.pathname === subItem.path
+                          ? "bg-gray-800 text-white"
+                          : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <subItem.icon className="mr-2 h-4 w-4" />
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+
+        {isLogin ? (
+          <div className="border-t border-gray-800 p-4">
+            <button className="flex w-full items-center justify-center rounded-md bg-gray-800 px-4 py-2 text-sm text-white hover:bg-gray-700">
+              <Settings className="mr-2 h-4 w-4" />
+              Account Settings
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        ></div>
+      )}
+
+      {/* Main Content */}
+      <div
+        className={`flex-1 overflow-y-auto transition-all duration-200 ease-in-out ${
+          isMobileMenuOpen ? "md:ml-64" : ""
+        }`}
+      >
+        <div className="">
+          <TopBar />
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Layout;

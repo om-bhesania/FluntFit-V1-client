@@ -1,26 +1,21 @@
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { Footer } from "./components/footer";
-import { Header } from "./components/header";
 import Router from "./routes/Router";
-import TopBar from "./components/topbar/Topbar";
-import { useState } from "react";
+import { Login } from "./pages/auth/login";
+import { AuthProvider } from "./routes/auth/AuthProvider";
 
-function App() {
-  const [is404Page, setIs404Page] = useState<boolean>(false);
+const App = () => {
   return (
     <BrowserRouter>
-      <div className="app-layout !bg-background">
-        <TopBar />
-        <Header />
-        <main className="app-content mt-6">
-          <Router setIs404Page={setIs404Page} />
-        </main>
-        {is404Page && <Footer />}
-      </div>
-      <ToastContainer />
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/*" element={<Router />} />
+        </Routes>
+        <ToastContainer />
+      </AuthProvider>
     </BrowserRouter>
   );
-}
+};
 
 export default App;

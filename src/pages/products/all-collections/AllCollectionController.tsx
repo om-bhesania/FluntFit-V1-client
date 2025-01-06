@@ -16,6 +16,7 @@ function AllCollectionController() {
   const [selectedProduct, setSelectedProduct] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { notify } = useToast();
+  console.log("first");
 
   const loadData = async () => {
     setLoading(true);
@@ -45,6 +46,7 @@ function AllCollectionController() {
   const { onOpen: openModal, onClose: closeModal } = useDisclosure();
 
   const handleEdit = (product: any) => {
+    console.log(product);
     setSelectedProduct(product);
     handleOpen();
   };
@@ -239,9 +241,7 @@ function AllCollectionController() {
   ];
 
   return (
-    <>
-      <AllCollectionComponent columns={columns} data={data} loading={loading} />
-    </>
+    <AllCollectionComponent columns={columns} data={data} loading={loading} />
   );
 }
 

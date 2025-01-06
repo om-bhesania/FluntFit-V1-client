@@ -8,6 +8,7 @@ const service = async <T>({
   data,
   headers,
   config = {},
+  withCredentials, // New prop added
 }: serviceParams): Promise<T> => {
   try {
     const axiosConfig: AxiosRequestConfig = {
@@ -19,6 +20,7 @@ const service = async <T>({
         ...config.headers,
         ...headers,
       },
+      withCredentials, // Include the withCredentials prop here
     };
 
     // Make the request and return the response data

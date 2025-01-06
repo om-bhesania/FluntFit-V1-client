@@ -4,6 +4,7 @@ export interface serviceParams {
   data?: any;
   headers?: Record<string, string>;
   config?: any;
+  withCredentials?: boolean;
 }
 
 export interface ModalComponentProps {
