@@ -64,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
       <div
         className={`fixed inset-y-0 left-0 transform ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex md:h-screen md:w-64 flex-col bg-gray-900 z-30`}
+        } md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex md:h-screen w-64 flex-col bg-gray-900 z-30`}
       >
         {/* Title Section */}
         <div className="flex h-16 items-center justify-center border-b border-gray-800">

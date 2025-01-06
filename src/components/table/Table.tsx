@@ -38,7 +38,7 @@ interface ReactTableProps<T extends object> {
   loading: boolean;
   handleExport: () => void;
   isAddBtnVisible?: boolean;
-  btnLink?: string;
+  btnLink?: any;
 }
 
 function Table<T extends object>({
@@ -57,17 +57,18 @@ function Table<T extends object>({
 }: ReactTableProps<T>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndex ?? 0,
-    pageSize: pageSize ?? 6,
+    pageSize: pageSize ?? 6, // Start pagination after 6 records
   });
-  const [sorting, setSorting] = useState([{ id: "date", desc: true }]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [sorting, setSorting] = useState([{ id: "date", desc: true }]); // default sorting by "date" column in descending order
+  const [searchQuery, setSearchQuery] = useState(""); // Store global search query
 
-  const filteredData = data.filter((item) =>
-    Object.values(item)
+  // Filter data based on the search query
+  const filteredData = data.filter((item) => {
+    return Object.values(item)
       .join(" ")
       .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+      .includes(searchQuery.toLowerCase());
+  });
 
   const table = useReactTable({
     data: filteredData,
@@ -89,121 +90,138 @@ function Table<T extends object>({
       onPaginationChange(pagination);
     }
   }, [pagination, onPaginationChange]);
-
   const nav = useNavigate();
-
+  const handleRediect = () => {
+    nav(btnLink);
+  };
   return (
     <div className="flex flex-col my-5 overflow-x-auto">
-      <div className="mb-4 flex items-center justify-between">
-        <Input
-          aria-label="Search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full max-w-md"
-          placeholder="Search..."
-          variant="bordered"
-          startContent={<Search className="text-gray-400" />}
-        />
-        <div className="space-x-2">
-          {isAddBtnVisible && (
-            <Button
-              onClick={() => nav(btnLink || "")}
-              variant="flat"
-              color="secondary"
-              className="flex items-center gap-2"
-            >
-              <Plus /> Add Product
-            </Button>
-          )}
-          <Button
-            onClick={handleExport}
+      <div className="mb">
+        <div className="flex items-center justify-between mb-4 w-full">
+          <Input
+            aria-label="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full max-w-[400px] flex-1"
+            placeholder="Search..."
             variant="bordered"
-            color="primary"
-            className="flex items-center gap-2"
-          >
-            <Download /> Export as CSV
-          </Button>
+            startContent={<Search className="text-gray-400 " />}
+          />
+          <div className="space-x-2 flex-1 flex items-center justify-end">
+            {isAddBtnVisible && (
+              <Button
+                onClick={handleRediect}
+                variant="flat"
+                color="secondary"
+                className="text-primary max-md:text-xs max-md:px-1 max-md:mx-1"
+              >
+                <Plus className="max-md:h-5 max-md:w-5" /> <span className="max-md:hidden">Add Product</span>
+              </Button>
+            )}
+            <Button
+              onClick={handleExport}
+              variant="bordered"
+              color="primary"
+              className="max-md:text-xs max-md:px-1 max-md:mx-1"
+            >
+              <Download className="max-md:h-5 max-md:w-5" /> <span className="max-md:hidden">Export as Csv</span>
+            </Button>
+          </div>
         </div>
       </div>
-
-      <div className="overflow-hidden shadow-md rounded-lg">
-        <table
-          className={classNames(
-            "min-w-full divide-y divide-gray-200 bg-white",
-            className
-          )}
-        >
-          <thead className="bg-gray-50">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer"
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <div className="flex items-center">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {header.column.getIsSorted() === "asc" && (
-                        <ChevronUpIcon className="h-4 w-4 ml-1" />
-                      )}
-                      {header.column.getIsSorted() === "desc" && (
-                        <ChevronDownIcon className="h-4 w-4 ml-1" />
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {loading ? (
-              <tr>
-                <td colSpan={columns.length} className="px-4 py-3 text-center">
-                  <Spinner size="lg" />
-                </td>
-              </tr>
-            ) : filteredData.length > 0 ? (
-              table.getRowModel().rows.map((row) => (
-                <Fragment key={row.id}>
-                  <tr className="hover:bg-gray-50">
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="px-4 py-3 text-sm text-gray-700 text-center"
+      <div className="overflow-x-auto shadow-xl rounded-lg tablee">
+        <div className="inline-block min-w-full">
+          <div className="overflow-hidden rounded-2xl">
+            <table
+              className={classNames("min-w-full whitespace-nowrap", className)}
+            >
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id} className="border-b bg-gray-300">
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="py-3.5 px-3 text-left text-gray-600 cursor-pointer"
+                        onClick={header.column.getToggleSortingHandler()}
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                        {header.isPlaceholder ? null : (
+                          <div className="flex items-center justify-center">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {header.column.getIsSorted() === "asc" && (
+                              <ChevronUpIcon className="h-4 w-4 ml-1" />
+                            )}
+                            {header.column.getIsSorted() === "desc" && (
+                              <ChevronDownIcon className="h-4 w-4 ml-1" />
+                            )}
+                          </div>
                         )}
-                      </td>
+                      </th>
                     ))}
                   </tr>
-                  {renderSubComponent && (
-                    <tr>
-                      <td colSpan={columns.length}>
-                        {renderSubComponent({ row })}
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={columns.length} className="px-4 py-3 text-center">
-                  No data found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                ))}
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      className="py-2.5 px-3 text-center"
+                    >
+                      <Spinner size="lg" className="h-12 w-12 text-center" />
+                    </td>
+                  </tr>
+                ) : filteredData.length > 0 ? (
+                  <>
+                    {table.getRowModel().rows.map((row) => (
+                      <Fragment key={row.id}>
+                        <tr
+                          className={classNames(
+                            "hover:bg-gray-50 border-b-1 border-gray-500/20"
+                          )}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <td
+                              key={cell.id}
+                              className="py-2 px-3 whitespace-nowrap text-center"
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          ))}
+                        </tr>
 
-      {filteredData.length > pagination.pageSize && (
-        <Pagination table={table} />
+                        {renderSubComponent ? (
+                          <tr key={row.id + "-expanded"}>
+                            <td colSpan={columns.length}>
+                              {renderSubComponent({ row })}
+                            </td>
+                          </tr>
+                        ) : null}
+                      </Fragment>
+                    ))}
+                  </>
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      className="py-3.5 px-3 text-center"
+                    >
+                      No data found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {filteredData.length > 6 && (
+        <Pagination table={table} data={filteredData} />
       )}
     </div>
   );
@@ -211,48 +229,60 @@ function Table<T extends object>({
 
 function Pagination<T>({
   table,
-}: React.PropsWithChildren<{ table: ReactTable<T> }>) {
+  data,
+}: React.PropsWithChildren<{ table: ReactTable<T>; data: any }>) {
   return (
-    <div className="flex items-center justify-between p-4">
-      <div className="flex items-center space-x-2">
-        <Button
-          isIconOnly
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-          variant="ghost"
-        >
-          <ChevronsLeft className="h-5 w-5" />
-        </Button>
-        <Button
-          isIconOnly
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-          variant="ghost"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Button>
-        <span className="text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-        <Button
-          isIconOnly
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-          variant="ghost"
-        >
-          <ChevronRightIcon className="h-5 w-5" />
-        </Button>
-        <Button
-          isIconOnly
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-          variant="ghost"
-        >
-          <ChevronsRight className="h-5 w-5" />
-        </Button>
-      </div>
-    </div>
+    <>
+      {!data.length && (
+        <div className="flex items-center justify-between p-2 self-end mt-3">
+          <div className="flex items-center gap-2">
+            <Button
+              isIconOnly
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+              className="p-2 border-primary border-2"
+              variant="ghost"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+            </Button>
+            <Button
+              isIconOnly
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="p-2 border-primary border-2"
+              variant="ghost"
+            >
+              <ChevronsLeft className="h-5 w-5" />
+            </Button>
+            <span className="text-sm">
+              <span>Page </span>
+              <strong>
+                {table.getState().pagination.pageIndex + 1} of{" "}
+                {table.getPageCount()}
+              </strong>
+            </span>
+            <Button
+              isIconOnly
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="p-2 border-primary border-2"
+              variant="ghost"
+            >
+              <ChevronsRight className="h-5 w-5" />
+            </Button>
+            <Button
+              isIconOnly
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+              className="p-2 border-primary border-2"
+              variant="ghost"
+            >
+              <ChevronRightIcon className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
