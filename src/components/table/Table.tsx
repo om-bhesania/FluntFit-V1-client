@@ -39,7 +39,7 @@ interface ReactTableProps<T extends object> {
   handleExport: () => void;
   isAddBtnVisible?: boolean;
   btnLink?: any;
-  onClick?: any;
+  onRowClick?: any;
 }
 
 function Table<T extends object>({
@@ -55,7 +55,7 @@ function Table<T extends object>({
   handleExport,
   isAddBtnVisible,
   btnLink,
-  onClick,
+  onRowClick,
 }: ReactTableProps<T>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndex ?? 0,
@@ -185,7 +185,7 @@ function Table<T extends object>({
                           className={classNames(
                             "hover:bg-gray-50 border-b-1 border-gray-500/20"
                           )}
-                          onClick={() => onClick && onClick(row.original)}
+                          onClick={() => onRowClick && onRowClick(row.original)}
                         >
                           {row.getVisibleCells().map((cell) => (
                             <td

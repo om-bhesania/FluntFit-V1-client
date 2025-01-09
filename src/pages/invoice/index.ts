@@ -1,1 +1,1 @@
-export { default as InvoiceGenerator } from "./invoiceController";
+export { default as InvoiceGenerator } from "./InvoiceController";

@@ -11,6 +11,10 @@ const service = async <T>({
   withCredentials, // New prop added
 }: serviceParams): Promise<T> => {
   try {
+    // Get the token from local storage (or another storage method)
+    const token = sessionStorage.getItem("authToken"); // Adjust this based on your storage method
+
+    // Build the request configuration
     const axiosConfig: AxiosRequestConfig = {
       ...config,
       method: method.toLowerCase() as AxiosRequestConfig["method"],
@@ -19,6 +23,7 @@ const service = async <T>({
       headers: {
         ...config.headers,
         ...headers,
+        ...(token && { Authorization: `Bearer ${token}` }), // Add token if available
       },
       withCredentials, // Include the withCredentials prop here
     };
