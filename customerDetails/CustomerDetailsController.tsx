@@ -1,8 +1,12 @@
 import * as Yup from "yup";
 import CustomerDetailsComponent from "./CustomerDetailsComponent";
- 
+
 import { FormValues } from "./CustomerDetailsModal";
 import { FormikHelpers } from "formik";
+import service from "../src/services/services";
+import apiUrls from "../src/utils/apiUrls";
+import { useEffect, useState } from "react";
+import useToast from "../src/hooks/useToast";
 export interface CustomerDetailsComponentProps {
   isOpen: boolean;
   onOpen: () => void;
@@ -52,22 +56,24 @@ const CustomerDetailsController: React.FC<CustomerDetailsControllerProps> = ({
   onSubmit,
   productData,
 }) => {
-  //   const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState(null);
+  const { notify } = useToast();
 
-  //   const handleSubmit = (
-  //     values: FormValues,
-  //     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
-  //   ) => {
-  //     console.log(values);
-  //     setSubmitting(false);
-  //     setIsOpen(false);
-  //   };
-
-  //   const handleOpenModal = () => setIsOpen(true);
-  //   const handleCloseModal = () => setIsOpen(false);
-  console.log("onOpen", onOpen);
-  console.log("isOpen", isOpen);
-  console.log("onClose", onClose);
+  useEffect(() => {
+    loadData();
+  }, []);
+  const loadData = async () => {
+    try {
+      const result: any = await service({
+        method: "get",
+        url: apiUrls.products.get,
+      });
+      setData(result?.products || []);
+    } catch (error: any) {
+      notify(error?.response.data.message, { type: "error" });
+    } finally {
+    }
+  };
   return (
     <CustomerDetailsComponent
       isOpen={isOpen}
@@ -77,6 +83,7 @@ const CustomerDetailsController: React.FC<CustomerDetailsControllerProps> = ({
       validationSchema={validationSchema}
       onSubmit={onSubmit}
       productData={productData}
+      data={data}
     />
   );
 };

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, EyeClosedIcon, EyeIcon, Key, Mail } from "lucide-react";
 import React, { useState } from "react";
 import * as Yup from "yup";
+import Loader from "../../../components/loader/Loader";
 
 interface LoginProps {
   variant?:
@@ -17,6 +18,7 @@ interface LoginProps {
   color?: "default" | "primary" | "secondary" | "danger" | "success";
   handleSubmit: (data: any) => void;
   errorMessage?: string;
+  loading: boolean;
 }
 
 const LoginPage: React.FC<LoginProps> = ({
@@ -24,6 +26,7 @@ const LoginPage: React.FC<LoginProps> = ({
   color = "primary",
   handleSubmit,
   errorMessage,
+  loading,
 }) => {
   const [togglePassword, setTogglePassword] = useState<boolean>(false);
   const handleTogglePassword = () => {
@@ -83,15 +86,13 @@ const LoginPage: React.FC<LoginProps> = ({
                 try {
                   await onSubmit(values); // Call your submit handler
                   resetForm(); // Reset the form after successful submission
-                } catch (error) {
-                  console.error("Error during submission:", error);
-                  // Do not reset the form if there's an error
+                } catch {
                 } finally {
                   setSubmitting(false); // Set submitting state back to false
                 }
               }}
             >
-              {({ isSubmitting }) => (
+              {() => (
                 <Form className="mt-8 space-y-6">
                   <div className="rounded-md shadow-sm -space-y-px">
                     <div className="mb-4">
@@ -158,11 +159,17 @@ const LoginPage: React.FC<LoginProps> = ({
                     )}
                     <Button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={loading}
                       color={color}
                       variant={variant}
                       className="w-full"
-                      endContent={<ArrowRight className="ml-2" />}
+                      endContent={
+                        loading ? (
+                          <Loader size="sm" color="white" />
+                        ) : (
+                          <ArrowRight className="ml-2" />
+                        )
+                      }
                     >
                       Sign in
                     </Button>

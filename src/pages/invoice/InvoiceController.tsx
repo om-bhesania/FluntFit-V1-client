@@ -6,9 +6,9 @@ import InvoiceComponent from "./InvoiceComponent";
 import {
   initialValues,
   validationSchema,
-} from "./customerDetails/CustomerDetailsController";
-import { FormValues } from "./customerDetails/CustomerDetailsModal";
- 
+} from "../../../customerDetails/CustomerDetailsController";
+import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
+
 export interface InvoiceComponentType {
   onRowClick: (data: any) => void;
   generatePDF: () => void;
@@ -37,7 +37,6 @@ function InvoiceController() {
 
   const onRowClick = (data: any) => {
     handleOpenModal();
-    console.log("controller", data);
     setSelectedData(data);
   };
   useEffect(() => {
@@ -57,7 +56,6 @@ function InvoiceController() {
   };
   const generatePDF = () => {
     // Logic to generate PDF
-    console.log("Generating PDF for", selectedData);
   };
   const columns = [
     {
@@ -176,19 +174,16 @@ function InvoiceController() {
   ];
 
   const handleSubmit = (
-    values: FormValues,
+    // values: FormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ) => {
-    console.log(values);
     setSubmitting(false);
     setIsOpen(false);
   };
 
   const handleOpenModal = () => setIsOpen(true);
   const handleCloseModal = () => setIsOpen(false);
-  const onSubmit = (data: any) => {
-    console.log("onSubmit", data);
-  };
+  const onSubmit = () => {};
   return (
     <>
       <InvoiceComponent

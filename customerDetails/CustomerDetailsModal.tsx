@@ -10,7 +10,7 @@ import {
 } from "@nextui-org/react";
 import { Field, Form, Formik, FormikHelpers } from "formik";
   
-import CustomTooltip from "./../../../components/tooltip/Tooltip";
+import CustomTooltip from "../src/components/tooltip/Tooltip";
  
 export interface FormValues {
   name: string;

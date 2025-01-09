@@ -19,5 +19,9 @@ const apiUrls = {
     deleteAll: "products/delete-all",
     fileUpload: "upload",
   },
+  customer: {
+    get: "customers",
+    post: "customers",
+  },
 };
 export default apiUrls;

@@ -1,8 +1,8 @@
 import { Button } from "@nextui-org/react";
-import { CustomerDetails } from "./customerDetails";
+import { CustomerDetails } from "../../../customerDetails";
 import InvoicePreview from "./InvoicePreview";
 import InvoiceTable from "./InvoiceTable";
-import { FormValues } from "./customerDetails/CustomerDetailsModal";
+import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
 export interface InvoiceComponentType {
   onRowClick: (data: any) => void;
   generatePDF: () => void;
