@@ -17,13 +17,13 @@ const Breadcrumbs: React.FC = () => {
     );
 
   return (
-    <nav className="flex" aria-label="Breadcrumb">
+    <nav className="flex p-2" aria-label="Breadcrumb">
       <ol className="inline-flex items-center">
         {/* Always show "Home" as the first breadcrumb */}
         <li className="inline-flex items-center">
           <Link
             to="/"
-            className="inline-flex items-center text-sm font-semibold text-primary hover:text-primary-dark p-2"
+            className="text-sm font-semibold text-primary hover:text-primary-dark"
           >
             Home
           </Link>
@@ -45,7 +45,7 @@ const Breadcrumbs: React.FC = () => {
                   .slice(0, index + 1)
                   .join("/")
                   .toLowerCase()}`}
-                className="inline-flex items-center text-sm font-semibold text-primary hover:text-primary-dark p-2"
+                className="text-sm font-semibold text-primary hover:text-primary-dark"
               >
                 {item}
               </Link>

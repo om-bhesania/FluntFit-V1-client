@@ -25,11 +25,8 @@ export const GetProductApi = async (notify: any) => {
     const result: any = await service({
       method: "get",
       url: apiUrls.products.get,
-    });
-    notify("Products fetched successfully", {
-      type: "success",
-    });
-    return result?.data;
+    });  
+    return result;
   } catch (error: any) {
     const errorMessage = error?.response?.data.messages;
     notify(errorMessage, {

@@ -58,3 +58,14 @@ body::-webkit-scrollbar-thumb:hover {
 .swiper-pagination-bullet:not(.swiper-pagination-bullet-active){
   @apply !bg-primary !opacity-50;
 }
+
+/* Add this CSS in your styles file */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}

@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+
+import { GetProductApi } from "../products/ProductsApi";
 import useToast from "../../hooks/useToast";
-import service from "../../services/services";
-import apiUrls from "../../utils/apiUrls";
-import InvoiceComponent from "./InvoiceComponent";
-import {
-  initialValues,
-  validationSchema,
-} from "../../../customerDetails/CustomerDetailsController";
+import InvoiceComponent from './InvoiceComponent';
 import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
+
+// Static customer list for demo
+const customers = [
+  { id: "1", name: "General Customer" },
+  { id: "2", name: "John Doe" },
+  { id: "3", name: "Jane Smith" },
+];
 
 export interface InvoiceComponentType {
   onRowClick: (data: any) => void;
@@ -30,178 +33,121 @@ export interface InvoiceComponentType {
   productData: any;
 }
 function InvoiceController() {
-  const [selectedData, setSelectedData] = useState(null);
-  const [ProductData, setData] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredCustomers, setFilteredCustomers] = useState(customers);
+  const [items, setItems] = useState<any[]>([]); // Replace 'any' with actual type if needed
+  const [taxRate, setTaxRate] = useState(5);
+  const [discountRate, setDiscountRate] = useState(0);
+  const [productsData, setProductsData] = useState<any[]>([]);
   const { notify } = useToast();
 
-  const onRowClick = (data: any) => {
-    handleOpenModal();
-    setSelectedData(data);
-  };
   useEffect(() => {
     loadData();
   }, []);
+
+  // Load products data from API
   const loadData = async () => {
     try {
-      const result: any = await service({
-        method: "get",
-        url: apiUrls.products.get,
-      });
-      setData(result?.products || []);
+      const result: any = await GetProductApi(notify);
+      console.log("result", result);
+      setProductsData(result?.products || []);
     } catch (error: any) {
       notify(error?.response.data.message, { type: "error" });
-    } finally {
     }
   };
-  const generatePDF = () => {
-    // Logic to generate PDF
-  };
-  const columns = [
-    {
-      header: "Serial Number",
-      accessorKey: "serialNumber",
-      cell: ({ table, row }: any) => {
-        const pageIndex = table.getState().pagination.pageIndex;
-        const pageSize = table.getState().pagination.pageSize;
-        const serialNumber = pageIndex * pageSize + row.index + 1;
-        return serialNumber;
-      },
-      maxWidth: 10,
-    },
 
-    {
-      header: "Product Name",
-      accessorKey: "productName",
-      cell: ({ row }: any) => row.original.productName,
-    },
-    {
-      header: "Product Description",
-      accessorKey: "productDescription",
-      cell: ({ row }: any) => row.original.productDescription,
-    },
-    {
-      header: "Category",
-      accessorKey: "category",
-      cell: ({ row }: any) => row.original.category,
-    },
-    {
-      header: "Subcategory",
-      accessorKey: "subcategory",
-      cell: ({ row }: any) => row.original.subcategory,
-    },
-    {
-      header: "Product Type",
-      accessorKey: "productType",
-      cell: ({ row }: any) => row.original.productType,
-    },
-    {
-      header: "Brand",
-      accessorKey: "brand",
-      cell: ({ row }: any) => row.original.brand,
-    },
-    {
-      header: "Price",
-      accessorKey: "price",
-      cell: ({ row }: any) => row.original.price,
-    },
-    {
-      header: "Cost Price",
-      accessorKey: "Costprice",
-      cell: ({ row }: any) => row.original.costPrice,
-    },
-    {
-      header: "Sale Price",
-      accessorKey: "salePrice",
-      cell: ({ row }: any) =>
-        row.original.salePrice === null ? "-" : row.original.salePrice,
-    },
-    {
-      header: "Profit Margin",
-      accessorKey: "Profit Margin",
-      cell: ({ row }: any) => {
-        const costPrice = row.original.costPrice;
-        const price =
-          row.original.salePrice !== null
-            ? row.original.salePrice
-            : row.original.price;
-        if (costPrice === 0) {
-          return "100%";
-        }
-        const profitMargin = ((price - costPrice) / costPrice) * 100;
-
-        return `${profitMargin.toFixed(2)}%`;
-      },
-    },
-    {
-      header: "Profit Earned",
-      accessorKey: "Profit",
-      cell: ({ row }: any) => {
-        const costPrice = row.original.costPrice;
-        const price =
-          row.original.salePrice !== null
-            ? row.original.salePrice
-            : row.original.price;
-        if (costPrice === 0) {
-          return `₹${price.toFixed(2)}`;
-        }
-        const profitEarned = price - costPrice;
-        return `₹${profitEarned.toFixed(2)}`;
-      },
-    },
-    { header: "SKU", accessorKey: "sku" },
-    {
-      header: "Quantity In Stock",
-      accessorKey: "quantityInStock",
-      cell: ({ row }: any) => row.original.quantityInStock,
-    },
-    {
-      header: "Size Options",
-      accessorKey: "sizeOptions",
-      cell: ({ row }: any) => row.original.sizeOptions.toString(),
-    },
-
-    {
-      header: "Care Instructions",
-      accessorKey: "careInstructions",
-      cell: ({ row }: any) => row.original.careInstructions,
-    },
-    {
-      header: "Inventory Status",
-      accessorKey: "inventoryStatus",
-      cell: ({ row }: any) => row.original.inventoryStatus,
-    },
-  ];
-
-  const handleSubmit = (
-    // values: FormValues,
-    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
-  ) => {
-    setSubmitting(false);
-    setIsOpen(false);
+  // Handle customer search logic
+  const handleCustomerSearch = (value: string) => {
+    setSearchValue(value);
+    const matchingCustomers = customers.filter((customer) =>
+      customer.name.toLowerCase().includes(value.toLowerCase())
+    );
+    if (matchingCustomers.length === 0) {
+      setFilteredCustomers([{ id: "new", name: "Create New Customer" }]);
+    } else {
+      setFilteredCustomers(matchingCustomers);
+    }
   };
 
-  const handleOpenModal = () => setIsOpen(true);
-  const handleCloseModal = () => setIsOpen(false);
-  const onSubmit = () => {};
+  // Add a new item to the invoice
+  const addItem = () => {
+    const newItem = {
+      id: Date.now().toString(),
+      productName: "", // Initially no product selected
+      quantity: 1,
+      price: 0,
+    };
+    setItems([...items, newItem]);
+  };
+
+  // Remove an item from the invoice
+  const removeItem = (id: string) => {
+    setItems(items.filter((item) => item.id !== id));
+  };
+
+  // Update an item's details
+  const updateItem = (id: string, field: string, value: any) => {
+    setItems(
+      items.map((item) =>
+        item.id === id
+          ? { ...item, [field]: field === "productName" ? value : Number(value) }
+          : item
+      )
+    );
+  };
+
+  // Handle product selection to auto-populate price
+  const handleProductSelect = (itemId: string, productName: string) => {
+    const selectedProduct = productsData.find(
+      (product) => product.productName === productName
+    );
+    const price = selectedProduct ? selectedProduct.price : 0;
+    updateItem(itemId, "productName", productName);
+    updateItem(itemId, "price", price);
+  };
+
+  // Calculate the subtotal of items
+  const calculateSubtotal = () => {
+    return items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  };
+
+  // Calculate the discount on the subtotal
+  const calculateDiscount = (subtotal: number) => {
+    return (subtotal * discountRate) / 100;
+  };
+
+  // Calculate the tax on the subtotal after applying discount
+  const calculateTax = (subtotal: number, discount: number) => {
+    return ((subtotal - discount) * taxRate) / 100;
+  };
+
+  // Calculate the total after applying discount and adding tax
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    const discount = calculateDiscount(subtotal);
+    const tax = calculateTax(subtotal, discount);
+    return subtotal - discount + tax;
+  };
+
   return (
-    <>
-      <InvoiceComponent
-        onRowClick={onRowClick}
-        generatePDF={generatePDF}
-        columns={columns}
-        data={ProductData}
-        selectedData={selectedData}
-        isOpen={isOpen}
-        onOpen={handleOpenModal}
-        onClose={handleCloseModal}
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-        productData={selectedData}
-        handleSubmit={handleSubmit}
-      />
-    </>
+    <InvoiceComponent
+      items={items}
+      taxRate={taxRate}
+      discountRate={discountRate}
+      searchValue={searchValue}
+      filteredCustomers={filteredCustomers}
+      addItem={addItem}
+      removeItem={removeItem}
+      updateItem={updateItem}
+      calculateSubtotal={calculateSubtotal}
+      calculateDiscount={calculateDiscount}
+      calculateTax={calculateTax}
+      calculateTotal={calculateTotal}
+      handleInput={handleCustomerSearch}
+      setTaxRate={setTaxRate}
+      setDiscountRate={setDiscountRate}
+      productsData={productsData} 
+    />
   );
 }
 

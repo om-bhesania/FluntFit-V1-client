@@ -34,6 +34,8 @@ function LoginController({
     try {
       const res: any = await LoginApi(data, notify);
       sessionStorage.setItem("authToken", res.data.data.token);
+      sessionStorage.setItem("name", res.data.data.name);
+      sessionStorage.setItem("email", res.data.data.userEmail);
       if (res.status === "Success" || res.status === "success") {
         nav("/products/all-products?isLogin=true");
       }

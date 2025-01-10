@@ -158,7 +158,7 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
         </nav>
 
         {isLogin ? (
-          <div className="border-t border-gray-800 p-4">
+          <div className="md:hidden border-t border-gray-800 p-4">
             <button
               className="flex w-full items-center justify-center rounded-md bg-gray-800 px-4 py-2 text-sm text-white hover:bg-gray-700"
               onClick={() => Logout(nav, notify)}
