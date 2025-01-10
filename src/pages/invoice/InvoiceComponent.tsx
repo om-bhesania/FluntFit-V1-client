@@ -111,18 +111,29 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
               onInput={(e) =>
                 handleCustomerSearch((e.target as HTMLInputElement).value)
               }
+              onSelectionChange={(key) => {
+                if (key === "new") {
+                  handleOpenModal();
+                } else {
+                  // Handle regular customer selection
+                }
+              }}
               className="max-w-[400px]"
               placeholder="Search or create a new customer"
               variant="bordered"
               color="default"
+              allowsCustomValue
             >
               {(item) => (
-                <AutocompleteItem key={item._id} className="capitalize">
+                <AutocompleteItem
+                  key={item._id}
+                  textValue={
+                    item.name === "Create New Customer" ? "" : item.name
+                  }
+                  className="capitalize"
+                >
                   {item._id === "new" ? (
-                    <div
-                      className="flex items-center gap-2 cursor-pointer"
-                      onClick={handleOpenModal}
-                    >
+                    <div className="flex items-center gap-2 cursor-pointer">
                       <Plus className="!h-4 !w-4 text-primary" />
                       {item.name}
                     </div>

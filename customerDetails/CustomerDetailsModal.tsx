@@ -47,8 +47,8 @@ function CustomerDetailsModal({
       address: Yup.string().required("Address is required"),
       email: Yup.string().email("Invalid email address"),
     }),
-    onSubmit: (values) => {
-      onSubmit(values);
+    onSubmit:async (values) => {
+      await onSubmit(values);
       formik.resetForm();
     },
   });

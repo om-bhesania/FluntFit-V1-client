@@ -62,9 +62,9 @@ function InvoiceController() {
     try {
       const result: any = await GetProductApi(notify);
       const response = await GetCustomerApi(notify);
-      console.log("response", response);
       setProductsData(result?.products || []);
       setCustomers(response);
+      setFilteredCustomers(response);
     } catch (error: any) {
       notify(error?.response.data.message, { type: "error" });
     }
@@ -72,12 +72,12 @@ function InvoiceController() {
 
   const handleCustomerSearch = (value: string) => {
     setSearchValue(value);
-
+    // Check if the search value is empty
     if (value.trim() === "") {
-      // Reset to show all customers if the search value is empty
+      // Reset to show all customers if the search input is cleared
       setFilteredCustomers(customers);
     } else {
-      // Filter customers based on search value
+      // Filter customers based on the search value
       const matchingCustomers = customers.filter((customer: any) =>
         customer.name.toLowerCase().includes(value.toLowerCase())
       );
@@ -94,15 +94,8 @@ function InvoiceController() {
   // Handle "Create New Customer" click
   const handleCreateNewCustomer = async () => {
     try {
-      // Replace with your API call logic
-      const newCustomerResponse = await GetCustomerApi(notify);
-      console.log("newCustomerResponse"), newCustomerResponse;
-      const newCustomer = newCustomerResponse.data; // Assuming response contains the new customer data
-
-      // Add the new customer to the list and clear the search field
-      setCustomersData([...newCustomerResponse, newCustomer]);
-      setFilteredCustomers([...customers, newCustomer]);
-      setSearchValue(""); // Clear the search field
+      await GetCustomerApi(notify);
+      loadData();
       notify("Customer created successfully", { type: "success" });
     } catch (error) {
       notify("Failed to create new customer", { type: "error" });
@@ -182,11 +175,13 @@ function InvoiceController() {
   const handleSubmit = async (values: FormValues) => {
     const res = await AddCustomersApi(values, notify);
     console.log(res);
+    // setCustomersData(res);
     setModalOpen(false); // Close the modal
   };
 
   // Open modal
   const handleOpenModal = () => {
+    console.log('first')
     setModalOpen(true);
   };
 
