@@ -38,7 +38,7 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
               <PopoverContent className="p-4 w-72 bg-white rounded-lg shadow-lg border border-gray-200">
                 <div className="flex items-center w-full">
                   <div className="w-10 h-10 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center font-bold text-xl">
-                    {name[0]?.toUpperCase()}
+                    {name?.toUpperCase()}
                   </div>
                   <div className="ml-3">
                     <h3 className="text-lg font-semibold text-gray-800">
