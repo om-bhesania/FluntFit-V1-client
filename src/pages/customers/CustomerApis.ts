@@ -1,31 +1,30 @@
 import service from "../../services/services";
 import apiUrls from "../../utils/apiUrls";
 
-
 export const AddCustomersApi = async (data: any, notify: any) => {
   try {
-    await service({
+    const res: any = await service({
       url: apiUrls.customer.post,
       method: "post",
       data: data,
     });
-    notify("Product added successfully", {
+    notify(res.response.message, {
       type: "success",
     });
-  } catch (error: any) { 
-    notify(error.response.data.message, {
+  } catch (error: any) {
+    console.log(error.response.data.messages[0]);
+    notify(error.response.data.message[0], {
       type: "error",
     });
   }
 };
-
 
 export const GetCustomerApi = async (notify: any) => {
   try {
     const result: any = await service({
       method: "get",
       url: apiUrls.customer.get,
-    }); 
+    });
     return result?.response.customers;
   } catch (error: any) {
     const errorMessage = error?.response?.data.messages;

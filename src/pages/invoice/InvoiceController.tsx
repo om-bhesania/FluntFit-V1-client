@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 
 import { GetProductApi } from "../products/ProductsApi";
 import useToast from "../../hooks/useToast";
-import InvoiceComponent from './InvoiceComponent';
+import InvoiceComponent from "./InvoiceComponent";
 import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
-
+import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
+import * as Yup from "yup";
 // Static customer list for demo
 const customers = [
   { id: "1", name: "General Customer" },
@@ -33,14 +34,25 @@ export interface InvoiceComponentType {
   productData: any;
 }
 function InvoiceController() {
-  const [searchValue, setSearchValue] = useState("");
-  const [filteredCustomers, setFilteredCustomers] = useState(customers);
   const [items, setItems] = useState<any[]>([]); // Replace 'any' with actual type if needed
+  const [customers, setCustomers] = useState([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<any>([]);
+  const [customersData, setCustomersData] = useState<any[]>([]);
+  const [searchValue, setSearchValue] = useState("");
   const [taxRate, setTaxRate] = useState(5);
   const [discountRate, setDiscountRate] = useState(0);
   const [productsData, setProductsData] = useState<any[]>([]);
   const { notify } = useToast();
 
+  // Validation schema using Yup
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    number: Yup.string()
+      .matches(/^[0-9]{10}$/, "Enter a valid 10-digit phone number")
+      .required("Phone number is required"),
+    address: Yup.string().required("Address is required"),
+    email: Yup.string().email("Invalid email address"),
+  });
   useEffect(() => {
     loadData();
   }, []);
@@ -49,23 +61,52 @@ function InvoiceController() {
   const loadData = async () => {
     try {
       const result: any = await GetProductApi(notify);
-      console.log("result", result);
+      const response = await GetCustomerApi(notify);
+      console.log("response", response);
       setProductsData(result?.products || []);
+      setCustomers(response);
     } catch (error: any) {
       notify(error?.response.data.message, { type: "error" });
     }
   };
 
-  // Handle customer search logic
   const handleCustomerSearch = (value: string) => {
     setSearchValue(value);
-    const matchingCustomers = customers.filter((customer) =>
-      customer.name.toLowerCase().includes(value.toLowerCase())
-    );
-    if (matchingCustomers.length === 0) {
-      setFilteredCustomers([{ id: "new", name: "Create New Customer" }]);
+
+    if (value.trim() === "") {
+      // Reset to show all customers if the search value is empty
+      setFilteredCustomers(customers);
     } else {
-      setFilteredCustomers(matchingCustomers);
+      // Filter customers based on search value
+      const matchingCustomers = customers.filter((customer: any) =>
+        customer.name.toLowerCase().includes(value.toLowerCase())
+      );
+
+      // Show "Create New Customer" if no matching customers are found
+      if (matchingCustomers.length === 0) {
+        setFilteredCustomers([{ _id: "new", name: "Create New Customer" }]);
+      } else {
+        setFilteredCustomers(matchingCustomers);
+      }
+    }
+  };
+
+  // Handle "Create New Customer" click
+  const handleCreateNewCustomer = async () => {
+    try {
+      // Replace with your API call logic
+      const newCustomerResponse = await GetCustomerApi(notify);
+      console.log("newCustomerResponse"), newCustomerResponse;
+      const newCustomer = newCustomerResponse.data; // Assuming response contains the new customer data
+
+      // Add the new customer to the list and clear the search field
+      setCustomersData([...newCustomerResponse, newCustomer]);
+      setFilteredCustomers([...customers, newCustomer]);
+      setSearchValue(""); // Clear the search field
+      notify("Customer created successfully", { type: "success" });
+    } catch (error) {
+      notify("Failed to create new customer", { type: "error" });
+      console.error(error);
     }
   };
 
@@ -76,6 +117,7 @@ function InvoiceController() {
       productName: "", // Initially no product selected
       quantity: 1,
       price: 0,
+      total: "",
     };
     setItems([...items, newItem]);
   };
@@ -90,20 +132,17 @@ function InvoiceController() {
     setItems(
       items.map((item) =>
         item.id === id
-          ? { ...item, [field]: field === "productName" ? value : Number(value) }
+          ? {
+              ...item,
+              [field]: field === "productName" ? value : Number(value),
+            }
           : item
       )
     );
   };
-
-  // Handle product selection to auto-populate price
-  const handleProductSelect = (itemId: string, productName: string) => {
-    const selectedProduct = productsData.find(
-      (product) => product.productName === productName
-    );
-    const price = selectedProduct ? selectedProduct.price : 0;
-    updateItem(itemId, "productName", productName);
-    updateItem(itemId, "price", price);
+  // Calculate the total for each individual item
+  const calculateItemTotal = (quantity: number, price: number) => {
+    return quantity * price;
   };
 
   // Calculate the subtotal of items
@@ -129,6 +168,33 @@ function InvoiceController() {
     return subtotal - discount + tax;
   };
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  // Initial form values
+  const initialValues: FormValues = {
+    name: "",
+    phone: "",
+    address: "",
+    email: "",
+  };
+
+  // Handle form submission
+  const handleSubmit = async (values: FormValues) => {
+    const res = await AddCustomersApi(values, notify);
+    console.log(res);
+    setModalOpen(false); // Close the modal
+  };
+
+  // Open modal
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <InvoiceComponent
       items={items}
@@ -146,7 +212,17 @@ function InvoiceController() {
       handleInput={handleCustomerSearch}
       setTaxRate={setTaxRate}
       setDiscountRate={setDiscountRate}
-      productsData={productsData} 
+      productsData={productsData}
+      calculateItemTotal={calculateItemTotal}
+      handleCreateNewCustomer={handleCreateNewCustomer}
+      initialValues={initialValues}
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+      onSubmit={handleSubmit}
+      customersData={customersData}
+      validationSchema={validationSchema}
+      handleOpenModal={handleOpenModal}
+      handleCustomerSearch={handleCustomerSearch}
     />
   );
 }
