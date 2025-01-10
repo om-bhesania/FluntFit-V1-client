@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { GetProductApi } from "../products/ProductsApi";
-import useToast from "../../hooks/useToast";
-import InvoiceComponent from "./InvoiceComponent";
-import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
-import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
 import * as Yup from "yup";
-// Static customer list for demo
-const customers = [
-  { id: "1", name: "General Customer" },
-  { id: "2", name: "John Doe" },
-  { id: "3", name: "Jane Smith" },
-];
+import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
+import useToast from "../../hooks/useToast";
+import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
+import { GetProductApi } from "../products/ProductsApi";
+import InvoiceComponent from "./InvoiceComponent";
 
 export interface InvoiceComponentType {
   onRowClick: (data: any) => void;
@@ -37,7 +31,6 @@ function InvoiceController() {
   const [items, setItems] = useState<any[]>([]); // Replace 'any' with actual type if needed
   const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState<any>([]);
-  const [customersData, setCustomersData] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [taxRate, setTaxRate] = useState(5);
   const [discountRate, setDiscountRate] = useState(0);
@@ -181,7 +174,7 @@ function InvoiceController() {
 
   // Open modal
   const handleOpenModal = () => {
-    console.log('first')
+    console.log("first");
     setModalOpen(true);
   };
 
@@ -214,7 +207,6 @@ function InvoiceController() {
       isOpen={isModalOpen}
       onClose={handleCloseModal}
       onSubmit={handleSubmit}
-      customersData={customersData}
       validationSchema={validationSchema}
       handleOpenModal={handleOpenModal}
       handleCustomerSearch={handleCustomerSearch}

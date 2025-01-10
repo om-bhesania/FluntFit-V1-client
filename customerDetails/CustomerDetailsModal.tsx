@@ -2,16 +2,14 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   Input,
   Modal,
   ModalContent,
-  ModalFooter,
   ModalHeader,
-  Textarea,
+  Textarea
 } from "@nextui-org/react";
 import { useFormik } from "formik";
-import { Phone, Mail, MapPin, User } from "lucide-react";
+import { Mail, MapPin, Phone, User } from "lucide-react";
 import * as Yup from "yup";
 
 export interface FormValues {

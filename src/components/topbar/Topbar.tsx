@@ -1,10 +1,10 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
-import { LogOutIcon, User, User2Icon } from "lucide-react";
-import useSessionStorage from "../../hooks/useSessionStorage";
-import Breadcrumbs from "../breadCrumbs/BreadCrumbs";
-import { Logout } from "../../utils/utils";
-import useToast from "../../hooks/useToast";
+import { LogOutIcon, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useSessionStorage from "../../hooks/useSessionStorage";
+import useToast from "../../hooks/useToast";
+import { Logout } from "../../utils/utils";
+import Breadcrumbs from "../breadCrumbs/BreadCrumbs";
 
 interface BreadcrumbItemProps {
   breadcrumbs?: string[];

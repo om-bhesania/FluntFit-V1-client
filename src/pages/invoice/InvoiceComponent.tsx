@@ -12,9 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import { EqualIcon, Plus, Trash2, X } from "lucide-react";
-import React, { useState } from "react";
-import { CustomerDetails } from "./customerDetails";
+import { Plus, Trash2 } from "lucide-react";
+import React from "react";
 import CustomerDetailsModal from "../../../customerDetails/CustomerDetailsModal";
 
 interface InvoiceComponentType {
@@ -39,8 +38,7 @@ interface InvoiceComponentType {
   initialValues: any;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: any) => void;
-  customersData: any;
+  onSubmit: (values: any) => void; 
   validationSchema: any;
   handleOpenModal: () => void;
   handleCustomerSearch: (data: any) => void;
