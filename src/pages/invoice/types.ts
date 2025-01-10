@@ -1,6 +1,6 @@
-import { FormValues } from "./customerDetails/CustomerDetailsModal";
 
- 
+import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
+
 export interface InvoiceComponentType {
   onRowClick: (data: any) => void;
   generatePDF: () => void;

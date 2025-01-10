@@ -1,7 +1,19 @@
+import { Tooltip } from "@nextui-org/react";
 
- 
-const Tooltip = ({ content, trigger }:any) => {
-  return <Tooltip content={content}>{trigger}</Tooltip>;
+interface CustomTooltipTypes {
+  content: string;
+  trigger: string;
+  className?: string;
 }
 
-export default Tooltip;
+export default function CustomTooltip({
+  trigger,
+  content,
+  className,
+}: CustomTooltipTypes) {
+  return (
+    <Tooltip content={content} className={className}>
+      {trigger}
+    </Tooltip>
+  );
+}

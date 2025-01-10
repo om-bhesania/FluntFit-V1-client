@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useToast from "../../../hooks/useToast";
 import { LoginApi } from "./AuthApis";
@@ -20,25 +20,28 @@ function LoginController({
 }) {
   const { notify } = useToast();
   const nav = useNavigate();
-
+  const [loading, setLoading] = useState<boolean>(false);
   // Redirect to products if the token is present
   useEffect(() => {
     const token = sessionStorage.getItem("authToken");
     if (token) {
-      nav("/products/all-products");
+      nav("/products/all-products?isLogin=true");
     }
   }, [nav]); // This will run once when the component mounts
 
   const handleSubmit = async (data: any) => {
+    setLoading(true);
     try {
       const res: any = await LoginApi(data, notify);
       sessionStorage.setItem("authToken", res.data.data.token);
       if (res.status === "Success" || res.status === "success") {
-        nav("/products/all-products");
+        nav("/products/all-products?isLogin=true");
       }
     } catch (error: any) {
       // Handle error here
       console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,6 +50,7 @@ function LoginController({
       variant={variant}
       color={color}
       handleSubmit={handleSubmit}
+      loading={loading}
     />
   );
 }

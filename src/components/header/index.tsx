@@ -1,17 +1,20 @@
 import {
   ChevronDown,
   ChevronUp,
+  LogOutIcon,
   Menu,
   PackageSearch,
   Plus,
   ReceiptTextIcon,
-  Settings,
   ShoppingCart,
+  User,
   X,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import TopBar from "../topbar/Topbar";
+import useToast from "../../hooks/useToast";
+import { Logout } from "../../utils/utils";
 
 const menuItems = [
   {
@@ -28,6 +31,11 @@ const menuItems = [
     ],
   },
   {
+    name: "Customers",
+    path: "/Customers",
+    icon: User,
+  },
+  {
     name: "Invoice Generation",
     path: "/invoice/generate",
     icon: ReceiptTextIcon,
@@ -41,6 +49,8 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
   const location = useLocation();
+  const nav = useNavigate();
+  const { notify } = useToast();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const toggleMobileMenu = () => {
@@ -149,9 +159,12 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
 
         {isLogin ? (
           <div className="border-t border-gray-800 p-4">
-            <button className="flex w-full items-center justify-center rounded-md bg-gray-800 px-4 py-2 text-sm text-white hover:bg-gray-700">
-              <Settings className="mr-2 h-4 w-4" />
-              Account Settings
+            <button
+              className="flex w-full items-center justify-center rounded-md bg-gray-800 px-4 py-2 text-sm text-white hover:bg-gray-700"
+              onClick={() => Logout(nav, notify)}
+            >
+              <LogOutIcon className="mr-2 h-4 w-4" />
+              Logout
             </button>
           </div>
         ) : null}

@@ -15,7 +15,7 @@ function AllCollectionController() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { notify } = useToast(); 
+  const { notify } = useToast();
 
   const loadData = async () => {
     setLoading(true);
@@ -25,8 +25,8 @@ function AllCollectionController() {
         url: apiUrls.products.get,
       });
       setData(result?.products || []);
-    } catch (error) {
-      notify("Failed to load data", { type: "error" });
+    } catch (error: any) {
+      notify(error?.response.data.message, { type: "error" });
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ function AllCollectionController() {
 
   const { onOpen: openModal, onClose: closeModal } = useDisclosure();
 
-  const handleEdit = (product: any) => { 
+  const handleEdit = (product: any) => {
     setSelectedProduct(product);
     handleOpen();
   };
