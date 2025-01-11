@@ -12,9 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import { Plus, Trash2 } from "lucide-react";
-import React from "react";
-import CustomerDetailsModal from "../../../customerDetails/CustomerDetailsModal";
+import { CloudSnow, Plus, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import CustomerDetailsModal from "./customerDetails/CustomerDetailsModal";
+import Badge from "../../components/badge/Badge";
 
 interface InvoiceComponentType {
   items: any[];
@@ -31,23 +32,31 @@ interface InvoiceComponentType {
   calculateTotal: () => number;
   handleInput: (value: string) => void;
   setTaxRate: React.Dispatch<React.SetStateAction<number>>;
-  setDiscountRate: React.Dispatch<React.SetStateAction<number>>;
+  setDiscountRate: React.Dispatch<React.SetStateAction<string>>;
+  setCashDiscountRate: React.Dispatch<React.SetStateAction<number>>;
   productsData: any;
   calculateItemTotal: (quantity: any, price: any) => any;
   handleCreateNewCustomer: () => void;
   initialValues: any;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: any) => void; 
+  onSubmit: (values: any) => void;
   validationSchema: any;
   handleOpenModal: () => void;
   handleCustomerSearch: (data: any) => void;
+  calculateCGST: any;
+  calculateSGST: any;
+  newCustomerData: Array<Text>;
+  isNewCustomer: boolean;
+  calculateCashDiscount: (data: any) => void;
+  cashDiscountRate: any;
 }
 
 const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   items,
   taxRate,
   discountRate,
+  cashDiscountRate,
   filteredCustomers,
   addItem,
   removeItem,
@@ -55,10 +64,12 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   calculateSubtotal,
   calculateDiscount,
   calculateTax,
+  calculateCashDiscount,
   calculateTotal,
   handleCustomerSearch,
   setTaxRate,
   setDiscountRate,
+  setCashDiscountRate,
   productsData,
   calculateItemTotal,
   initialValues,
@@ -66,7 +77,21 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   onClose,
   onSubmit,
   handleOpenModal,
+  calculateCGST,
+  calculateSGST,
+  newCustomerData,
+  isNewCustomer,
 }) => {
+  const [selectedProductId, setSelectedProductId] = useState("");
+  const [gstData, setGstData] = useState("");
+
+  const selectedProduct = productsData.filter(
+    (product: any) => product._id === selectedProductId
+  );
+  useEffect(() => {
+    setGstData(selectedProduct?.[0]?.gst);
+  }, [selectedProduct?.[0]?.gst]);
+  console.log(gstData);
   return (
     <>
       <div className="container">
@@ -162,6 +187,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                 <TableColumn>QTY</TableColumn>
                 <TableColumn>PRICE</TableColumn>
                 <TableColumn>TOTAL</TableColumn>
+                <TableColumn>GST</TableColumn>
                 <TableColumn>ACTION</TableColumn>
               </TableHeader>
               <TableBody>
@@ -175,22 +201,22 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                         value={item.name}
                         onChange={(e) => {
                           const selectedProductId = e.target.value;
-                          console.log("selectedProductId", selectedProductId);
+                          setSelectedProductId(selectedProductId);
                           const selectedProduct = productsData.filter(
                             (product: any) => product._id === selectedProductId
                           );
+
                           if (selectedProduct) {
                             updateItem(
                               item.id,
                               "name",
-                              selectedProduct.productName
+                              selectedProduct?.[0].productName
                             );
                             updateItem(
                               item.id,
                               "price",
-                              selectedProduct?.[0].salePrice
-                                ? selectedProduct?.[0].salePrice
-                                : selectedProduct?.[0].price
+                              selectedProduct?.[0]?.salePrice ||
+                                selectedProduct?.[0]?.price
                             );
                           }
                         }}
@@ -198,9 +224,10 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                       >
                         {productsData.map((product: any) => (
                           <SelectItem
-                            className="max-w-[400px] "
+                            className="max-w-[400px]"
+                            color="primary"
                             key={product._id}
-                            value={product.productName}
+                            value={product._id}
                           >
                             {product.productName}
                           </SelectItem>
@@ -240,11 +267,20 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                         }
                       />
                     </TableCell>
+                    {/* total */}
                     <TableCell>
                       <div className="w-full flex items-center justify-center">
                         ₹{calculateItemTotal(item.quantity, item.price)}
                       </div>
                     </TableCell>
+                    {/* GST */}
+                    <TableCell>
+                      <div className="w-full flex items-center justify-center">
+                        {selectedProduct?.[0]?.gst}
+                      </div>
+                    </TableCell>
+
+                    {/* action */}
                     <TableCell>
                       <Button
                         isIconOnly
@@ -275,22 +311,63 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                 <span className="font-medium">Subtotal:</span>
                 <span>₹{calculateSubtotal().toFixed(2)}</span>
               </div>
+
               <div className="flex justify-between">
-                <span className="font-medium">Discount ({discountRate}%):</span>
-                <span>
-                  ₹{calculateDiscount(calculateSubtotal()).toFixed(2)}
-                </span>
+                <span className="font-medium">Untaxed Amount:</span>
+                <span>₹{calculateSubtotal().toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="font-medium">GST ({taxRate}%):</span>
-                <span>
-                  ₹
-                  {calculateTax(
-                    calculateSubtotal(),
-                    calculateDiscount(calculateSubtotal())
-                  ).toFixed(2)}
-                </span>
+              <div className="ml-4">
+                <div className="flex justify-between">
+                  <span className="text-sm">- CGST:</span>
+                  <span>
+                    ₹
+                    {calculateCGST(
+                      calculateSubtotal(),
+                      calculateDiscount(calculateSubtotal())
+                    ).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">- SGST:</span>
+                  <span>
+                    ₹
+                    {calculateSGST(
+                      calculateSubtotal(),
+                      calculateDiscount(calculateSubtotal())
+                    ).toFixed(2)}
+                  </span>
+                </div>
               </div>
+              {discountRate > 0 && (
+                <div className="flex justify-between">
+                  <Badge
+                    content={
+                      <span className="inline-flex items-center">
+                        <span className="mr-1">Discount</span>
+                        <span className="font-bold">({discountRate}%)</span>
+                      </span>
+                    }
+                  />
+                  <span>
+                    ₹{calculateDiscount(calculateSubtotal()).toFixed(2)}
+                  </span>
+                </div>
+              )}
+              {cashDiscountRate > 0 && (
+                <div className="flex justify-between ">
+                  <Badge
+                    color="teal"
+                    content={
+                      <span className="inline-flex items-center">
+                        Flat Discount
+                      </span>
+                    }
+                  />
+
+                  <span>₹{cashDiscountRate.toFixed(2)}</span>
+                </div>
+              )}
+
               <div className="flex justify-between text-lg font-bold">
                 <span>Total:</span>
                 <span>₹{calculateTotal().toFixed(2)}</span>
@@ -321,10 +398,25 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                 color="default"
                 type="number"
                 value={discountRate.toString()}
-                onChange={(e) => setDiscountRate(Number(e.target.value))}
+                onChange={(e) => setDiscountRate(e.target.value)}
                 endContent={
                   <div className="pointer-events-none flex items-center">
                     <span className="text-default-400 text-small">%</span>
+                  </div>
+                }
+              />
+            </div>
+            <div>
+              <h2 className="text-sm font-medium mb-2">Flat Discount:</h2>
+              <Input
+                variant="bordered"
+                color="default"
+                type="number"
+                value={cashDiscountRate.toString()}
+                onChange={(e) => setCashDiscountRate(Number(e.target.value))}
+                endContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 text-small">₹</span>
                   </div>
                 }
               />

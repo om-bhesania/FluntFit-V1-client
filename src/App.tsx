@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import Router from "./routes/Router";
 import { Login } from "./pages/auth/login";
 import { AuthProvider } from "./routes/auth/AuthProvider";
+import SessionProvider from "./services/SessionProvider";
 
 const App = () => {
   return (

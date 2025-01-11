@@ -1,8 +1,12 @@
 import * as Yup from "yup";
 import CustomerDetailsComponent from "./CustomerDetailsComponent";
 
-import { FormikHelpers } from "formik";
 import { FormValues } from "./CustomerDetailsModal";
+import { FormikHelpers } from "formik";
+import service from "../../../services/services";
+import apiUrls from "../../../utils/apiUrls";
+import { useEffect, useState } from "react";
+import useToast from "../../../hooks/useToast";
 export interface CustomerDetailsComponentProps {
   isOpen: boolean;
   onOpen: () => void;
@@ -43,7 +47,6 @@ export interface CustomerDetailsControllerProps {
   handleOpenModal: () => void;
   handleCloseModal: () => void;
   productData: any;
-  data: any;
 }
 const CustomerDetailsController: React.FC<CustomerDetailsControllerProps> = ({
   isOpen,
@@ -52,8 +55,25 @@ const CustomerDetailsController: React.FC<CustomerDetailsControllerProps> = ({
   validationSchema,
   onSubmit,
   productData,
-  data,
 }) => {
+  const [data, setData] = useState(null);
+  const { notify } = useToast();
+
+  useEffect(() => {
+    loadData();
+  }, []);
+  const loadData = async () => {
+    try {
+      const result: any = await service({
+        method: "get",
+        url: apiUrls.products.get,
+      });
+      setData(result?.products || []);
+    } catch (error: any) {
+      notify(error?.response.data.message, { type: "error" });
+    } finally {
+    }
+  };
   return (
     <CustomerDetailsComponent
       isOpen={isOpen}

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 import * as Yup from "yup";
-import { FormValues } from "../../../customerDetails/CustomerDetailsModal";
 import useToast from "../../hooks/useToast";
 import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
 import { GetProductApi } from "../products/ProductsApi";
+import { FormValues } from "./customerDetails/CustomerDetailsModal";
 import InvoiceComponent from "./InvoiceComponent";
 
 export interface InvoiceComponentType {
@@ -31,9 +31,12 @@ function InvoiceController() {
   const [items, setItems] = useState<any[]>([]); // Replace 'any' with actual type if needed
   const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState<any>([]);
+  const [newCustomerData, setNewCustomerData] = useState<any>([]);
+  const [isNewCustomer, setIsNewCustomer] = useState<any>([]);
   const [searchValue, setSearchValue] = useState("");
   const [taxRate, setTaxRate] = useState(5);
-  const [discountRate, setDiscountRate] = useState(0);
+  const [discountRate, setDiscountRate] = useState('');
+  const [cashDiscountRate, setCashDiscountRate] = useState(0);
   const [productsData, setProductsData] = useState<any[]>([]);
   const { notify } = useToast();
 
@@ -45,6 +48,7 @@ function InvoiceController() {
       .required("Phone number is required"),
     address: Yup.string().required("Address is required"),
     email: Yup.string().email("Invalid email address"),
+    state: Yup.string().required("State is Required"),
   });
   useEffect(() => {
     loadData();
@@ -64,6 +68,7 @@ function InvoiceController() {
   };
 
   const handleCustomerSearch = (value: string) => {
+    console.log("value", value);
     setSearchValue(value);
     // Check if the search value is empty
     if (value.trim() === "") {
@@ -138,20 +143,37 @@ function InvoiceController() {
 
   // Calculate the discount on the subtotal
   const calculateDiscount = (subtotal: number) => {
-    return (subtotal * discountRate) / 100;
+    return (subtotal * Number(discountRate)) / 100;
   };
 
+  // Calculate the cash discount (flat amount)
+  const calculateCashDiscount = (subtotal: number) => {
+    // Ensure the cash discount does not exceed the subtotal
+    return cashDiscountRate > subtotal ? subtotal : cashDiscountRate;
+  };
+
+  // Calculate the CGST
+  const calculateCGST = (subtotal: number, discount: number) => {
+    return ((subtotal - discount) * (taxRate / 2)) / 100;
+  };
+
+  // Calculate the SGST
+  const calculateSGST = (subtotal: number, discount: number) => {
+    return ((subtotal - discount) * (taxRate / 2)) / 100;
+  };
   // Calculate the tax on the subtotal after applying discount
   const calculateTax = (subtotal: number, discount: number) => {
     return ((subtotal - discount) * taxRate) / 100;
   };
 
-  // Calculate the total after applying discount and adding tax
+  // Calculate the total after applying discounts and adding tax
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const discount = calculateDiscount(subtotal);
-    const tax = calculateTax(subtotal, discount);
-    return subtotal - discount + tax;
+    const percentageDiscount = calculateDiscount(subtotal);
+    const cashDiscount = calculateCashDiscount(subtotal);
+    const totalDiscount = percentageDiscount + cashDiscount; // Combine both discounts
+    const tax = calculateTax(subtotal, totalDiscount);
+    return subtotal - totalDiscount + tax;
   };
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -162,32 +184,37 @@ function InvoiceController() {
     phone: "",
     address: "",
     email: "",
+    state: "",
+    city: "",
+    dob: null,
   };
 
   // Handle form submission
   const handleSubmit = async (values: FormValues) => {
     const res = await AddCustomersApi(values, notify);
-    console.log(res);
-    // setCustomersData(res);
+    setFilteredCustomers(res.response.newCustomer);
+    setNewCustomerData(res.response.newCustomer);
+    setIsNewCustomer(res.response.status === "Success" ? true : false);
     setModalOpen(false); // Close the modal
   };
 
   // Open modal
   const handleOpenModal = () => {
-    console.log("first");
     setModalOpen(true);
   };
 
   // Close modal
   const handleCloseModal = () => {
     setModalOpen(false);
+    setFilteredCustomers(customers);
   };
 
   return (
     <InvoiceComponent
       items={items}
       taxRate={taxRate}
-      discountRate={discountRate}
+      discountRate={Number(discountRate)}
+      cashDiscountRate={cashDiscountRate}
       searchValue={searchValue}
       filteredCustomers={filteredCustomers}
       addItem={addItem}
@@ -195,7 +222,10 @@ function InvoiceController() {
       updateItem={updateItem}
       calculateSubtotal={calculateSubtotal}
       calculateDiscount={calculateDiscount}
+      calculateCashDiscount={calculateCashDiscount}
       calculateTax={calculateTax}
+      calculateCGST={calculateCGST}
+      calculateSGST={calculateSGST}
       calculateTotal={calculateTotal}
       handleInput={handleCustomerSearch}
       setTaxRate={setTaxRate}
@@ -210,6 +240,9 @@ function InvoiceController() {
       validationSchema={validationSchema}
       handleOpenModal={handleOpenModal}
       handleCustomerSearch={handleCustomerSearch}
+      newCustomerData={newCustomerData}
+      isNewCustomer={isNewCustomer}
+      setCashDiscountRate={setCashDiscountRate}
     />
   );
 }

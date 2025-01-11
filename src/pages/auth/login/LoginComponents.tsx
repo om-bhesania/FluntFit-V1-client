@@ -41,11 +41,7 @@ const LoginPage: React.FC<LoginProps> = ({
       .required("Password is required"),
   });
   const onSubmit = async (values: any): Promise<void> => {
-    try {
-      await handleSubmit(values);
-    } catch (error: any) {
-      throw new Error(error);
-    }
+    await handleSubmit(values);
   };
 
   return (

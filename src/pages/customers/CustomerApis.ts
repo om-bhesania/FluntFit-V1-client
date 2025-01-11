@@ -11,6 +11,7 @@ export const AddCustomersApi = async (data: any, notify: any) => {
     notify(res.response.message, {
       type: "success",
     });
+    return res;
   } catch (error: any) {
     console.log(error.response.data.message);
     notify(error.response.data.message, {

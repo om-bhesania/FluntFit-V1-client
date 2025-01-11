@@ -91,31 +91,31 @@ function AllCollectionController() {
       accessorKey: "productName",
       cell: ({ row }: any) => row.original.productName,
     },
-    {
-      header: "Product Description",
-      accessorKey: "productDescription",
-      cell: ({ row }: any) => row.original.productDescription,
-    },
-    {
-      header: "Category",
-      accessorKey: "category",
-      cell: ({ row }: any) => row.original.category,
-    },
-    {
-      header: "Subcategory",
-      accessorKey: "subcategory",
-      cell: ({ row }: any) => row.original.subcategory,
-    },
-    {
-      header: "Product Type",
-      accessorKey: "productType",
-      cell: ({ row }: any) => row.original.productType,
-    },
-    {
-      header: "Brand",
-      accessorKey: "brand",
-      cell: ({ row }: any) => row.original.brand,
-    },
+    // {
+    //   header: "Product Description",
+    //   accessorKey: "productDescription",
+    //   cell: ({ row }: any) => row.original.productDescription,
+    // },
+    // {
+    //   header: "Category",
+    //   accessorKey: "category",
+    //   cell: ({ row }: any) => row.original.category,
+    // },
+    // {
+    //   header: "Subcategory",
+    //   accessorKey: "subcategory",
+    //   cell: ({ row }: any) => row.original.subcategory,
+    // },
+    // {
+    //   header: "Product Type",
+    //   accessorKey: "productType",
+    //   cell: ({ row }: any) => row.original.productType,
+    // },
+    // {
+    //   header: "Brand",
+    //   accessorKey: "brand",
+    //   cell: ({ row }: any) => row.original.brand,
+    // },
     {
       header: "Price",
       accessorKey: "price",
@@ -171,22 +171,22 @@ function AllCollectionController() {
       accessorKey: "quantityInStock",
       cell: ({ row }: any) => row.original.quantityInStock,
     },
-    {
-      header: "Size Options",
-      accessorKey: "sizeOptions",
-      cell: ({ row }: any) => row.original.sizeOptions.toString(),
-    },
+    // {
+    //   header: "Size Options",
+    //   accessorKey: "sizeOptions",
+    //   cell: ({ row }: any) => row.original.sizeOptions.toString(),
+    // },
 
-    {
-      header: "Care Instructions",
-      accessorKey: "careInstructions",
-      cell: ({ row }: any) => row.original.careInstructions,
-    },
-    {
-      header: "Inventory Status",
-      accessorKey: "inventoryStatus",
-      cell: ({ row }: any) => row.original.inventoryStatus,
-    },
+    // {
+    //   header: "Care Instructions",
+    //   accessorKey: "careInstructions",
+    //   cell: ({ row }: any) => row.original.careInstructions,
+    // },
+    // {
+    //   header: "Inventory Status",
+    //   accessorKey: "inventoryStatus",
+    //   cell: ({ row }: any) => row.original.inventoryStatus,
+    // },
 
     {
       header: "Actions",

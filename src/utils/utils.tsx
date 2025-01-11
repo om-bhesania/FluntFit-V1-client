@@ -1,3 +1,5 @@
+import { LogOutApi } from "../pages/auth/login/AuthApis";
+
 export function generateLabel({
   name,
   price,
@@ -153,7 +155,8 @@ export function deleteAllCookies(): void {
   });
 }
 
-export const Logout = (nav: any, notify: any) => {
+export const Logout = async (nav: any, notify: any) => {
+  await LogOutApi(notify);
   sessionStorage.clear();
   nav("/login");
   notify("Logged out successfully", { type: "success" });
