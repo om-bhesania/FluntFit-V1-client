@@ -46,7 +46,7 @@ interface InvoiceComponentType {
   setDiscountRate: React.Dispatch<React.SetStateAction<string>>;
   setCashDiscountRate: React.Dispatch<React.SetStateAction<number>>;
   productsData: any;
-  calculateItemTotal: (quantity: any, price: any) => any;
+  calculateItemTotal: (quantity: number, price: number, gstRate: number) => any;
   handleCreateNewCustomer: () => void;
   initialValues: any;
   isOpen: boolean;
@@ -65,6 +65,8 @@ interface InvoiceComponentType {
   productGSTRates: any;
   setProductGSTRates: any;
   handleProductSelect: (itemId: string, selectedProductId: string) => any;
+  setNewCustomerData: any;
+  customers: any;
 }
 
 const InvoiceComponent: React.FC<InvoiceComponentType> = ({
@@ -94,8 +96,10 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   calculateSGST,
   productGSTRates,
   handleProductSelect,
+  setNewCustomerData,
+  customers,
+  searchValue,
 }) => {
-
   // Function to get GST rate for a specific item
   const getItemGSTRate = (itemId: string) => {
     return productGSTRates[itemId] || 0;
@@ -155,10 +159,28 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
               onSelectionChange={(key) => {
                 if (key === "new") {
                   handleOpenModal();
+                } else {
+                  const selectedCustomer = customers.find(
+                    (customer: any) => customer._id === key
+                  );
+
+                  if (selectedCustomer) {
+                    console.log("Selected Customer:", selectedCustomer);
+                    setNewCustomerData(selectedCustomer);
+                  } else {
+                    const matchingCustomer = customers.find(
+                      (customer: any) => customer.phone === searchValue
+                    );
+
+                    if (matchingCustomer) {
+                      console.log("Customer Found by Phone:", matchingCustomer);
+                      setNewCustomerData(matchingCustomer);
+                    }
+                  }
                 }
               }}
               className="max-w-[400px]"
-              placeholder="Search or create a new customer"
+              placeholder="Search by name or phone number"
               variant="bordered"
               color="default"
               allowsCustomValue
@@ -271,7 +293,8 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                         ₹
                         {calculateItemTotal(
                           item.quantity || 0,
-                          item.price || 0
+                          item.price || 0,
+                          productGSTRates[item.id] || 0
                         )}
                       </div>
                     </TableCell>

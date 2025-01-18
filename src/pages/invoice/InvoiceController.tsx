@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import * as Yup from "yup";
 import useToast from "../../hooks/useToast";
 import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
@@ -28,7 +27,16 @@ export interface InvoiceComponentType {
   productData: any;
 }
 function InvoiceController() {
-  const [items, setItems] = useState<any[]>([]); // Replace 'any' with actual type if needed
+  const [items, setItems] = useState<any[]>([
+    {
+      id: Date.now().toString(), // Unique ID for the first item
+      productName: "",
+      productId: "",
+      quantity: 1,
+      price: 0,
+      total: 0,
+    },
+  ]); // Replace 'any' with actual type if needed
   const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState<any>([]);
   const [newCustomerData, setNewCustomerData] = useState<any>([]);
@@ -71,27 +79,28 @@ function InvoiceController() {
     }
   };
 
-  const handleCustomerSearch = (value: string) => {
-    console.log("value", value);
-    setSearchValue(value);
-    // Check if the search value is empty
-    if (value.trim() === "") {
-      // Reset to show all customers if the search input is cleared
-      setFilteredCustomers(customers);
-    } else {
-      // Filter customers based on the search value
-      const matchingCustomers = customers.filter((customer: any) =>
-        customer.name.toLowerCase().includes(value.toLowerCase())
-      );
+ const handleCustomerSearch = (value: string) => {
+   console.log("Search Value:", value);
+   setSearchValue(value);
 
-      // Show "Create New Customer" if no matching customers are found
-      if (matchingCustomers.length === 0) {
-        setFilteredCustomers([{ _id: "new", name: "Create New Customer" }]);
-      } else {
-        setFilteredCustomers(matchingCustomers);
-      }
-    }
-  };
+   if (value.trim() === "") {
+     setFilteredCustomers(customers); // Reset the list when search is empty
+   } else {
+     // Filter customers by name or phone
+     const matchingCustomers = customers.filter(
+       (customer: any) =>
+         customer.name.toLowerCase().includes(value.toLowerCase()) ||
+         customer.phone.includes(value)
+     );
+
+     if (matchingCustomers.length === 0) {
+       setFilteredCustomers([{ _id: "new", name: "Create New Customer" }]);
+     } else {
+       setFilteredCustomers(matchingCustomers);
+     }
+   }
+ };
+
 
   // Handle "Create New Customer" click
   const handleCreateNewCustomer = async () => {
@@ -285,6 +294,8 @@ function InvoiceController() {
       productGSTRates={productGSTRates}
       setProductGSTRates={setProductGSTRates}
       handleProductSelect={handleProductSelect}
+      setNewCustomerData={setNewCustomerData}
+      customers={customers}
     />
   );
 }
