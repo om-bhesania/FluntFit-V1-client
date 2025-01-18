@@ -33,6 +33,9 @@ export const initialValues: FormValues = {
   number: "",
   address: "",
   email: "",
+  state: "",
+  city: "",
+  dob: null,
 };
 export interface CustomerDetailsControllerProps {
   isOpen: boolean;

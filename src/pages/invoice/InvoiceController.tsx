@@ -35,9 +35,13 @@ function InvoiceController() {
   const [isNewCustomer, setIsNewCustomer] = useState<any>([]);
   const [searchValue, setSearchValue] = useState("");
   const [taxRate, setTaxRate] = useState(5);
-  const [discountRate, setDiscountRate] = useState('');
+  const [discountRate, setDiscountRate] = useState("");
   const [cashDiscountRate, setCashDiscountRate] = useState(0);
   const [productsData, setProductsData] = useState<any[]>([]);
+  // State to track product GST rates for each row
+  const [productGSTRates, setProductGSTRates] = useState<{
+    [key: string]: number;
+  }>({});
   const { notify } = useToast();
 
   // Validation schema using Yup
@@ -104,18 +108,46 @@ function InvoiceController() {
   // Add a new item to the invoice
   const addItem = () => {
     const newItem = {
-      id: Date.now().toString(),
-      productName: "", // Initially no product selected
+      id: Date.now().toString(), // Unique ID for this item
+      productName: "", // Initially empty
       quantity: 1,
       price: 0,
-      total: "",
+      total: 0,
     };
-    setItems([...items, newItem]);
+
+    setItems((prevItems) => [...prevItems, newItem]);
   };
 
-  // Remove an item from the invoice
-  const removeItem = (id: string) => {
-    setItems(items.filter((item) => item.id !== id));
+  const handleProductSelect = (itemId: string, selectedProductId: string) => {
+    const selectedProduct = productsData.find(
+      (product: any) => product._id === selectedProductId
+    );
+
+    if (!selectedProduct) {
+      console.error("Selected product not found!");
+      return;
+    }
+
+    // Update the item in the `items` array
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              productName: selectedProduct.name || "",
+              price: selectedProduct.price || 0,
+              total: selectedProduct.price || 0,
+            }
+          : item
+      )
+    );
+
+    // Optionally update GST rates
+    const gstRate = selectedProduct.gst || 0;
+    setProductGSTRates((prev) => ({
+      ...prev,
+      [itemId]: gstRate,
+    }));
   };
 
   // Update an item's details
@@ -131,6 +163,12 @@ function InvoiceController() {
       )
     );
   };
+
+  // Remove an item from the invoice
+  const removeItem = (id: string) => {
+    setItems(items.filter((item) => item.id !== id));
+  };
+
   // Calculate the total for each individual item
   const calculateItemTotal = (quantity: number, price: number) => {
     return quantity * price;
@@ -181,7 +219,7 @@ function InvoiceController() {
   // Initial form values
   const initialValues: FormValues = {
     name: "",
-    phone: "",
+    number: "",
     address: "",
     email: "",
     state: "",
@@ -243,6 +281,10 @@ function InvoiceController() {
       newCustomerData={newCustomerData}
       isNewCustomer={isNewCustomer}
       setCashDiscountRate={setCashDiscountRate}
+      setItems={setItems}
+      productGSTRates={productGSTRates}
+      setProductGSTRates={setProductGSTRates}
+      handleProductSelect={handleProductSelect}
     />
   );
 }

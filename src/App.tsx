@@ -1,9 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Router from "./routes/Router";
 import { Login } from "./pages/auth/login";
 import { AuthProvider } from "./routes/auth/AuthProvider";
-import SessionProvider from "./services/SessionProvider";
+import Router from "./routes/Router";
 
 const App = () => {
   return (

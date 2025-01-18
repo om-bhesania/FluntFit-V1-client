@@ -18,9 +18,7 @@ function CustomerDetailsComponent({
   isOpen,
   onClose,
   initialValues,
-  validationSchema,
   onSubmit,
-  data,
 }: CustomerDetailsComponentProps) {
   console.log("first");
   return (
@@ -29,9 +27,7 @@ function CustomerDetailsComponent({
         isOpen={isOpen}
         onClose={onClose}
         initialValues={initialValues}
-        validationSchema={validationSchema}
         onSubmit={onSubmit}
-        productData={data}
       />
     </div>
   );

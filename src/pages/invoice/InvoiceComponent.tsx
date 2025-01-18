@@ -12,18 +12,29 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import { CloudSnow, Plus, Trash2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import CustomerDetailsModal from "./customerDetails/CustomerDetailsModal";
+import { Plus, Trash2 } from "lucide-react";
+import React from "react";
 import Badge from "../../components/badge/Badge";
+import CustomerDetailsModal from "./customerDetails/CustomerDetailsModal";
+
+interface InvoiceItem {
+  id: string;
+  name: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  gst: number;
+  total: number;
+}
 
 interface InvoiceComponentType {
-  items: any[];
+  // Keep all existing props
+  items: InvoiceItem[];
   taxRate: number;
   discountRate: number;
   searchValue: string;
   filteredCustomers: any[];
-  addItem: () => void;
+  addItem: any;
   removeItem: (id: string) => void;
   updateItem: (id: string, field: string, value: any) => void;
   calculateSubtotal: () => number;
@@ -50,6 +61,10 @@ interface InvoiceComponentType {
   isNewCustomer: boolean;
   calculateCashDiscount: (data: any) => void;
   cashDiscountRate: any;
+  setItems: any;
+  productGSTRates: any;
+  setProductGSTRates: any;
+  handleProductSelect: (itemId: string, selectedProductId: string) => any;
 }
 
 const InvoiceComponent: React.FC<InvoiceComponentType> = ({
@@ -63,8 +78,6 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   updateItem,
   calculateSubtotal,
   calculateDiscount,
-  calculateTax,
-  calculateCashDiscount,
   calculateTotal,
   handleCustomerSearch,
   setTaxRate,
@@ -79,23 +92,28 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   handleOpenModal,
   calculateCGST,
   calculateSGST,
-  newCustomerData,
-  isNewCustomer,
+  productGSTRates,
+  handleProductSelect,
 }) => {
-  const [selectedProductId, setSelectedProductId] = useState("");
-  const [gstData, setGstData] = useState("");
 
-  const selectedProduct = productsData.filter(
-    (product: any) => product._id === selectedProductId
-  );
-  useEffect(() => {
-    setGstData(selectedProduct?.[0]?.gst);
-  }, [selectedProduct?.[0]?.gst]);
-  console.log(gstData);
+  // Function to get GST rate for a specific item
+  const getItemGSTRate = (itemId: string) => {
+    return productGSTRates[itemId] || 0;
+  };
+
+  // Function to get price for a specific item
+  const getItemPrice = (itemId: string) => {
+    console.log("itemId", itemId);
+    const item = items.find((item) => item.id === itemId);
+    return item ? item.price : 0;
+  };
+  console.log(items.map((item) => item));
   return (
     <>
       <div className="container">
+        {/* Keep existing header section */}
         <div className="flex justify-between mb-8 gap-4 flex-wrap max-w-1/2">
+          {/* ... (keep all the existing header content) */}
           <div className="flex-1 w-full">
             <h2 className="text-sm font-medium mb-2">Current Date:</h2>
             <Input
@@ -137,8 +155,6 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
               onSelectionChange={(key) => {
                 if (key === "new") {
                   handleOpenModal();
-                } else {
-                  // Handle regular customer selection
                 }
               }}
               className="max-w-[400px]"
@@ -193,32 +209,15 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
               <TableBody>
                 {items.map((item) => (
                   <TableRow key={item.id}>
-                    {/* name */}
                     <TableCell className="w-[400px]">
                       <Select
                         variant="bordered"
                         placeholder="Select a product"
-                        value={item.name}
+                        value={item.productId || ""}
                         onChange={(e) => {
-                          const selectedProductId = e.target.value;
-                          setSelectedProductId(selectedProductId);
-                          const selectedProduct = productsData.filter(
-                            (product: any) => product._id === selectedProductId
-                          );
-
-                          if (selectedProduct) {
-                            updateItem(
-                              item.id,
-                              "name",
-                              selectedProduct?.[0].productName
-                            );
-                            updateItem(
-                              item.id,
-                              "price",
-                              selectedProduct?.[0]?.salePrice ||
-                                selectedProduct?.[0]?.price
-                            );
-                          }
+                          console.log(e.target.value);
+                          addItem(e.target.value);
+                          handleProductSelect(item.id, e.target.value);
                         }}
                         aria-label="Select product"
                       >
@@ -234,29 +233,29 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                         ))}
                       </Select>
                     </TableCell>
-                    {/* quantity */}
-                    <TableCell className="">
+                    <TableCell>
                       <Input
                         variant="bordered"
                         color="default"
                         type="number"
-                        value={item.quantity.toString()}
+                        value={item.quantity?.toString() || "1"}
                         onChange={(e) =>
-                          updateItem(item.id, "quantity", e.target.value)
+                          updateItem(
+                            item.id,
+                            "quantity",
+                            Number(e.target.value)
+                          )
                         }
                         className="w-full"
                       />
                     </TableCell>
-                    {/* price */}
-                    <TableCell className="">
+                    <TableCell>
                       <Input
                         variant="bordered"
                         color="default"
                         type="number"
-                        value={item.price.toString()} // Make sure item.price is a number
-                        onChange={(e) =>
-                          updateItem(item.id, "price", e.target.value)
-                        }
+                        value={item.price.toString()}
+                        onChange={() => getItemPrice(item.id)}
                         className="w-full"
                         startContent={
                           <div className="pointer-events-none flex items-center">
@@ -267,20 +266,20 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                         }
                       />
                     </TableCell>
-                    {/* total */}
                     <TableCell>
                       <div className="w-full flex items-center justify-center">
-                        ₹{calculateItemTotal(item.quantity, item.price)}
+                        ₹
+                        {calculateItemTotal(
+                          item.quantity || 0,
+                          item.price || 0
+                        )}
                       </div>
                     </TableCell>
-                    {/* GST */}
                     <TableCell>
                       <div className="w-full flex items-center justify-center">
-                        {selectedProduct?.[0]?.gst}
+                        {getItemGSTRate(item.id)}
                       </div>
                     </TableCell>
-
-                    {/* action */}
                     <TableCell>
                       <Button
                         isIconOnly
@@ -297,6 +296,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
               </TableBody>
             </Table>
 
+            {/* Keep existing buttons and summary section */}
             <Button
               color="default"
               variant="flat"
@@ -354,7 +354,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                 </div>
               )}
               {cashDiscountRate > 0 && (
-                <div className="flex justify-between ">
+                <div className="flex justify-between">
                   <Badge
                     color="teal"
                     content={
@@ -363,7 +363,6 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                       </span>
                     }
                   />
-
                   <span>₹{cashDiscountRate.toFixed(2)}</span>
                 </div>
               )}
