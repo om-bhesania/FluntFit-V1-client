@@ -61,6 +61,10 @@ const SessionProvider = ({ children }: any) => {
 
   return (
     <>
+    <div className="top-bar"></div>
+      <div className="bg-yellow-300 text-black lowercase font-semibold text-center p-2 lg:hidden visible">
+        For optimal usage of the app, please use larger screen devices.
+      </div>
       {children}
 
       {/* Using key to re-mount the modal whenever the session expires */}

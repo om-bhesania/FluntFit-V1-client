@@ -228,7 +228,7 @@ function InvoiceController() {
   // Initial form values
   const initialValues: FormValues = {
     name: "",
-    number: "",
+    phone: "",
     address: "",
     email: "",
     state: "",
@@ -296,6 +296,7 @@ function InvoiceController() {
       handleProductSelect={handleProductSelect}
       setNewCustomerData={setNewCustomerData}
       customers={customers}
+      
     />
   );
 }

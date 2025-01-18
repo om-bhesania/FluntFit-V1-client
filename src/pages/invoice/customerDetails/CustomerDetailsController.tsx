@@ -30,7 +30,7 @@ export const validationSchema = Yup.object().shape({
 
 export const initialValues: FormValues = {
   name: "",
-  number: "",
+  phone: "",
   address: "",
   email: "",
   state: "",

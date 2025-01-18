@@ -66,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
       {/* Mobile menu button */}
       <button
         onClick={toggleMobileMenu}
-        className="fixed top-4 left-4 z-40 md:hidden p-2 rounded-md bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        className="fixed top-10 left-4 z-40 md:hidden p-2 rounded-md bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
       >
         {isMobileMenuOpen ? (
           <X className="h-6 w-6" aria-hidden="true" />

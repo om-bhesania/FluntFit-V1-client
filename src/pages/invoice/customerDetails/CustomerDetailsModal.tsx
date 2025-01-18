@@ -21,7 +21,7 @@ import * as Yup from "yup";
 import { parseDate } from "@internationalized/date";
 export interface FormValues {
   name: string;
-  number: string;
+  phone: string;
   address: string;
   email?: string;
   state: string;
@@ -96,18 +96,18 @@ function CustomerDetailsModal({
                 {/* Phone Input */}
                 <Input
                   name="phone"
-                  value={formik.values.number}
+                  value={formik.values.phone}
                   type="tel"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Enter phone number"
                   variant="flat"
                   description={
-                    formik.touched.number && formik.errors.number
-                      ? formik.errors.number
+                    formik.touched.phone && formik.errors.phone
+                      ? formik.errors.phone
                       : ""
                   }
-                  isInvalid={formik.touched.number && !!formik.errors.number}
+                  isInvalid={formik.touched.phone && !!formik.errors.phone}
                   startContent={<Phone className="text-gray-400" />}
                 />
 
