@@ -16,6 +16,21 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
   const isLogin = useSessionStorage("authToken");
   const { notify } = useToast();
   const nav = useNavigate();
+  const initials =
+    name?.length > 2
+      ? name
+          ?.split(" ")
+          .map((n: string, index: number) => {
+            if (index < 2) {
+              return n[0]; // Get the first letter of the first two words
+            }
+            return ""; // Ignore other words
+          })
+          .join("")
+          .toUpperCase()
+      : name?.length > 1
+      ? name?.slice(0, 2).toUpperCase()
+      : name?.[0]?.toUpperCase().repeat(2);
   return (
     <>
       <div className="max-md:hidden bg-white dark:bg-gray-800">
@@ -38,7 +53,7 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
               <PopoverContent className="p-4 w-72 bg-white rounded-lg shadow-lg border border-gray-200">
                 <div className="flex items-center w-full">
                   <div className="w-10 h-10 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center font-bold text-xl">
-                    {name?.toUpperCase()}
+                    {initials}
                   </div>
                   <div className="ml-3">
                     <h3 className="text-lg font-semibold text-gray-800">
