@@ -161,3 +161,15 @@ export const Logout = async (nav: any, notify: any) => {
   nav("/login");
   notify("Logged out successfully", { type: "success" });
 };
+
+export const getGSTColor = (gstRate: string) => {
+  if (gstRate === "5%") {
+    return "blue";
+  } else if (gstRate === "12%") {
+    return "red";
+  } else if (gstRate === "18%") {
+    return "orange";
+  } else {
+    return "gray";
+  }
+};

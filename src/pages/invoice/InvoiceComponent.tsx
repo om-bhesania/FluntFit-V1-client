@@ -2,6 +2,10 @@ import {
   Autocomplete,
   AutocompleteItem,
   Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Input,
   Select,
   SelectItem,
@@ -15,6 +19,7 @@ import {
 import { Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Badge from "../../components/badge/Badge";
+import { getGSTColor } from "../../utils/utils";
 import CustomerDetailsModal from "./customerDetails/CustomerDetailsModal";
 import InvoiceTemplate from "./template/InvoiceTemplate";
 
@@ -35,7 +40,7 @@ interface InvoiceComponentType {
   discountRate: number;
   searchValue: string;
   filteredCustomers: any[];
-  addItem: any;
+  // addItem: any;
   removeItem: (id: string) => void;
   updateItem: (id: string, field: string, value: any) => void;
   calculateSubtotal: () => number;
@@ -68,17 +73,19 @@ interface InvoiceComponentType {
   handleProductSelect: (itemId: string, selectedProductId: string) => any;
   setNewCustomerData: any;
   customers: any;
+  handleSelectedProductDataForInvoice: (selectedId: string) => any;
+  selectedProductsData: any;
 }
 
 const InvoiceComponent: React.FC<InvoiceComponentType> = ({
-  items,
+  // items,
   taxRate,
   discountRate,
   cashDiscountRate,
   filteredCustomers,
-  addItem,
-  removeItem,
-  updateItem,
+  // addItem,
+  // removeItem,
+  // updateItem,
   calculateSubtotal,
   calculateDiscount,
   calculateTotal,
@@ -95,55 +102,76 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   handleOpenModal,
   calculateCGST,
   calculateSGST,
-  productGSTRates,
-  handleProductSelect,
+  // productGSTRates,
+  // handleProductSelect,
   setNewCustomerData,
   customers,
   searchValue,
+  handleSelectedProductDataForInvoice,
+  selectedProductsData,
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<any>([]);
-  // const [selectedProductsData, setSelectedProductsData] = useState<any>([]);
+  const [productName, setProductName] = useState<any>([]);
+  const [productQuantity, setProductQuantity] = useState<any>(1);
+  const [productPrice, setProductPrice] = useState<any>(0);
+  const [productUnitPrice, setProductUnitPrice] = useState<any>(0);
+  const [productPriceTotal, setProductPriceTotal] = useState<any>(0);
+  const [productGst, setProductGst] = useState<any>();
+  const newItemData = {
+    productName,
+    productQuantity,
+    productGst,
+    productPrice,
+    productPriceTotal,
+    productUnitPrice,
+  };
+
   const [invoiceData, setInvoiceData] = useState({
-    items,
     taxRate,
     discountRate,
     cashDiscountRate,
     selectedCustomer,
+    selectedProductsData: selectedProductsData,
     invoiceNumber: "",
     currentDate: new Date().toLocaleDateString(),
     cashier: "Administrator",
+    allData: newItemData,
   });
 
+  const [items, setItems] = useState<any[]>([
+    {
+      id: Date.now().toString(), // Unique ID for the first item
+      productName: "",
+      productId: "",
+      quantity: 1,
+      price: 0,
+      discount: 0,
+      total: 0,
+    },
+  ]); // Replace 'any' with actual type if needed
   useEffect(() => {
     setInvoiceData((prevData) => ({
       ...prevData,
-      items,
       taxRate,
       discountRate,
       cashDiscountRate,
       selectedCustomer,
+      selectedProductsData: selectedProductsData,
+      allData: newItemData,
     }));
-  }, [items, taxRate, discountRate, cashDiscountRate, selectedCustomer]);
-
-  const getGSTColor = (gstRate: string) => {
-    if (gstRate === "5%") {
-      return "blue";
-    } else if (gstRate === "12%") {
-      return "red";
-    } else if (gstRate === "18%") {
-      return "orange";
-    } else {
-      return "gray";
-    }
-  };
+  }, [
+    taxRate,
+    discountRate,
+    cashDiscountRate,
+    selectedCustomer,
+    selectedProductsData,
+    productQuantity,
+    productName,
+    productGst,
+  ]);
 
   const getItemGSTRate = (itemId: string) => {
     return productGSTRates[itemId] || 0;
-  };
-
-  const getItemPrice = (itemId: string) => {
-    const item = items.find((item) => item.id === itemId);
-    return item ? item.price : 0;
   };
 
   const generateInvoiceNumber = () => {
@@ -163,7 +191,9 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   };
 
   const [invoiceNumber, setInvoiceNumber] = useState(getInitialInvoiceNumber());
-
+  const [productGSTRates, setProductGSTRates] = useState<{
+    [key: string]: number;
+  }>({});
   useEffect(() => {
     setInvoiceData((prevData) => ({
       ...prevData,
@@ -180,12 +210,120 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
     }));
     // Add any additional logic for reviewing the invoice
   };
+  console.log(selectedProductsData, "productsData");
+  // Add a new item to the invoice
+  const addItem = (e: any) => {
+    const newItem = {
+      id: Date.now().toString(), // Unique ID for this item
+      productName: "", // Initially empty
+      quantity: 1,
+      price: 0,
+      discount: 0,
+      total: 0,
+    };
 
-  const handleSelectedProductDataForInvoice = (selectedId: string) => {
-    const filteredProductData = productsData.find((item: any) => item._id === selectedId);
-    console.log("filteredProductData", filteredProductData);
-    // setSelectedProductsData();
+    setItems((prevItems) => [...prevItems, newItem]);
   };
+
+  const handleProductSelect = (itemId: string, selectedProductId: string) => {
+    const selectedProduct = productsData.find(
+      (product: any) => product._id === selectedProductId
+    );
+    setProductName((prev: any) => ({
+      ...prev,
+      [itemId]: selectedProduct?.productName,
+    }));
+    if (!selectedProduct) {
+      console.error("Selected product not found!");
+      return;
+    }
+
+    // Update the item in the `items` array
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              productName: selectedProduct?.name || "",
+              price: selectedProduct?.salePrice
+                ? selectedProduct?.salePrice
+                : selectedProduct?.price || 0,
+              discount: selectedProduct?.price || 0,
+              total: selectedProduct?.price || 0,
+            }
+          : item
+      )
+    );
+
+    // Optionally update GST rates
+    const gstRate = selectedProduct?.gst || 0;
+    setProductGSTRates((prev) => ({
+      ...prev,
+      [itemId]: gstRate,
+    }));
+    setProductGst((prev: any) => ({
+      ...prev,
+      [itemId]: gstRate,
+    }));
+    setProductPrice((prev: any) => ({
+      ...prev,
+      [itemId]: selectedProduct?.salePrice
+        ? selectedProduct?.salePrice
+        : selectedProduct?.price,
+    }));
+    setProductUnitPrice((prev: any) => ({
+      ...prev,
+      [itemId]: selectedProduct.price,
+    }));
+  };
+
+  // Update an item's details
+  const updateItem = (id: string, field: string, value: any) => {
+    setItems(
+      items.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              [field]: field === "productName" ? value : Number(value),
+            }
+          : item
+      )
+    );
+  };
+
+  // Remove an item from the invoice
+  const removeItem = (id: string) => {
+    setItems(items.filter((item) => item.id !== id));
+    setProductGst((prev: any) => {
+      const updatedGst = { ...prev };
+      delete updatedGst[id];
+      return updatedGst;
+    });
+    setProductName((prev: any) => {
+      const updatedName = { ...prev };
+      delete updatedName[id];
+      return updatedName;
+    });
+    setProductPrice((prev: any) => {
+      const updatedPrice = { ...prev };
+      delete updatedPrice[id];
+      return updatedPrice;
+    });
+    setProductPriceTotal((prev: any) => {
+      const updatedPriceTotal = { ...prev };
+      delete updatedPriceTotal[id];
+      return updatedPriceTotal;
+    });
+    setProductUnitPrice((prev: any) => {
+      const updatedDiscount = { ...prev };
+      delete updatedDiscount[id];
+      return updatedDiscount;
+    });
+  };
+  console.log(
+    "items.map((item) => ",
+    items.map((item) => item)
+  );
   return (
     <>
       <div className="flex justify-center max-md:flex-wrap">
@@ -301,23 +439,30 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                   <TableColumn>QTY</TableColumn>
                   <TableColumn>PRICE</TableColumn>
                   <TableColumn>TOTAL</TableColumn>
+                  <TableColumn>UNIT PRICE</TableColumn>
                   <TableColumn>GST</TableColumn>
                   <TableColumn>ACTION</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {items.map((item) => (
                     <TableRow key={item.id}>
+                      {/* Item */}
                       <TableCell className="w-[400px]">
                         <Select
                           variant="bordered"
                           placeholder="Select a product"
                           value={item.productId || ""}
                           onChange={(e) => {
-                            addItem(e.target.value);
                             handleProductSelect(item.id, e.target.value);
                             handleSelectedProductDataForInvoice(e.target.value);
                           }}
                           aria-label="Select product"
+                          onReset={() => {
+                            setProductName("");
+                            setProductQuantity(1);
+                            setProductPrice(0);
+                            setProductPriceTotal(0);
+                          }}
                         >
                           {productsData.map((product: any) => (
                             <SelectItem
@@ -331,29 +476,65 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                           ))}
                         </Select>
                       </TableCell>
+                      {/* Quantity */}
                       <TableCell>
                         <Input
+                          name="quantity"
                           variant="bordered"
                           color="default"
                           type="number"
                           value={item.quantity?.toString() || "1"}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             updateItem(
                               item.id,
                               "quantity",
                               Number(e.target.value)
-                            )
-                          }
+                            );
+                            setProductQuantity((prev: any) => ({
+                              ...prev,
+                              [item.id]: e.target.value,
+                            }));
+                          }}
                           className="w-full"
                         />
                       </TableCell>
+                      {/* Price */}
                       <TableCell>
                         <Input
                           variant="bordered"
                           color="default"
                           type="number"
-                          value={item.price.toString()}
-                          onChange={() => getItemPrice(item.id)}
+                          name="price"
+                          value={item.price.toString() || 0}
+                          onChange={(e) => {
+                            const updatedPrice = Number(e.target.value);
+                            updateItem(item.id, "price", updatedPrice);
+                            setItems((prevItems) =>
+                              prevItems.map((prevItem) =>
+                                prevItem.id === item.id
+                                  ? {
+                                      ...prevItem,
+                                      price: updatedPrice,
+                                      total:
+                                        updatedPrice * (prevItem.quantity || 1),
+                                    }
+                                  : prevItem
+                              )
+                            );
+                            setProductPrice((prev: any) => ({
+                              ...prev,
+                              [item.id]: Number(e.target.value),
+                            }));
+
+                            setProductPriceTotal((prev: any) => ({
+                              ...prev,
+                              [item.id]: calculateItemTotal(
+                                item.quantity || 0,
+                                Number(e.target.value) || 0,
+                                productGSTRates[item.id] || 0
+                              ),
+                            }));
+                          }}
                           className="w-full"
                           startContent={
                             <div className="pointer-events-none flex items-center">
@@ -364,25 +545,52 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                           }
                         />
                       </TableCell>
+                      {/* Total */}
                       <TableCell>
                         <div className="w-full flex items-center justify-center">
-                          ₹
-                          {calculateItemTotal(
-                            item.quantity || 0,
-                            item.price || 0,
-                            productGSTRates[item.id] || 0
-                          )}
+                          <Input
+                            value={calculateItemTotal(
+                              item.quantity || 0,
+                              item.price || 0,
+                              productGSTRates[item.id] || 0
+                            )}
+                            variant="bordered"
+                            color="default"
+                            type="number"
+                            isReadOnly
+                            classNames={{
+                              inputWrapper: "!border-0 shadow-none",
+                            }}
+                            startContent="₹"
+                            onChange={(e) => {
+                              updateItem(
+                                item.id,
+                                "total",
+                                Number(e.target.value)
+                              );
+                            }}
+                          />
                         </div>
                       </TableCell>
+                      {/* Discount */}
+                      <TableCell>
+                        <div className="w-full flex items-center justify-center">
+                          {item.discount.toString()}
+                        </div>
+                      </TableCell>
+                      {/* GST */}
                       <TableCell>
                         <div className="w-full flex items-center justify-center">
                           <Badge
                             content={getItemGSTRate(item.id)}
                             customClass="rounded-[5px]"
-                            color={getGSTColor(getItemGSTRate(item.id))}
+                            color={getGSTColor(
+                              getItemGSTRate(item.id).toString()
+                            )}
                           />
                         </div>
                       </TableCell>
+                      {/* ACTION */}
                       <TableCell>
                         <Button
                           isIconOnly

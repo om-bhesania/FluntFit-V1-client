@@ -46,12 +46,25 @@ function InvoiceController() {
   const [discountRate, setDiscountRate] = useState("");
   const [cashDiscountRate, setCashDiscountRate] = useState(0);
   const [productsData, setProductsData] = useState<any[]>([]);
+  const [selectedProductsData, setSelectedProductsData] = useState<any>([]);
   // State to track product GST rates for each row
   const [productGSTRates, setProductGSTRates] = useState<{
     [key: string]: number;
   }>({});
   const { notify } = useToast();
 
+  const handleSelectedProductDataForInvoice = (
+    selectedId?: string,
+    otherData?: any
+  ) => {
+    const filteredProductData = productsData.find(
+      (item: any) => item._id === selectedId
+    );
+    console.log("otherData", otherData);
+    setSelectedProductsData((prev: any) => {
+      return [...prev, filteredProductData];
+    });
+  };
   // Validation schema using Yup
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
@@ -79,28 +92,27 @@ function InvoiceController() {
     }
   };
 
- const handleCustomerSearch = (value: string) => {
-   console.log("Search Value:", value);
-   setSearchValue(value);
+  const handleCustomerSearch = (value: string) => {
+    console.log("Search Value:", value);
+    setSearchValue(value);
 
-   if (value.trim() === "") {
-     setFilteredCustomers(customers); // Reset the list when search is empty
-   } else {
-     // Filter customers by name or phone
-     const matchingCustomers = customers.filter(
-       (customer: any) =>
-         customer.name.toLowerCase().includes(value.toLowerCase()) ||
-         customer.phone.includes(value)
-     );
+    if (value.trim() === "") {
+      setFilteredCustomers(customers); // Reset the list when search is empty
+    } else {
+      // Filter customers by name or phone
+      const matchingCustomers = customers.filter(
+        (customer: any) =>
+          customer.name.toLowerCase().includes(value.toLowerCase()) ||
+          customer.phone.includes(value)
+      );
 
-     if (matchingCustomers.length === 0) {
-       setFilteredCustomers([{ _id: "new", name: "Create New Customer" }]);
-     } else {
-       setFilteredCustomers(matchingCustomers);
-     }
-   }
- };
-
+      if (matchingCustomers.length === 0) {
+        setFilteredCustomers([{ _id: "new", name: "Create New Customer" }]);
+      } else {
+        setFilteredCustomers(matchingCustomers);
+      }
+    }
+  };
 
   // Handle "Create New Customer" click
   const handleCreateNewCustomer = async () => {
@@ -115,17 +127,17 @@ function InvoiceController() {
   };
 
   // Add a new item to the invoice
-  const addItem = () => {
-    const newItem = {
-      id: Date.now().toString(), // Unique ID for this item
-      productName: "", // Initially empty
-      quantity: 1,
-      price: 0,
-      total: 0,
-    };
+  // const addItem = () => {
+  //   const newItem = {
+  //     id: Date.now().toString(), // Unique ID for this item
+  //     productName: "", // Initially empty
+  //     quantity: 1,
+  //     price: 0,
+  //     total: 0,
+  //   };
 
-    setItems((prevItems) => [...prevItems, newItem]);
-  };
+  //   setItems((prevItems) => [...prevItems, newItem]);
+  // };
 
   const handleProductSelect = (itemId: string, selectedProductId: string) => {
     const selectedProduct = productsData.find(
@@ -184,9 +196,8 @@ function InvoiceController() {
   };
 
   // Calculate the subtotal of items
-  const calculateSubtotal = () => {
-    return items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-  };
+  const calculateSubtotal = () =>
+    items.reduce((acc, item) => acc + item.total, 0);
 
   // Calculate the discount on the subtotal
   const calculateDiscount = (subtotal: number) => {
@@ -264,7 +275,7 @@ function InvoiceController() {
       cashDiscountRate={cashDiscountRate}
       searchValue={searchValue}
       filteredCustomers={filteredCustomers}
-      addItem={addItem}
+      // addItem={addItem}
       removeItem={removeItem}
       updateItem={updateItem}
       calculateSubtotal={calculateSubtotal}
@@ -296,7 +307,8 @@ function InvoiceController() {
       handleProductSelect={handleProductSelect}
       setNewCustomerData={setNewCustomerData}
       customers={customers}
-      
+      handleSelectedProductDataForInvoice={handleSelectedProductDataForInvoice}
+      selectedProductsData={selectedProductsData}
     />
   );
 }
