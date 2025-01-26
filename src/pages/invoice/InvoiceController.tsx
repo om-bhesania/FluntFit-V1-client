@@ -5,6 +5,7 @@ import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
 import { GetProductApi } from "../products/ProductsApi";
 import { FormValues } from "./customerDetails/CustomerDetailsModal";
 import InvoiceComponent from "./InvoiceComponent";
+import InvoiceComponentTest from "./InvoiceComponentTest";
 
 export interface InvoiceComponentType {
   onRowClick: (data: any) => void;
@@ -224,9 +225,32 @@ function InvoiceController() {
     return ((subtotal - discount) * taxRate) / 100;
   };
 
+  const calculateDetailedSubtotal = (item:any) => {
+    // Ensure items exist and is an array
+    if (!items || items.length === 0) {
+      return 0;
+    }
+
+    // Calculate subtotal with detailed item calculations
+    return items.reduce((total, item) => {
+      // Base price with GST added
+      const priceWithGST = item.price * (1 + item.gst / 100);
+
+      // Apply product-level discount
+      const discountedPrice =
+        priceWithGST * (1 - (item.productDiscount || 0) / 100);
+
+      // Calculate total for this item with quantity
+      const itemTotal = discountedPrice * item.quantity;
+
+      return total + itemTotal;
+    }, 0);
+  };
+
   // Calculate the total after applying discounts and adding tax
-  const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
+  const calculateTotal = (items?:any) => {
+    // Use the new detailed subtotal calculation method
+    const subtotal = calculateDetailedSubtotal(items);
     const percentageDiscount = calculateDiscount(subtotal);
     const cashDiscount = calculateCashDiscount(subtotal);
     const totalDiscount = percentageDiscount + cashDiscount; // Combine both discounts
@@ -268,16 +292,59 @@ function InvoiceController() {
   };
 
   return (
-    <InvoiceComponent
-      items={items}
-      taxRate={taxRate}
-      discountRate={Number(discountRate)}
-      cashDiscountRate={cashDiscountRate}
-      searchValue={searchValue}
+    // <InvoiceComponent
+    //   items={items}
+    //   taxRate={taxRate}
+    //   discountRate={Number(discountRate)}
+    //   searchValue={searchValue}
+    //   filteredCustomers={filteredCustomers}
+    //   // addItem={addItem}
+    //   removeItem={removeItem}
+    //   updateItem={updateItem}
+    //   cashDiscountRate={cashDiscountRate}
+    //   calculateSubtotal={calculateSubtotal}
+    //   calculateDiscount={calculateDiscount}
+    //   calculateCashDiscount={calculateCashDiscount}
+    //   calculateTax={calculateTax}
+    //   calculateCGST={calculateCGST}
+    //   calculateSGST={calculateSGST}
+    //   calculateTotal={calculateTotal}
+    //   handleInput={handleCustomerSearch}
+    //   setTaxRate={setTaxRate}
+    //   setDiscountRate={setDiscountRate}
+    //   productsData={productsData}
+    //   calculateItemTotal={calculateItemTotal}
+    //   handleCreateNewCustomer={handleCreateNewCustomer}
+    //   initialValues={initialValues}
+    //   isOpen={isModalOpen}
+    //   onClose={handleCloseModal}
+    //   onSubmit={handleSubmit}
+    //   validationSchema={validationSchema}
+    //   handleOpenModal={handleOpenModal}
+    //   handleCustomerSearch={handleCustomerSearch}
+    //   newCustomerData={newCustomerData}
+    //   isNewCustomer={isNewCustomer}
+    //   setCashDiscountRate={setCashDiscountRate}
+    //   setItems={setItems}
+    //   productGSTRates={productGSTRates}
+    //   setProductGSTRates={setProductGSTRates}
+    //   handleProductSelect={handleProductSelect}
+    //   setNewCustomerData={setNewCustomerData}
+    //   customers={customers}
+    //   handleSelectedProductDataForInvoice={handleSelectedProductDataForInvoice}
+    //   selectedProductsData={selectedProductsData}
+    // />
+    <InvoiceComponentTest
       filteredCustomers={filteredCustomers}
-      // addItem={addItem}
-      removeItem={removeItem}
-      updateItem={updateItem}
+      handleCustomerSearch={handleCustomerSearch}
+      newCustomerData={newCustomerData}
+      isNewCustomer={isNewCustomer}
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+      onSubmit={handleSubmit}
+      searchValue={searchValue}
+      initialValues={initialValues}
+      cashDiscountRate={cashDiscountRate}
       calculateSubtotal={calculateSubtotal}
       calculateDiscount={calculateDiscount}
       calculateCashDiscount={calculateCashDiscount}
@@ -285,30 +352,7 @@ function InvoiceController() {
       calculateCGST={calculateCGST}
       calculateSGST={calculateSGST}
       calculateTotal={calculateTotal}
-      handleInput={handleCustomerSearch}
-      setTaxRate={setTaxRate}
-      setDiscountRate={setDiscountRate}
       productsData={productsData}
-      calculateItemTotal={calculateItemTotal}
-      handleCreateNewCustomer={handleCreateNewCustomer}
-      initialValues={initialValues}
-      isOpen={isModalOpen}
-      onClose={handleCloseModal}
-      onSubmit={handleSubmit}
-      validationSchema={validationSchema}
-      handleOpenModal={handleOpenModal}
-      handleCustomerSearch={handleCustomerSearch}
-      newCustomerData={newCustomerData}
-      isNewCustomer={isNewCustomer}
-      setCashDiscountRate={setCashDiscountRate}
-      setItems={setItems}
-      productGSTRates={productGSTRates}
-      setProductGSTRates={setProductGSTRates}
-      handleProductSelect={handleProductSelect}
-      setNewCustomerData={setNewCustomerData}
-      customers={customers}
-      handleSelectedProductDataForInvoice={handleSelectedProductDataForInvoice}
-      selectedProductsData={selectedProductsData}
     />
   );
 }

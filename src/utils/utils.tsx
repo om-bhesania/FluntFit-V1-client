@@ -162,12 +162,12 @@ export const Logout = async (nav: any, notify: any) => {
   notify("Logged out successfully", { type: "success" });
 };
 
-export const getGSTColor = (gstRate: string) => {
-  if (gstRate === "5%") {
+export const getGSTColor = (gstRate:number) => {
+  if (gstRate === 5) {
     return "blue";
-  } else if (gstRate === "12%") {
+  } else if (gstRate === 12) {
     return "red";
-  } else if (gstRate === "18%") {
+  } else if (gstRate === 18) {
     return "orange";
   } else {
     return "gray";

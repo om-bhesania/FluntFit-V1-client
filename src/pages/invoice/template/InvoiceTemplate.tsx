@@ -9,10 +9,9 @@ const InvoiceTemplate: React.FC<InvoiceProps> = ({
 
   invoiceData,
 }) => {
-  const productIds = Object.keys(invoiceData.allData.productName);
-  console.log("productIds", productIds);
+  const productIds = Object.keys(invoiceData.allData.productName); 
   const [productData, setProductData] = useState<any>([]);
-
+console.log(invoiceData)
   useEffect(() => {
     if (!productIds || !invoiceData?.allData) {
       setProductData([]);
@@ -127,30 +126,31 @@ const InvoiceTemplate: React.FC<InvoiceProps> = ({
   return (
     <div className="max-md:container">
       <div
-        className={`${className} md:max-w-7xl max-w-full  md:mx-auto md:p-8 p-6 bg-white`}
+        className={`${className} md:max-w-5xl max-w-full  md:mx-auto md:p-8 p-6 bg-white`}
       >
         {/* Header */}
         <div className="flex justify-between mb-8">
           <div className="flex gap-4">
             <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-01-19%20at%2002.45.23_28196d38.jpg-J3coLONODvzAS04uKhUl4pNkAy20yQ.jpeg"
+              src="//mixbunch.in/cdn/shop/files/logo4.png?v=1703583291&width=600"
               alt="Mix Bunch Logo"
               className="w-12 h-12 object-contain"
             />
             <div>
               <h1 className="text-2xl font-semibold">Mix Bunch</h1>
+              <h2 className="text-xl">Blend Of Fashion</h2>
               <p className="text-sm text-gray-600">Shop No-10, Fortune Air,</p>
               <p className="text-sm text-gray-600">Krunal Char Rasta, Gotri,</p>
               <p className="text-sm text-gray-600"> Vadodara-390021</p>
               <p className="text-sm text-gray-600">Ph:- 7043745089</p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="font-semibold text-gray-600 mt-2">
                 GSTIN:- 24IZRPK5753C1Z1
               </p>
             </div>
           </div>
           <div className="text-right">
-            <h2 className="text-xl">Blend Of Fashion</h2>
             <div className="text-sm text-gray-600 mt-2">
+              <br />
               <p>{customerData?.name || "Customer Name"}</p>
               <p>{customerData?.phone || "Customer Name"}</p>
               <p>{customerData?.city || "City"} </p>
@@ -165,46 +165,55 @@ const InvoiceTemplate: React.FC<InvoiceProps> = ({
           <h2 className="text-xl mb-4">
             Customer Invoices {invoiceData.invoiceNumber}
           </h2>
-          <div className="flex justify-between mb-4">
-            <div>
-              <p className="text-sm text-gray-600">Invoice Date:</p>
-              <p>{new Date().toLocaleDateString()}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Due Date:</p>
-              <p>{new Date().toLocaleDateString()}</p>
-            </div>
-          </div>
         </div>
 
         {/* Invoice Table */}
         <table className="w-full mb-8">
           <thead>
             <tr className="border-b">
-              <th className="py-2 text-center">Name</th>
-              <th className="py-2 text-center">Quantity</th>
-              <th className="py-2 text-center">Price</th>
-              <th className="py-2 text-center">Disc.%</th>
-              <th className="py-2 text-center">Unit Price</th>
-              <th className="py-2 text-center">Total Price</th>
-              <th className="py-2 text-center">Taxes</th>
-              <th className="py-2 text-center">Amount</th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                Name
+              </th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                {" "}
+                HSN/SAC
+              </th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                Quantity
+              </th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                Price
+              </th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                Discount
+              </th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                Total Price
+              </th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                Taxes
+              </th>
+              <th className="py-2 text-center text-sm px-1.5 whitespace-nowrap">
+                Amount
+              </th>
             </tr>
           </thead>
           <tbody>
             {productData.map((product: any, index: number) => (
               <tr key={`${product.id}-${index}`}>
                 <td className="py-2 text-center">{product.productName}</td>
+                <td className="py-2 text-center"></td>
                 <td className="py-2 text-center">{product?.productQuantity}</td>
                 <td className="py-2 text-center">₹ {product?.price}</td>
                 <td className="py-2 text-center">
                   {!discountRate && "₹"}
-                  {!discountRate && (product.discount - product?.price )||
+                  {(!discountRate && product.discount - product?.price) ||
                     discountRate}{" "}
                   {(discountRate && "%") || ""}
                 </td>
-                <td className="py-2 text-center">₹{product.discount}</td>
-                <td className="py-2 text-center">₹ {product?.total}</td>
+                <td className="py-2 text-center">
+                  ₹ {product?.total}
+                </td>
                 <td className="py-2 text-center">{product?.productGst}</td>
                 <td className="text-center py-2">
                   ₹{product?.total.toFixed(2)}
@@ -241,14 +250,6 @@ const InvoiceTemplate: React.FC<InvoiceProps> = ({
               <span>Total</span>
               <span>₹ {total.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between border-b py-1 text-gray-600">
-              <span>Paid on {new Date().toLocaleDateString()}</span>
-              <span>₹ {total.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between py-1 font-semibold">
-              <span>Credit</span>
-              <span>₹ 0.00</span>
-            </div>
           </div>
         </div>
 
@@ -271,7 +272,7 @@ const InvoiceTemplate: React.FC<InvoiceProps> = ({
         {/* Payment Info */}
         <div className="mt-8">
           <p className="text-sm text-gray-600">
-            Payment Communication: INV/2025/00006
+            Payment Communication: {invoiceData.invoiceNumber}
           </p>
           <p className="text-sm text-gray-600 mt-4">
             Our return policy allows for returns within 10 days of receiving

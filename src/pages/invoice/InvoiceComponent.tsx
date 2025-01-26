@@ -2,6 +2,8 @@ import {
   Autocomplete,
   AutocompleteItem,
   Button,
+  DateInput,
+  DatePicker,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -22,6 +24,7 @@ import Badge from "../../components/badge/Badge";
 import { getGSTColor } from "../../utils/utils";
 import CustomerDetailsModal from "./customerDetails/CustomerDetailsModal";
 import InvoiceTemplate from "./template/InvoiceTemplate";
+import { getLocalTimeZone, parseDate } from "@internationalized/date";
 
 interface InvoiceItem {
   id: string;
@@ -115,6 +118,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
   const [productQuantity, setProductQuantity] = useState<any>(1);
   const [productPrice, setProductPrice] = useState<any>(0);
   const [productUnitPrice, setProductUnitPrice] = useState<any>(0);
+  const [productHSNSAC, setProductHSNSAC] = useState<any>("997212");
   const [productPriceTotal, setProductPriceTotal] = useState<any>(0);
   const [productGst, setProductGst] = useState<any>();
   const newItemData = {
@@ -124,6 +128,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
     productPrice,
     productPriceTotal,
     productUnitPrice,
+    productHSNSAC,
   };
 
   const [invoiceData, setInvoiceData] = useState({
@@ -147,6 +152,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
       price: 0,
       discount: 0,
       total: 0,
+      productHSNSAC:''
     },
   ]); // Replace 'any' with actual type if needed
   useEffect(() => {
@@ -208,9 +214,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
       ...prevData,
       invoiceNumber: newInvoiceNumber,
     }));
-    // Add any additional logic for reviewing the invoice
   };
-  console.log(selectedProductsData, "productsData");
   // Add a new item to the invoice
   const addItem = (e: any) => {
     const newItem = {
@@ -319,11 +323,14 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
       delete updatedDiscount[id];
       return updatedDiscount;
     });
+    setProductHSNSAC((prev: any) => {
+      const updatedHSNSAC = { ...prev };
+      delete updatedHSNSAC[id];
+      return updatedHSNSAC;
+    });
   };
-  console.log(
-    "items.map((item) => ",
-    items.map((item) => item)
-  );
+
+  const currentDate = new Date().toISOString().split("T")[0];
   return (
     <>
       <div className="flex justify-center max-md:flex-wrap">
@@ -333,13 +340,28 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
             {/* ... (keep all the existing header content) */}
             <div className="flex-1 w-full">
               <h2 className="text-sm font-medium mb-2">Current Date:</h2>
-              <Input
+              <DatePicker
                 variant="bordered"
                 color="default"
-                type="text"
-                value={invoiceData.currentDate}
-                isReadOnly
                 className="w-full"
+                maxValue={parseDate(currentDate)}
+                defaultValue={parseDate(currentDate)}
+                showMonthAndYearPickers={true}
+                shouldForceLeadingZeros
+                onChange={(newValue) => {
+                  const formattedDate = newValue
+                    .toDate(getLocalTimeZone())
+                    .toLocaleDateString("en-US", {
+                      month: "2-digit",
+                      day: "2-digit",
+                      year: "numeric",
+                    });
+                  setInvoiceData((prevData) => ({
+                    ...prevData,
+                    currentDate: formattedDate,
+                  }));
+                }}
+                aria-label="Date of Birth"
               />
             </div>
             <div className="flex-1 w-full">
@@ -361,6 +383,12 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                 type="text"
                 value={invoiceData.cashier}
                 className="w-full"
+                onChange={(e) => {
+                  setInvoiceData((prevData) => ({
+                    ...prevData,
+                    cashier: e.target.value,
+                  }));
+                }}
               />
             </div>
             <div className="flex-1 w-full">
@@ -429,7 +457,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
               <Table
                 aria-label="Invoice items table"
                 classNames={{
-                  td: "p-0 py-2 pe-2",
+                  td: "p-0 py-2 pe-2 min-w-[80px]",
                 }}
               >
                 <TableHeader>
@@ -437,6 +465,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                     ITEM
                   </TableColumn>
                   <TableColumn>QTY</TableColumn>
+                  <TableColumn>HSN/SAC</TableColumn>
                   <TableColumn>PRICE</TableColumn>
                   <TableColumn>TOTAL</TableColumn>
                   <TableColumn>UNIT PRICE</TableColumn>
@@ -476,6 +505,29 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                           ))}
                         </Select>
                       </TableCell>
+                      {/* HSN/SAC */}
+                      {/* Item */}
+                      <TableCell className="w-[400px]">
+                        <Input
+                          name="HSN/SAC"
+                          variant="bordered"
+                          color="default"
+                          type="number"
+                          value={item.quantity?.toString() || "1"}
+                          onChange={(e) => {
+                            updateItem(
+                              item.id,
+                              "HSN/SAC",
+                              Number(e.target.value)
+                            );
+                            setProductHSNSAC((prev: any) => ({
+                              ...prev,
+                              [item.id]: e.target.value,
+                            }));
+                          }}
+                          className="w-full"
+                        />
+                      </TableCell>
                       {/* Quantity */}
                       <TableCell>
                         <Input
@@ -485,11 +537,6 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                           type="number"
                           value={item.quantity?.toString() || "1"}
                           onChange={(e) => {
-                            updateItem(
-                              item.id,
-                              "quantity",
-                              Number(e.target.value)
-                            );
                             setProductQuantity((prev: any) => ({
                               ...prev,
                               [item.id]: e.target.value,
@@ -508,7 +555,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                           value={item.price.toString() || 0}
                           onChange={(e) => {
                             const updatedPrice = Number(e.target.value);
-                            updateItem(item.id, "price", updatedPrice);
+
                             setItems((prevItems) =>
                               prevItems.map((prevItem) =>
                                 prevItem.id === item.id
@@ -585,7 +632,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                             content={getItemGSTRate(item.id)}
                             customClass="rounded-[5px]"
                             color={getGSTColor(
-                              getItemGSTRate(item.id).toString()
+                              getItemGSTRate(item.id)
                             )}
                           />
                         </div>
@@ -685,7 +732,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
               </div>
             </div>
 
-            <div className="w-[300px] space-y-4">
+            <div className="w-[120px] space-y-4">
               <div>
                 <h2 className="text-sm font-medium mb-2">GST:</h2>
                 <Input
@@ -731,15 +778,15 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
                   }
                 />
               </div>
-              <Button
-                color="primary"
-                className="w-full"
-                onClick={handleReviewInvoice}
-              >
-                Review Invoice
-              </Button>
             </div>
           </div>
+          <Button
+            color="primary"
+            className="w-full mt-4 text-left"
+            onClick={handleReviewInvoice}
+          >
+            Review Invoice
+          </Button>
         </div>
         <CustomerDetailsModal
           initialValues={initialValues}
@@ -747,7 +794,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
           onClose={onClose}
           onSubmit={onSubmit}
         />
-        <InvoiceTemplate
+        {/* <InvoiceTemplate
           className="!max-w-[1/2]"
           items={items}
           taxRate={taxRate}
@@ -760,7 +807,7 @@ const InvoiceComponent: React.FC<InvoiceComponentType> = ({
           calculateSGST={calculateSGST}
           calculateTotal={calculateTotal}
           invoiceData={invoiceData}
-        />
+        /> */}
       </div>
     </>
   );
