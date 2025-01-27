@@ -59,7 +59,6 @@ function CustomerDetailsModal({
       state: Yup.string().required("State is Required"),
     }),
     onSubmit: async (values) => {
-      console.log("values", values);
       await handleSubmit(values);
       formik.resetForm();
       formik.setFieldValue('dob' , '')

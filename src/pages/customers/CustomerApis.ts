@@ -13,7 +13,6 @@ export const AddCustomersApi = async (data: any, notify: any) => {
     });
     return res;
   } catch (error: any) {
-    console.log(error.response.data.message);
     notify(error.response.data.message, {
       type: "error",
     });

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 
 // Interfaces to define the structure of our data
 export interface Product {

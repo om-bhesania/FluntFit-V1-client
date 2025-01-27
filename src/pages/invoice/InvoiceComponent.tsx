@@ -85,7 +85,6 @@ export default function InvoiceComponent({
   const [invoiceData, setInvoiceData] = useState<any>({});
   const [invoiceNumber, setInvoiceNumber] = useState(getInitialInvoiceNumber());
   const currentDate = new Date().toISOString().split("T")[0];
-console.log("invoiceNumber", invoiceNumber);
   useEffect(() => {
     if (selectedCustomer && Object.keys(selectedCustomer).length > 0) {
       formik.setValues({
@@ -194,8 +193,6 @@ console.log("invoiceNumber", invoiceNumber);
       // },
     },
   });
-  console.log("Filtered Customers:", filteredCustomers);
-  console.log("Formik Items:", formik.values.items);
   useEffect(() => {
     const {
       subtotal,
