@@ -37,9 +37,10 @@ const service = async <T>({
   } catch (error: any) {
     if (error.response && error.response.status === 401) {
       // Log out the user and clear the session
-      await LogOutApi(notify); // Assuming this is the function that handles logging out
+      LogOutApi(notify); // Assuming this is the function that handles logging out
       sessionStorage.clear();
       window.location.href = "/login"; // Redirect to login page
+      notify("Unauthorized Access detected", { type: error });
     } else {
       console.error(`Error during ${method} request to ${url}:`, error);
       throw error;

@@ -2,6 +2,7 @@ import service from "../../../services/services";
 import apiUrls from "../../../utils/apiUrls";
 
 export const LoginApi = async (data: any, notify: any) => {
+  console.log(data)
   try {
     const res = await service({
       url: apiUrls.auth.login,

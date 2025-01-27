@@ -43,7 +43,7 @@ export interface CustomerDetailsControllerProps {
   onClose: any;
   initialValues: any;
   validationSchema: any;
-  onSubmit: (
+  handleSubmit: (
     values: FormValues,
     actions: { setSubmitting: (isSubmitting: boolean) => void }
   ) => void;
@@ -56,7 +56,7 @@ const CustomerDetailsController: React.FC<CustomerDetailsControllerProps> = ({
   onOpen,
   onClose,
   validationSchema,
-  onSubmit,
+  handleSubmit,
   productData,
 }) => {
   const [data, setData] = useState(null);
@@ -84,7 +84,7 @@ const CustomerDetailsController: React.FC<CustomerDetailsControllerProps> = ({
       onClose={onClose}
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      handleSubmit={handleSubmit}
       productData={productData}
       data={data}
     />

@@ -26,6 +26,7 @@ export interface FormValues {
   email?: string;
   state: string;
   city?: string;
+  customer?: [];
   dob?: DateValue | null;
 }
 
@@ -33,14 +34,14 @@ interface CustomerDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialValues: FormValues;
-  onSubmit: any
+  handleSubmit: any;
 }
 
 function CustomerDetailsModal({
   isOpen,
   onClose,
   initialValues,
-  onSubmit,
+  handleSubmit,
 }: CustomerDetailsModalProps) {
   const [value, setValue] = useState<DateValue | null>(null);
   const formik = useFormik({
@@ -58,14 +59,19 @@ function CustomerDetailsModal({
       state: Yup.string().required("State is Required"),
     }),
     onSubmit: async (values) => {
-      await onSubmit(values);
+      console.log("values", values);
+      await handleSubmit(values);
       formik.resetForm();
+      formik.setFieldValue('dob' , '')
+      formik.setFieldValue("state", "");
+      formik.setFieldValue("city", "");
     },
   });
   const [citiesOfState, setCitiesOfState] = useState<any>();
   const states = State.getStatesOfCountry("IN");
   const cities = City.getCitiesOfState("IN", citiesOfState);
   const currentDate = new Date().toISOString().split("T")[0];
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} placement="center" backdrop="blur">
       <ModalContent>
@@ -148,6 +154,7 @@ function CustomerDetailsModal({
                 />
                 <DatePicker
                   label="Birth date"
+                  name="dob"
                   calendarProps={{
                     defaultFocusedValue: value || undefined,
                     nextButtonProps: {

@@ -8,7 +8,7 @@ export interface CustomerDetailsComponentProps {
   onClose: () => void;
   initialValues: FormValues;
   validationSchema: any;
-  onSubmit: (
+  handleSubmit: (
     values: FormValues,
     formikHelpers: FormikHelpers<FormValues>
   ) => void;
@@ -18,16 +18,15 @@ function CustomerDetailsComponent({
   isOpen,
   onClose,
   initialValues,
-  onSubmit,
+  handleSubmit,
 }: CustomerDetailsComponentProps) {
-  console.log("first");
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <CustomerDetailsModal
         isOpen={isOpen}
         onClose={onClose}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        handleSubmit={handleSubmit}
       />
     </div>
   );

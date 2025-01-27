@@ -42,6 +42,7 @@ function LoginController({
     } catch (error: any) {
       // Handle error here
       console.error("Login error:", error);
+      return true;
     } finally {
       setLoading(false);
     }

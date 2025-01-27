@@ -3,9 +3,8 @@ import * as Yup from "yup";
 import useToast from "../../hooks/useToast";
 import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
 import { GetProductApi } from "../products/ProductsApi";
-import { FormValues } from "./customerDetails/CustomerDetailsModal";
+import { FormValues } from "./customerDetails/CustomerDetailsModal"; 
 import InvoiceComponent from "./InvoiceComponent";
-import InvoiceComponentTest from "./InvoiceComponentTest";
 
 export interface InvoiceComponentType {
   onRowClick: (data: any) => void;
@@ -46,26 +45,14 @@ function InvoiceController() {
   const [taxRate, setTaxRate] = useState(5);
   const [discountRate, setDiscountRate] = useState("");
   const [cashDiscountRate, setCashDiscountRate] = useState(0);
-  const [productsData, setProductsData] = useState<any[]>([]);
-  const [selectedProductsData, setSelectedProductsData] = useState<any>([]);
+  const [productsData, setProductsData] = useState<any[]>([]); 
   // State to track product GST rates for each row
   const [productGSTRates, setProductGSTRates] = useState<{
     [key: string]: number;
   }>({});
   const { notify } = useToast();
 
-  const handleSelectedProductDataForInvoice = (
-    selectedId?: string,
-    otherData?: any
-  ) => {
-    const filteredProductData = productsData.find(
-      (item: any) => item._id === selectedId
-    );
-    console.log("otherData", otherData);
-    setSelectedProductsData((prev: any) => {
-      return [...prev, filteredProductData];
-    });
-  };
+ 
   // Validation schema using Yup
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
@@ -94,9 +81,7 @@ function InvoiceController() {
   };
 
   const handleCustomerSearch = (value: string) => {
-    console.log("Search Value:", value);
     setSearchValue(value);
-
     if (value.trim() === "") {
       setFilteredCustomers(customers); // Reset the list when search is empty
     } else {
@@ -121,55 +106,10 @@ function InvoiceController() {
       await GetCustomerApi(notify);
       loadData();
       notify("Customer created successfully", { type: "success" });
+      handleCloseModal();
     } catch (error) {
-      notify("Failed to create new customer", { type: "error" });
-      console.error(error);
+      return false;
     }
-  };
-
-  // Add a new item to the invoice
-  // const addItem = () => {
-  //   const newItem = {
-  //     id: Date.now().toString(), // Unique ID for this item
-  //     productName: "", // Initially empty
-  //     quantity: 1,
-  //     price: 0,
-  //     total: 0,
-  //   };
-
-  //   setItems((prevItems) => [...prevItems, newItem]);
-  // };
-
-  const handleProductSelect = (itemId: string, selectedProductId: string) => {
-    const selectedProduct = productsData.find(
-      (product: any) => product._id === selectedProductId
-    );
-
-    if (!selectedProduct) {
-      console.error("Selected product not found!");
-      return;
-    }
-
-    // Update the item in the `items` array
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === itemId
-          ? {
-              ...item,
-              productName: selectedProduct.name || "",
-              price: selectedProduct.price || 0,
-              total: selectedProduct.price || 0,
-            }
-          : item
-      )
-    );
-
-    // Optionally update GST rates
-    const gstRate = selectedProduct.gst || 0;
-    setProductGSTRates((prev) => ({
-      ...prev,
-      [itemId]: gstRate,
-    }));
   };
 
   // Update an item's details
@@ -225,7 +165,7 @@ function InvoiceController() {
     return ((subtotal - discount) * taxRate) / 100;
   };
 
-  const calculateDetailedSubtotal = (item:any) => {
+  const calculateDetailedSubtotal = () => {
     // Ensure items exist and is an array
     if (!items || items.length === 0) {
       return 0;
@@ -248,9 +188,9 @@ function InvoiceController() {
   };
 
   // Calculate the total after applying discounts and adding tax
-  const calculateTotal = (items?:any) => {
+  const calculateTotal = () => {
     // Use the new detailed subtotal calculation method
-    const subtotal = calculateDetailedSubtotal(items);
+    const subtotal = calculateDetailedSubtotal();
     const percentageDiscount = calculateDiscount(subtotal);
     const cashDiscount = calculateCashDiscount(subtotal);
     const totalDiscount = percentageDiscount + cashDiscount; // Combine both discounts
@@ -268,6 +208,7 @@ function InvoiceController() {
     email: "",
     state: "",
     city: "",
+    customer: [],
     dob: null,
   };
 
@@ -334,7 +275,7 @@ function InvoiceController() {
     //   handleSelectedProductDataForInvoice={handleSelectedProductDataForInvoice}
     //   selectedProductsData={selectedProductsData}
     // />
-    <InvoiceComponentTest
+    <InvoiceComponent
       filteredCustomers={filteredCustomers}
       handleCustomerSearch={handleCustomerSearch}
       newCustomerData={newCustomerData}
@@ -353,6 +294,26 @@ function InvoiceController() {
       calculateSGST={calculateSGST}
       calculateTotal={calculateTotal}
       productsData={productsData}
+      handleOpenModal={handleOpenModal}
+      handleCloseModal={handleCloseModal}
+      setNewCustomerData={setNewCustomerData}
+      handleCreateNewCustomer={handleCreateNewCustomer}
+      // =========================================
+      discountRate={Number(discountRate)}
+      // addItem={addItem}
+      removeItem={removeItem}
+      updateItem={updateItem}
+      handleInput={handleCustomerSearch}
+      setTaxRate={setTaxRate}
+      setDiscountRate={setDiscountRate}
+      calculateItemTotal={calculateItemTotal}
+      validationSchema={validationSchema}
+      setCashDiscountRate={setCashDiscountRate}
+      setItems={setItems}
+      productGSTRates={productGSTRates}
+      setProductGSTRates={setProductGSTRates}
+      customers={customers}
+      handleSubmit={handleSubmit}
     />
   );
 }

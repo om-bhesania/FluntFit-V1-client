@@ -162,7 +162,7 @@ export const Logout = async (nav: any, notify: any) => {
   notify("Logged out successfully", { type: "success" });
 };
 
-export const getGSTColor = (gstRate:number) => {
+export const getGSTColor = (gstRate: number) => {
   if (gstRate === 5) {
     return "blue";
   } else if (gstRate === 12) {
@@ -172,4 +172,20 @@ export const getGSTColor = (gstRate:number) => {
   } else {
     return "gray";
   }
+};
+
+export const getInitialInvoiceNumber = () => {
+  const savedInvoiceNumber = localStorage.getItem("lastInvoiceNumber");
+  return savedInvoiceNumber || generateInvoiceNumber();
+};
+
+export const generateInvoiceNumber = () => {
+  const currentYear = new Date().getFullYear();
+  const lastInvoiceNumber =
+    localStorage.getItem("lastInvoiceNumber") || `INV/${currentYear}/00001`;
+  const [prefix, year, sequence] = lastInvoiceNumber.split("/");
+  const newSequence = String(Number(sequence) + 1).padStart(5, "0");
+  const newInvoiceNumber = `${prefix}/${year}/${newSequence}`;
+  localStorage.setItem("lastInvoiceNumber", newInvoiceNumber);
+  return newInvoiceNumber;
 };
