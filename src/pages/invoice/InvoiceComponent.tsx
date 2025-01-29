@@ -26,7 +26,7 @@ import {
 } from "../../utils/utils";
 import CustomerDetailsModal from "./customerDetails/CustomerDetailsModal";
 import InvoiceTemplate from "./template/InvoiceTemplate";
-import { printComponent } from "./template/utils";
+import InvoicePDFGenerator from "./template/InvoiceTemplateJSPdf";
 
 export interface InvoiceItem {
   id: string;
@@ -414,11 +414,12 @@ export default function InvoiceComponent({
     }
   }, [selectedCustomer]);
 
-  const handleReviewInvoice = () => {
+  const handleReviewInvoice = (data?: Function) => {
     const newInvoiceNumber = generateInvoiceNumber();
     setInvoiceNumber(newInvoiceNumber);
     formik.setFieldValue("invoiceNumber", newInvoiceNumber);
     localStorage.setItem("lastInvoiceNumber", newInvoiceNumber);
+    data && data();
   };
 
   useEffect(() => {
@@ -428,13 +429,7 @@ export default function InvoiceComponent({
     }
   }, []);
 
-  const saveAndDownload = () => {
-    printComponent(InvoiceTemplate, {
-      invoiceData,
-      className: "max-md:hidden visible",
-    },invoiceNumber);
-  };
-
+ 
   return (
     <>
       <div className="flex max-md:flex-wrap">
@@ -807,15 +802,10 @@ export default function InvoiceComponent({
             {/* <Button color="primary" type="submit" variant="bordered">
             Review Invoice
           </Button> */}
-            <Button
-              color="primary"
-              onClick={() => {
-                handleReviewInvoice();
-                saveAndDownload();
-              }}
-            >
-              Save and Download
-            </Button>
+            <InvoicePDFGenerator
+              invoiceData={invoiceData}
+              handleReviewInvoice={handleReviewInvoice}
+            />
           </div>
         </form>
 
@@ -832,7 +822,6 @@ export default function InvoiceComponent({
           className="max-md:hidden visible"
         />
       </div>
-        {/* <InvoicePdfData/> */}
     </>
   );
 }
