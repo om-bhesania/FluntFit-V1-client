@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-transparent overflow-x-hidden font-body;
+  @apply overflow-x-hidden font-body;
 }
 header {
   @apply !max-w-[1340px] mx-auto px-4;
@@ -34,28 +34,28 @@ body::-webkit-scrollbar-thumb:hover {
 
 /*  */
 .tablee::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+  height: 7.5px;
+  width: 7.5px;
 }
 
 .tablee::-webkit-scrollbar-track {
-  @apply bg-background;
+  @apply bg-gray-600;
 }
 
 /* Handle */
 .tablee::-webkit-scrollbar-thumb {
-  @apply bg-primary/30 rounded-md;
+  @apply bg-gray-900 rounded-md;
 }
 
 /* Handle on hover */
 .tablee::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary/40;
+  @apply bg-gray-800;
 }
 
-.swiper-pagination-bullet.swiper-pagination-bullet-active{
+.swiper-pagination-bullet.swiper-pagination-bullet-active {
   @apply bg-background;
 }
-.swiper-pagination-bullet:not(.swiper-pagination-bullet-active){
+.swiper-pagination-bullet:not(.swiper-pagination-bullet-active) {
   @apply !bg-primary !opacity-50;
 }
 
@@ -69,3 +69,9 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
+
+
+.bg-content1{
+  background-color: #030712 !important;
+}
+ 

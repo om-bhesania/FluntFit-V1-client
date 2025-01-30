@@ -1,17 +1,9 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Input,
-  Select,
-  SelectItem,
-  Textarea,
-} from "@nextui-org/react";
+import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import CommonCard from "../../../components/cards/CommonCard";
 import FileInput from "../../../components/fileUpload/FileInput";
-import useToast from "../../../hooks/useToast";
+import CommonInput from "../../../components/input/CommonInput";
 
 interface AddProductComponentProps {
   categories: { value: string; label: string }[];
@@ -43,7 +35,6 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   GSTOptions,
   InventoryOptions,
 }) => {
-  const { notify } = useToast();
   const initialValues =
     isEdit && prefilledData
       ? {
@@ -109,10 +100,10 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         "Sale Price should be less than or equal to Price"
       ),
     sku: Yup.string().required("SKU is required"),
-    quantityInStock: Yup.number()
-      .required("Stock quantity is required")
-      .integer("Stock quantity must be an integer")
-      .min(0, "Quantity cannot be negative"),
+    // quantityInStock: Yup.number()
+    //   .required("Stock quantity is required")
+    //   .integer("Stock quantity must be an integer")
+    //   .min(0, "Quantity cannot be negative"),
     sizeOptions: Yup.array().min(1, "At least one size option is required"),
     careInstructions: Yup.string().max(
       500,
@@ -124,7 +115,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: async (values, { resetForm, setFieldValue }) => {
+    onSubmit: async (values, { resetForm, setFieldValue }): Promise<void> => {
       try {
         // Process the media content files
         let uploadedUrls: any = [];
@@ -143,7 +134,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           price: Number(values.price),
           salePrice: Number(values.salePrice),
           sku: values.sku,
-          quantityInStock: Number(values.quantityInStock),
+          // quantityInStock: Number(values.quantityInStock),
+          quantityInStock: null,
           mediaContent: values.mediaContent, // Store the uploaded URLs instead of base64 files
           sizeOptions: values.sizeOptions,
           careInstructions: values.careInstructions,
@@ -151,32 +143,36 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           gst: values.gst,
           costPrice: Number(values.costPrice),
         };
+        let response: any;
         if (!isEdit) {
-          await handleSubmit(formData);
+          response = await handleSubmit(formData);
         } else if (handleSaveEdit) {
           await handleSaveEdit(prefilledData._id, formData);
         }
-        // // Clear specific fields after successful submission
-        setFieldValue("category", "", false);
-        setFieldValue("gst", "", false);
-        setFieldValue("sizeOptions", "", false);
-        setFieldValue("inventoryStatus", "", false);
-        setFieldValue("mediaContent", [], false); // Clear file input
+        // Reset form only if API response is successful
+        if (response?.status === 200 || response?.status === 201) {
+          // Clear specific fields after successful submission
+          setFieldValue("category", "", false);
+          setFieldValue("gst", "", false);
+          setFieldValue("sizeOptions", [], false);
+          setFieldValue("inventoryStatus", "", false);
+          setFieldValue("mediaContent", [], false); // Clear file input
 
-        // Optionally reset all fields
-        resetForm({
-          values: {
-            ...initialValues,
-            category: "",
-            subcategory: "",
-            inventoryStatus: "",
-            mediaContent: "",
-            gst: "",
-            sizeOptions: "",
-          },
-        });
+          // Optionally reset all fields
+          resetForm({
+            values: {
+              ...initialValues,
+              category: "",
+              subcategory: "",
+              inventoryStatus: "",
+              mediaContent: "",
+              gst: "",
+              sizeOptions: [],
+            },
+          });
+        }
       } catch (error) {
-        notify("Error submitting form", { type: "error" });
+        return;
       }
     },
   });
@@ -184,329 +180,338 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
   return (
     <div className="container">
       <form onSubmit={formik.handleSubmit}>
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="text-lg font-semibold">Basic Information</h2>
-          </CardHeader>
-          {/* <button onClick={deleteAllProducts}>Delete All</button> */}
-          <CardBody>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                name="productName"
-                value={formik.values.productName}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Product Name *"
-                variant="flat"
-                description={
-                  formik.errors.productName && formik.touched.productName
-                    ? String(formik.errors.productName)
-                    : ""
-                }
-                isInvalid={
-                  !!(formik.errors.productName && formik.touched.productName)
-                }
-              />
-              <Textarea
-                name="productDescription"
-                value={formik.values.productDescription}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Product Description"
-                variant="flat"
-              />
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="text-lg font-semibold">Category & Classification</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select
-                onChange={(event) => {
-                  const selectedValue = event.target.value;
-                  formik.setFieldValue("category", selectedValue);
-                }}
-                value={formik.values.category}
-                label="Category *"
-                placeholder="Select Category"
-                aria-label="Category"
-                isInvalid={
-                  !!(formik.errors.category && formik.touched.category)
-                }
-                description={
-                  formik.errors.category && formik.touched.category
-                    ? String(formik.errors.category)
-                    : ""
-                }
-              >
-                {categories.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                name="subcategory"
-                value={formik.values.subcategory}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Enter subcategory *"
-                variant="flat"
-                description={
-                  formik.errors.subcategory && formik.touched.subcategory
-                    ? String(formik.errors.subcategory)
-                    : ""
-                }
-                isInvalid={
-                  !!(formik.errors.subcategory && formik.touched.subcategory)
-                }
-              />
-              <Input
-                name="productType"
-                value={formik.values.productType}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Product Type *"
-                variant="flat"
-                isInvalid={
-                  !!(formik.errors.productType && formik.touched.productType)
-                }
-                description={
-                  formik.errors.productType && formik.touched.productType
-                    ? String(formik.errors.productType)
-                    : ""
-                }
-              />
-              <Input
-                name="brand"
-                value={formik.values.brand}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Product Brand *"
-                variant="flat"
-                labelPlacement="inside"
-                isInvalid={!!(formik.errors.brand && formik.touched.brand)}
-                description={
-                  formik.errors.brand && formik.touched.brand
-                    ? String(formik.errors.brand)
-                    : ""
-                }
-              />
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="text-lg font-semibold">Pricing & Stock (₹)</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                name="price"
-                value={formik.values.price}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Selling Price *"
-                variant="flat"
-                description={
-                  formik.errors.price && formik.touched.price
-                    ? String(formik.errors.price)
-                    : ""
-                }
-                isInvalid={!!(formik.errors.price && formik.touched.price)}
-              />
-              <Input
-                name="salePrice"
-                value={formik.values.salePrice}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Sale or Discounted Price (optional)"
-                variant="flat"
-                description={
-                  formik.errors.salePrice && formik.touched.salePrice
-                    ? String(formik.errors.salePrice)
-                    : ""
-                }
-                isInvalid={
-                  !!(formik.errors.salePrice && formik.touched.salePrice)
-                }
-              />
-              <Input
-                name="costPrice"
-                value={formik.values.costPrice}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Cost Price *"
-                variant="flat"
-                description={
-                  formik.errors.costPrice && formik.touched.costPrice
-                    ? String(formik.errors.costPrice)
-                    : ""
-                }
-                isInvalid={
-                  !!(formik.errors.costPrice && formik.touched.costPrice)
-                }
-              />
-              <Select
-                onChange={(event) => {
-                  const selectedValue = event.target.value;
-                  formik.setFieldValue("gst", selectedValue);
-                }}
-                value={formik.values.category}
-                label="GST(%) *"
-                placeholder="Enter GST"
-                aria-label="GST"
-                isInvalid={!!(formik.errors.gst && formik.touched.gst)}
-                description={
-                  formik.errors.gst && formik.touched.gst
-                    ? String(formik.errors.gst)
-                    : ""
-                }
-              >
-                {GSTOptions.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              <div className="">
-                <div className={`flex items-center gap-3 rounded-xl pr-2`}>
-                  <Input
-                    name="sku"
-                    value={formik.values.sku}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    label="SKU / Barcode *"
-                    isInvalid={!!(formik.errors.sku && formik.touched.sku)}
-                    description={
-                      formik.errors.sku && formik.touched.sku
-                        ? String(formik.errors.sku)
-                        : ""
-                    }
-                    endContent={
-                      <Button
-                        onClick={() =>
-                          handleSKUGeneration(formik.setFieldValue)
-                        }
-                        className="py-1.5 rounded-xl"
-                      >
-                        <span className="px-1.5 !text-xs">Generate SKU</span>
-                      </Button>
-                    }
-                  />
-                </div>
+        <CommonCard className="mb-6" title="Basic Information">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CommonInput
+              name="productName"
+              value={formik.values.productName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Product Name *"
+              variant="underlined"
+              description={
+                formik.errors.productName && formik.touched.productName
+                  ? String(formik.errors.productName)
+                  : ""
+              }
+              isInvalid={
+                !!(formik.errors.productName && formik.touched.productName)
+              }
+            />
+            <Textarea
+              name="productDescription"
+              value={formik.values.productDescription}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Product Description"
+              variant="underlined"
+              title="Product Description"
+            />
+          </div>
+        </CommonCard>
+        <CommonCard className="mb-6" title="Category & Classification">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Select
+              variant="underlined"
+              onChange={(event) => {
+                const selectedValue = event.target.value;
+                formik.setFieldValue("category", selectedValue);
+              }}
+              value={formik.values.category}
+              label="Category *"
+              placeholder="Select Category"
+              aria-label="Category"
+              isInvalid={!!(formik.errors.category && formik.touched.category)}
+              description={
+                formik.errors.category && formik.touched.category
+                  ? String(formik.errors.category)
+                  : ""
+              }
+            >
+              {categories.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </Select>
+            <CommonInput
+              name="subcategory"
+              value={formik.values.subcategory}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Enter subcategory *"
+              variant="underlined"
+              description={
+                formik.errors.subcategory && formik.touched.subcategory
+                  ? String(formik.errors.subcategory)
+                  : ""
+              }
+              isInvalid={
+                !!(formik.errors.subcategory && formik.touched.subcategory)
+              }
+            />
+            <CommonInput
+              name="productType"
+              value={formik.values.productType}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Product Type *"
+              variant="underlined"
+              isInvalid={
+                !!(formik.errors.productType && formik.touched.productType)
+              }
+              description={
+                formik.errors.productType && formik.touched.productType
+                  ? String(formik.errors.productType)
+                  : ""
+              }
+            />
+            <CommonInput
+              name="brand"
+              value={formik.values.brand}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Product Brand *"
+              variant="underlined"
+              isInvalid={!!(formik.errors.brand && formik.touched.brand)}
+              description={
+                formik.errors.brand && formik.touched.brand
+                  ? String(formik.errors.brand)
+                  : ""
+              }
+            />
+          </div>
+        </CommonCard>
+        <CommonCard className="mb-6" title="Pricing & Stock (₹)">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CommonInput
+              name="price"
+              value={formik.values.price}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Selling Price *"
+              variant="underlined"
+              description={
+                formik.errors.price && formik.touched.price
+                  ? String(formik.errors.price)
+                  : ""
+              }
+              isInvalid={!!(formik.errors.price && formik.touched.price)}
+            />
+            <CommonInput
+              name="salePrice"
+              value={formik.values.salePrice}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Sale or Discounted Price (optional)"
+              variant="underlined"
+              description={
+                formik.errors.salePrice && formik.touched.salePrice
+                  ? String(formik.errors.salePrice)
+                  : ""
+              }
+              isInvalid={
+                !!(formik.errors.salePrice && formik.touched.salePrice)
+              }
+            />
+            <CommonInput
+              name="costPrice"
+              value={formik.values.costPrice}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Cost Price *"
+              variant="underlined"
+              description={
+                formik.errors.costPrice && formik.touched.costPrice
+                  ? String(formik.errors.costPrice)
+                  : ""
+              }
+              isInvalid={
+                !!(formik.errors.costPrice && formik.touched.costPrice)
+              }
+            />
+            <Select
+              variant="underlined"
+              onChange={(event) => {
+                const selectedValue = event.target.value;
+                formik.setFieldValue("gst", selectedValue);
+              }}
+              value={formik.values.category}
+              label="GST(%) *"
+              placeholder="Enter GST"
+              aria-label="GST"
+              isInvalid={!!(formik.errors.gst && formik.touched.gst)}
+              description={
+                formik.errors.gst && formik.touched.gst
+                  ? String(formik.errors.gst)
+                  : ""
+              }
+            >
+              {GSTOptions.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </Select>
+            <div className="">
+              <div className={`flex items-center gap-3 rounded-xl pr-2`}>
+                <CommonInput
+                  variant="underlined"
+                  name="sku"
+                  value={formik.values.sku}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  label="SKU / Barcode *"
+                  isInvalid={!!(formik.errors.sku && formik.touched.sku)}
+                  description={
+                    formik.errors.sku && formik.touched.sku
+                      ? String(formik.errors.sku)
+                      : ""
+                  }
+                  endContent={
+                    <Button
+                      onClick={() => handleSKUGeneration(formik.setFieldValue)}
+                      className="py-1.5 rounded-xl text-gra-300"
+                      variant="bordered"
+                    >
+                      <span className="px-1.5 !text-xs">Generate SKU</span>
+                    </Button>
+                  }
+                />
               </div>
-              <Input
-                name="quantityInStock"
-                value={formik.values.quantityInStock}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Quantity in Stock *"
-                variant="flat"
-                description={
+            </div>
+            {/* <CommonInput
+              name="quantityInStock"
+              value={formik.values.quantityInStock}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Quantity in Stock *"
+              variant="underlined"
+              description={
+                formik.errors.quantityInStock && formik.touched.quantityInStock
+                  ? String(formik.errors.quantityInStock)
+                  : ""
+              }
+              isInvalid={
+                !!(
                   formik.errors.quantityInStock &&
                   formik.touched.quantityInStock
-                    ? String(formik.errors.quantityInStock)
-                    : ""
-                }
-                isInvalid={
-                  !!(
-                    formik.errors.quantityInStock &&
-                    formik.touched.quantityInStock
-                  )
-                }
-              />
+                )
+              }
+            /> */}
+          </div>
+        </CommonCard>
+        <CommonCard className="mb-6" title="Media Uploads">
+          <div className="space-y-4">
+            <FileInput
+              onFilesChange={(files) => {
+                formik.setFieldValue("mediaContent", files);
+              }}
+            />
+          </div>
+        </CommonCard>
+        <CommonCard className="mb-6" title="Additional Options">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Select
+              variant="underlined"
+              label="Select Size *"
+              placeholder="Select Size"
+              aria-label="Select Size"
+              selectionMode="multiple"
+              selectedKeys={
+                formik.values.sizeOptions &&
+                formik.values.sizeOptions.map((s: any) => s.size)
+              }
+              onSelectionChange={(selectedKeys) => {
+                const selectedValues = Array.from(selectedKeys).map((size) => ({
+                  size,
+                  quantity:
+                    formik.values.sizeOptions.find((s: any) => s.size === size)
+                      ?.quantity || 1, // Default quantity
+                }));
+                formik.setFieldValue("sizeOptions", selectedValues);
+              }}
+              isInvalid={
+                !!(formik.errors.sizeOptions && formik.touched.sizeOptions)
+              }
+              description={
+                formik.errors.sizeOptions && formik.touched.sizeOptions
+                  ? String(formik.errors.sizeOptions)
+                  : ""
+              }
+            >
+              {sizeOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </Select>
+
+            {/* Render selected sizes with quantity input */}
+            <div className="mt-4 flex space-x-6 gap-2">
+              {formik.values.sizeOptions.map(({ size, quantity }: any) => (
+                <div key={size} className="flex items-center gap-4">
+                  <span className="font-semibold">{size}:</span>
+                  <Input
+                    type="number"
+                    min="1"
+                    variant="bordered"
+                    value={quantity}
+                    onChange={(e) => {
+                      const updatedSizes = formik.values.sizeOptions.map(
+                        (s: any) =>
+                          s.size === size
+                            ? { ...s, quantity: e.target.value }
+                            : s
+                      );
+                      formik.setFieldValue("sizeOptions", updatedSizes);
+                    }}
+                    className="w-16"
+                    aria-label={`Quantity for ${size}`}
+                  />
+                </div>
+              ))}
             </div>
-          </CardBody>
-        </Card>
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="text-lg font-semibold">Media Uploads</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="space-y-4">
-              <FileInput
-                onFilesChange={(files) => {
-                  formik.setFieldValue("mediaContent", files);
-                }}
-              />
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="text-lg font-semibold">Additional Options</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select
-                label="Select Size *"
-                placeholder="Select Size"
-                aria-label="Select Size"
-                selectionMode="multiple"
-                selectedKeys={formik.values.sizeOptions}
-                onSelectionChange={(selectedKeys) => {
-                  const selectedValues = Array.from(selectedKeys);
-                  formik.setFieldValue("sizeOptions", selectedValues);
-                }}
-                isInvalid={
-                  !!(formik.errors.sizeOptions && formik.touched.sizeOptions)
-                }
-                description={
-                  formik.errors.sizeOptions && formik.touched.sizeOptions
-                    ? String(formik.errors.sizeOptions)
-                    : ""
-                }
-              >
-                {sizeOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Select
-                onChange={(event) => {
-                  const selectedValue = event.target.value;
-                  formik.setFieldValue("inventoryStatus", selectedValue); // Setting the value directly
-                }}
-                value={formik.values.inventoryStatus} // Formik's current value
-                placeholder="Select Inventory Status"
-                aria-label="Inventory Status"
-                label="Inventory Status *"
-                isInvalid={
-                  !!(
-                    formik.errors.inventoryStatus &&
-                    formik.touched.inventoryStatus
-                  )
-                }
-                description={
+
+            <Select
+              variant="underlined"
+              onChange={(event) => {
+                const selectedValue = event.target.value;
+                formik.setFieldValue("inventoryStatus", selectedValue); // Setting the value directly
+              }}
+              value={formik.values.inventoryStatus} // Formik's current value
+              placeholder="Select Inventory Status"
+              aria-label="Inventory Status"
+              label="Inventory Status *"
+              isInvalid={
+                !!(
                   formik.errors.inventoryStatus &&
                   formik.touched.inventoryStatus
-                    ? String(formik.errors.inventoryStatus)
-                    : ""
-                }
-              >
-                {InventoryOptions.map((status) => (
-                  <SelectItem key={status.value} value={status.value}>
-                    {status.label}
-                  </SelectItem>
-                ))}
-              </Select>
+                )
+              }
+              description={
+                formik.errors.inventoryStatus && formik.touched.inventoryStatus
+                  ? String(formik.errors.inventoryStatus)
+                  : ""
+              }
+            >
+              {InventoryOptions.map((status) => (
+                <SelectItem key={status.value} value={status.value}>
+                  {status.label}
+                </SelectItem>
+              ))}
+            </Select>
 
-              <Textarea
-                name="careInstructions"
-                value={formik.values.careInstructions}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Care Instructions"
-                variant="flat"
-              />
-            </div>
-          </CardBody>
-        </Card>
+            <Textarea
+              name="careInstructions"
+              value={formik.values.careInstructions}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Care Instructions"
+              variant="underlined"
+            />
+          </div>
+        </CommonCard>
 
         <Button
           variant="shadow"

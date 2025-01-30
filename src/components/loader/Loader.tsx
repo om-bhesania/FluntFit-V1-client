@@ -10,10 +10,11 @@ interface loaderProps {
     | "white";
   label?: string;
   size: "sm" | "md" | "lg";
+  className?: string;
 }
 
-const Loader: React.FC<loaderProps> = ({ color, size }) => {
-  return <Spinner color={color} size={size} />;
+const Loader: React.FC<loaderProps> = ({ color = 'white', size, className }) => {
+  return <Spinner color={color} size={size} className={className} />;
 };
 
 export default Loader;

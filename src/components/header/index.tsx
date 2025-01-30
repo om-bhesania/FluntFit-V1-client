@@ -7,14 +7,15 @@ import {
   Plus,
   ReceiptTextIcon,
   ShoppingCart,
+  TicketCheck,
   User,
-  X,
+  X
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import TopBar from "../topbar/Topbar";
 import useToast from "../../hooks/useToast";
 import { Logout } from "../../utils/utils";
+import TopBar from "../topbar/Topbar";
 
 const menuItems = [
   {
@@ -36,9 +37,21 @@ const menuItems = [
     icon: User,
   },
   {
-    name: "Invoice Generation",
-    path: "/invoice/generate",
+    name: "Invoices",
+    path: "/invoice",
     icon: ReceiptTextIcon,
+    dropdown: [
+      {
+        name: "Invoice Generation",
+        path: "/invoice/generate",
+        icon: ReceiptTextIcon,
+      },
+      {
+        name: "Invoice History",
+        path: "/invoice/invoice-history",
+        icon: TicketCheck,
+      },
+    ],
   },
 ];
 
@@ -62,11 +75,11 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-950">
       {/* Mobile menu button */}
       <button
         onClick={toggleMobileMenu}
-        className="fixed top-10 left-4 z-40 md:hidden p-2 rounded-md bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        className="fixed top-10 left-4 z-40 md:hidden p-2 rounded-md bg-gray-950 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
       >
         {isMobileMenuOpen ? (
           <X className="h-6 w-6" aria-hidden="true" />
@@ -79,7 +92,7 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
       <div
         className={`fixed inset-y-0 left-0 transform ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex md:h-screen w-64 flex-col bg-gray-900 z-30`}
+        } md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex md:h-screen w-64 flex-col bg-gray-950 z-30 border-r border-gray-800 `}
       >
         {/* Title Section */}
         <div className="flex h-16 items-center justify-center border-b border-gray-800">
@@ -180,7 +193,7 @@ const Layout: React.FC<LayoutProps> = ({ children, isLogin }) => {
 
       {/* Main Content */}
       <div
-        className={`flex-1 overflow-y-auto transition-all duration-200 ease-in-out ${
+        className={`flex-1 overflow-y-auto transition-all duration-200 ease-in-out bg-gray-950 ${
           isMobileMenuOpen ? "md:ml-64" : ""
         }`}
       >

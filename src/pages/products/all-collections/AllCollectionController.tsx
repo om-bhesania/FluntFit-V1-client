@@ -1,6 +1,7 @@
 import { Button, useDisclosure } from "@nextui-org/react";
-import { QrCode, Trash } from "lucide-react";
+import { QrCode } from "lucide-react";
 import { useEffect, useState } from "react";
+import { DeleteIcon } from "../../../assets/images/Icon";
 import EditModal from "../../../components/modal/EditModal";
 import useToast from "../../../hooks/useToast";
 import service from "../../../services/services";
@@ -83,7 +84,6 @@ function AllCollectionController() {
         const serialNumber = pageIndex * pageSize + row.index + 1;
         return serialNumber;
       },
-      maxWidth: 10,
     },
 
     {
@@ -119,58 +119,77 @@ function AllCollectionController() {
     {
       header: "Price",
       accessorKey: "price",
-      cell: ({ row }: any) => row.original.price,
+      cell: ({ row }: any) => `₹${row.original.price.toFixed(2)}`,
     },
     {
       header: "Cost Price",
-      accessorKey: "Costprice",
-      cell: ({ row }: any) => row.original.costPrice,
+      accessorKey: "costPrice",
+      cell: ({ row }: any) => `₹${row.original.costPrice.toFixed(2)}`,
     },
     {
       header: "Sale Price",
       accessorKey: "salePrice",
       cell: ({ row }: any) =>
-        row.original.salePrice === null ? "-" : row.original.salePrice,
+        row.original.salePrice !== null
+          ? `₹${row.original.salePrice.toFixed(2)}`
+          : "-",
     },
     {
       header: "Profit Margin",
-      accessorKey: "Profit Margin",
+      accessorKey: "profitMargin",
       cell: ({ row }: any) => {
         const costPrice = row.original.costPrice;
-        const price =
-          row.original.salePrice !== null
+        const sellingPrice =
+          row.original.salePrice > 0
             ? row.original.salePrice
-            : row.original.price;
+            : row.original.price; // Choose salePrice if > 0
+
         if (costPrice === 0) {
           return "100%";
         }
-        const profitMargin = ((price - costPrice) / costPrice) * 100;
 
+        const profitMargin = ((sellingPrice - costPrice) / costPrice) * 100;
         return `${profitMargin.toFixed(2)}%`;
       },
     },
     {
       header: "Profit Earned",
-      accessorKey: "Profit",
+      accessorKey: "profitEarned",
       cell: ({ row }: any) => {
         const costPrice = row.original.costPrice;
-        const price =
-          row.original.salePrice !== null
+        const sellingPrice =
+          row.original.salePrice > 0
             ? row.original.salePrice
-            : row.original.price;
-        if (costPrice === 0) {
-          return `₹${price.toFixed(2)}`;
-        }
-        const profitEarned = price - costPrice;
+            : row.original.price; // Choose salePrice if > 0
+
+        const profitEarned = sellingPrice - costPrice;
         return `₹${profitEarned.toFixed(2)}`;
       },
     },
-    { header: "SKU", accessorKey: "sku" },
     {
-      header: "Quantity In Stock",
+      header: "Quantity in Stock",
       accessorKey: "quantityInStock",
-      cell: ({ row }: any) => row.original.quantityInStock,
+      cell: ({ row }: any) => (
+        <>
+          {isNaN(
+            row.original.sizeOptions.reduce(
+              (sum: number, item: any) => sum + Number(item.quantity),
+              0
+            )
+          )
+            ? 0
+            : row.original.sizeOptions.reduce(
+                (sum: number, item: any) => sum + Number(item.quantity),
+                0
+              )}
+        </>
+      ),
     },
+    {
+      header: "SKU",
+      accessorKey: "sku",
+    },
+
     // {
     //   header: "Size Options",
     //   accessorKey: "sizeOptions",
@@ -192,7 +211,7 @@ function AllCollectionController() {
       header: "Actions",
       accessorKey: "actions",
       cell: ({ row }: any) => (
-        <div className="flex justify-center items-center gap-2">
+        <div className="flex justify-center items-center">
           <EditModal
             handleModalOpen={modalOpen}
             triggerLabel="Edit"
@@ -223,7 +242,7 @@ function AllCollectionController() {
             className="bg-transparent"
             isIconOnly
           >
-            <Trash className="text-danger/60" />
+            <DeleteIcon />
           </Button>
           <Button
             onClick={() => handleGenerateLabel(row.original)}
@@ -231,7 +250,7 @@ function AllCollectionController() {
             className="bg-transparent"
             isIconOnly
           >
-            <QrCode className="text-primary" />
+            <QrCode className="text-gray-300" />
           </Button>
         </div>
       ),

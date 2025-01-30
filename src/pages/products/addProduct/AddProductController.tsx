@@ -55,13 +55,13 @@ const AddProductController = ({
 
   const getFiles = () => {};
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: any): Promise<void> => {
     setLoading(true);
     try {
       await AddProductApi(values, notify);
       await uploadFilesToImgur(values.mediaContent);
     } catch (error) {
-      notify("Error submitting form", { type: "error" });
+      return;
     } finally {
       setLoading(false);
     }

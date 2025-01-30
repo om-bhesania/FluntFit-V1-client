@@ -92,7 +92,7 @@ const {notify} = useToast();
   };
 
   return (
-    <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+    <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-950">
       <div
         className="flex justify-center items-center h-40 border-2 border-dashed border-gray-300 p-4 mb-4"
         onDrop={handleDrop}
@@ -143,9 +143,10 @@ const {notify} = useToast();
 
       <div className="mt-4">
         <Button
-          color="primary"
           onClick={handleSubmit}
           disabled={selectedFiles.length === 0}
+          className="text-gray-300"
+          variant="bordered"
         >
           Submit Media
         </Button>

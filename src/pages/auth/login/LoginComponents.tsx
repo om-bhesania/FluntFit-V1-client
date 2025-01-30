@@ -45,7 +45,7 @@ const LoginPage: React.FC<LoginProps> = ({
   };
 
   return (
-    <div className="container min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl w-full space-y-8 flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -57,7 +57,7 @@ const LoginPage: React.FC<LoginProps> = ({
             alt="Login illustration"
             width={120}
             height={120}
-            className="mx-auto"
+            className="mx-auto invert"
           />
         </motion.div>
         <motion.div
@@ -66,12 +66,12 @@ const LoginPage: React.FC<LoginProps> = ({
           transition={{ duration: 0.5 }}
           className="w-full md:w-1/2"
         >
-          <Card className="p-8 bg-gray-900 shadow-xl">
+          <Card className="p-8 bg-gray-800/20 shadow-xl">
             <motion.h2
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="mt-6 text-center text-3xl font-extrabold text-white"
+              className="mt-6 text-center text-3xl font-extrabold text-gray-300 bg-transparent" 
             >
               Admin Login
             </motion.h2>
@@ -95,11 +95,15 @@ const LoginPage: React.FC<LoginProps> = ({
                       <Field name="email">
                         {({ field }: any) => (
                           <Input
+                          variant="underlined"
                             {...field}
                             type="email"
                             placeholder="Enter your email"
-                            startContent={<Mail className="text-gray-400" />}
+                            startContent={<Mail className="text-gray-300" />}
                             className="w-full"
+                            classNames={{
+                              input:"!text-gray-300"
+                            }}
                             autoComplete="email"
                           />
                         )}
@@ -114,10 +118,11 @@ const LoginPage: React.FC<LoginProps> = ({
                       <Field name="password">
                         {({ field }: any) => (
                           <Input
+                          variant="underlined"
                             {...field}
                             type={togglePassword ? "text" : "password"}
                             placeholder="Enter your password"
-                            startContent={<Key className="text-gray-400" />}
+                            startContent={<Key className="text-gray-300" />}
                             className="w-full"
                             autoComplete="current-password"
                             endContent={
@@ -161,7 +166,7 @@ const LoginPage: React.FC<LoginProps> = ({
                       className="w-full"
                       endContent={
                         loading ? (
-                          <Loader size="sm" color="white" />
+                          <Loader size="sm" />
                         ) : (
                           <ArrowRight className="ml-2" />
                         )

@@ -4,10 +4,11 @@ const InvoiceTemplate = ({ invoiceData, className }: any) => {
       parseFloat(invoiceData?.totalDiscount) || 0.0
   ).toFixed(2);
   
+
   return (
     <div className="max-md:container">
       <div
-        className={`${className} md:max-w-5xl max-w-full  md:mx-auto md:p-8 p-6 bg-white`}
+        className={`${className} md:max-w-4xl max-w-full  md:mx-auto md:p-8 p-6 bg-white`}
       >
         {/* Header */}
         <div className="flex justify-between mb-8">

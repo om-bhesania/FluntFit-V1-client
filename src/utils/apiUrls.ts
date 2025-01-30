@@ -1,5 +1,5 @@
-export const baseUrl = "https://flauntfit-v1-server.onrender.com/v1/";
-// export const baseUrl = "http://localhost:3012/v1/";
+// export const baseUrl = "https://flauntfit-v1-server.onrender.com/v1/";
+export const baseUrl = "http://localhost:3012/v1/";
 const apiUrls = {
   baseUrl: baseUrl,
   users: {
@@ -24,6 +24,10 @@ const apiUrls = {
   customer: {
     get: "customers",
     post: "customers",
+  },
+  invoice: {
+    post: "invoices",
+    get: "invoices",
   },
 };
 export default apiUrls;

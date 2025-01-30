@@ -2,23 +2,23 @@ import React from "react";
 import Table from "../../../components/table/Table";
 import { exportToCSV } from "../../../hooks/useExportCsv";
 
-interface AllCollectionComponentProps {
+interface InvoiceHistoryComponentProps {
   columns: any[];
   data: any[];
-  loading: boolean;
+  loading: boolean; 
 }
 
-const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
+const InvoiceHistoryComponent: React.FC<InvoiceHistoryComponentProps> = ({
   columns,
   data,
-  loading,
+  loading, 
 }) => {
   const handleExport = () => {
     exportToCSV(data, "AllCollections");
   };
 
   return (
-    <div className="container mt-6"> 
+    <div className="container mt-6">
       <Table
         data={data}
         columns={columns}
@@ -33,4 +33,4 @@ const AllCollectionComponent: React.FC<AllCollectionComponentProps> = ({
   );
 };
 
-export default AllCollectionComponent;
+export default InvoiceHistoryComponent;

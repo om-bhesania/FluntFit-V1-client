@@ -23,7 +23,7 @@ const Breadcrumbs: React.FC = () => {
         <li className="inline-flex items-center">
           <Link
             to="/"
-            className="text-sm font-semibold text-primary hover:text-primary-dark"
+            className="text-sm font-semibold text-white hover:text-primary-dark"
           >
             Home
           </Link>
@@ -45,7 +45,7 @@ const Breadcrumbs: React.FC = () => {
                   .slice(0, index + 1)
                   .join("/")
                   .toLowerCase()}`}
-                className="text-sm font-semibold text-primary hover:text-primary-dark"
+                className="text-sm font-semibold text-white hover:text-primary-dark"
               >
                 {item}
               </Link>

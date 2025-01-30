@@ -33,22 +33,26 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
       : name?.[0]?.toUpperCase().repeat(2);
   return (
     <>
-      <div className="max-md:hidden bg-white dark:bg-gray-800">
-        <div className="flex w-full justify-between items-center container p-2">
+      <div className="max-md:hidden bg-gray-950 border-b border-gray-800 pb-1">
+        <div className="flex w-full justify-between items-center container py-2">
           <div className="flex-1">
-            <div className="flex items-center justify-start max-w-7xl mx-auto text-primary">
+            <div className="flex items-center justify-start max-w-7xl mx-auto text-white leading-8">
               <Breadcrumbs />
             </div>
           </div>
-          <div className="md:hidden p-2 h-[68px] bg-white dark:bg-gray-800">
-            <div className="flex items-center justify-center max-w-7xl mx-auto text-primary h-full">
+          <div className="md:hidden p-2 h-[68px] bg-gray-950">
+            <div className="flex items-center justify-center max-w-7xl mx-auto text-white h-full">
               <Breadcrumbs />
             </div>
+            t
           </div>
           <div className="flex-1 flex items-center justify-end me-5">
             <Popover backdrop="blur" placement="bottom" offset={10}>
               <PopoverTrigger className="border-1 border-black rounded-full p-1">
-                <User className="text-primary cursor-pointer hover:text-accent transition ease-in-out duration-200 h-8 w-8" />
+                <div className="flex items-center gap-4">
+                  <div className="text-gray-300">{name}</div>
+                  <User className="text-white cursor-pointer border p-1 rounded-full hover:text-accent transition ease-in-out duration-200 h-8 w-8" />
+                </div>
               </PopoverTrigger>
               <PopoverContent className="p-4 w-72 bg-white rounded-lg shadow-lg border border-gray-200">
                 <div className="flex items-center w-full">

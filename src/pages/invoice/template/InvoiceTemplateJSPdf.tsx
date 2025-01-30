@@ -3,6 +3,8 @@ import "jspdf-autotable";
 // import montserrat from ''
 import { Button } from "@nextui-org/react";
 import Montserrat from "../../../assets/fonts/Montserrat";
+import CustomTooltip from "../../../components/tooltip/Tooltip";
+import { Receipt } from "lucide-react";
 
 interface InvoiceItem {
   item: string;
@@ -13,6 +15,7 @@ interface InvoiceItem {
   total: number;
   gst?: string | number;
   id?: string | number;
+
 }
 
 interface InvoiceData {
@@ -31,7 +34,7 @@ interface InvoiceData {
 
 interface InvoicePDFGeneratorProps {
   invoiceData: InvoiceData;
-  handleReviewInvoice: (data: any) => void;
+  handleReviewInvoice: (data: any) => void;  isTable?: boolean;
 }
 
 const generateInvoicePDF = ({
@@ -227,17 +230,21 @@ const generateInvoicePDF = ({
   });
 
   // Payment and return policy
-  yPos += 55;
+  yPos += 40;
   doc.setFontSize(10);
   doc.setTextColor(100);
-  doc.text(`Payment Communication: ${invoiceData?.invoiceNumber}`, 10, yPos + 50);
+  doc.text(
+    `Payment Communication: ${invoiceData?.invoiceNumber}`,
+    10,
+    yPos + 50
+  );
 
   const returnPolicy =
     "Our return policy allows for returns within 10 days of receiving your item. " +
     "To qualify for a return, the item must be unused and in the same condition as when you received it, " +
     "with tags attached and in its original packaging. A proof of purchase is also required.";
 
-  yPos += 55;
+  yPos += 38;
   addMultiLineText(returnPolicy, 10, yPos, 170);
 
   // Footer
@@ -253,6 +260,7 @@ const generateInvoicePDF = ({
 const InvoicePDFGenerator = ({
   invoiceData,
   handleReviewInvoice,
+  isTable,
 }: InvoicePDFGeneratorProps) => {
   const handleGeneratePDF = () => {
     try {
@@ -279,7 +287,7 @@ const InvoicePDFGenerator = ({
   //     console.error("Error generating PDF:", error);
   //   }
   // };
- 
+
   return (
     <>
       <Button
@@ -290,6 +298,20 @@ const InvoicePDFGenerator = ({
       >
         Save and Download
       </Button>
+      {isTable && (
+        <Button
+          variant={"solid"}
+          className="bg-transparent"
+          isIconOnly
+          onClick={() => handleReviewInvoice(handleGeneratePDF)}
+        >
+          <CustomTooltip
+            content="Download Invoice"
+            trigger={<Receipt className="text-gray-300" />}
+            className="text-gray-300"
+          />
+        </Button>
+      )}
       {/* <button onClick={handleGeneratePDFs}>test</button>
       {pdfBlob && (
         <iframe

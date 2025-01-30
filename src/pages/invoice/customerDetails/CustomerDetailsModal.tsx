@@ -84,7 +84,7 @@ function CustomerDetailsModal({
                 {/* Name Input */}
                 <Input
                   name="name"
-                  value={formik.values.name}
+                  value={formik.values?.name}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   placeholder="Enter customer's name"
@@ -101,7 +101,7 @@ function CustomerDetailsModal({
                 {/* Phone Input */}
                 <Input
                   name="phone"
-                  value={formik.values.phone}
+                  value={formik.values?.phone}
                   type="tel"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -119,7 +119,7 @@ function CustomerDetailsModal({
                 {/* Email Input */}
                 <Input
                   name="email"
-                  value={formik.values.email}
+                  value={formik.values?.email}
                   type="email"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -137,7 +137,7 @@ function CustomerDetailsModal({
                 {/* Address Input */}
                 <Textarea
                   name="address"
-                  value={formik.values.address}
+                  value={formik.values?.address}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className="col-span-3"
@@ -184,7 +184,7 @@ function CustomerDetailsModal({
                 <Select
                   name="state"
                   placeholder="Select State"
-                  value={formik.values.state}
+                  value={formik.values?.state}
                   onChange={(event) => {
                     const selectedValue = event.target.value;
                     const selectedState = states.find(
@@ -211,7 +211,7 @@ function CustomerDetailsModal({
                 <Select
                   name="city"
                   placeholder="Select City (optional)"
-                  value={formik.values.city} // Ensure this holds the city name
+                  value={formik.values?.city} // Ensure this holds the city name
                   onChange={(event) => {
                     const selectedCity = event.target.value;
                     formik.setFieldValue("city", selectedCity);

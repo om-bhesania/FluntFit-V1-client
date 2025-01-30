@@ -4,7 +4,6 @@ import {
   AutocompleteItem,
   Button,
   DatePicker,
-  Input,
   Select,
   SelectItem,
   Table,
@@ -12,13 +11,14 @@ import {
   TableCell,
   TableColumn,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import Badge from "../../components/badge/Badge";
+import CommonInput from "../../components/input/CommonInput";
 import {
   generateInvoiceNumber,
   getGSTColor,
@@ -75,11 +75,12 @@ export default function InvoiceComponent({
   isOpen,
   onClose,
   handleOpenModal,
-  handleCustomerSearch,
+  handleCustomerSearch = () => {},
   searchValue,
   initialValues,
   productsData,
   handleSubmit,
+  saveInvoice,
 }: any) {
   const [selectedCustomer, setSelectedCustomer] = useState<any>({});
   const [invoiceData, setInvoiceData] = useState<any>({});
@@ -161,37 +162,7 @@ export default function InvoiceComponent({
       totalUntaxedAmount: 0,
     },
     validationSchema: invoiceSchema,
-    onSubmit: async () => {
-      //   // Get the latest calculations
-      //   const {
-      //     subtotal,
-      //     flatDiscountData,
-      //     totalDiscount,
-      //     subtotalAfterDiscount,
-      //     sgst,
-      //     cgst,
-      //     totalBillingAmount,
-      //     totalUntaxedAmount,
-      //   } = getInvoiceBreakdown();
-      //   // Create a new object with all the values
-      //   const updatedValues = {
-      //     ...values,
-      //     subtotal,
-      //     flatDiscount: flatDiscountData,
-      //     totalDiscount,
-      //     subtotalAfterDiscount,
-      //     totalBillingAmount,
-      //     sgst,
-      //     cgst,
-      //     totalUntaxedAmount,
-      //   };
-      //   // Update the form values and invoice data in one go
-      //   await Promise.all([
-      //     formik.setValues(updatedValues, false),
-      //     setInvoiceData(updatedValues),
-      //   ]);
-      // },
-    },
+    onSubmit: async () => {},
   });
   useEffect(() => {
     const {
@@ -420,6 +391,7 @@ export default function InvoiceComponent({
     formik.setFieldValue("invoiceNumber", newInvoiceNumber);
     localStorage.setItem("lastInvoiceNumber", newInvoiceNumber);
     data && data();
+    saveInvoice(invoiceData);
   };
 
   useEffect(() => {
@@ -429,7 +401,6 @@ export default function InvoiceComponent({
     }
   }, []);
 
- 
   return (
     <>
       <div className="flex max-md:flex-wrap">
@@ -459,7 +430,7 @@ export default function InvoiceComponent({
             </div>
 
             <div>
-              <Input
+              <CommonInput
                 variant="bordered"
                 label="Invoice Number"
                 defaultValue={invoiceNumber}
@@ -474,7 +445,8 @@ export default function InvoiceComponent({
             </div>
 
             <div>
-              <Input
+              <CommonInput
+                name="Cashier"
                 label="Cashier"
                 defaultValue="Pratik"
                 variant="bordered"
@@ -496,7 +468,7 @@ export default function InvoiceComponent({
                   handleCustomerSearch((e.target as HTMLInputElement).value)
                 }
                 onSelectionChange={handleCustomerSelect}
-                className="max-w-[400px]"
+                className="max-w-[400px] !text-gray-300"
                 placeholder="Search by name or phone number"
                 variant="bordered"
                 color="default"
@@ -506,6 +478,10 @@ export default function InvoiceComponent({
                 {(item: any) => (
                   <AutocompleteItem
                     key={item._id}
+                    classNames={{
+                      title: "!text-gray-300",
+                      selectedIcon: "!text-gray-300",
+                    }}
                     textValue={
                       item.name === "Create New Customer" ? "" : item.name
                     }
@@ -530,10 +506,11 @@ export default function InvoiceComponent({
           <Table
             aria-label="Invoice items"
             classNames={{
+              wrapper: "overflow-x-auto",
               table: "w-full",
-              th: "text-center",
-              tr: "text-center ",
-              td: "text-ceenter",
+              th: "text-center bg-gray-800/80 text-gray-300",
+              tr: "text-center",
+              td: "text-center",
             }}
           >
             <TableHeader>
@@ -548,29 +525,38 @@ export default function InvoiceComponent({
               <TableColumn>ACTION</TableColumn>
             </TableHeader>
             <TableBody>
-              {formik.values.items.map((item: any, index: any) => (
+              {formik.values.items?.map((item: any, index: any) => (
                 <TableRow key={item.id}>
                   {/* Product Selection */}
-                  <TableCell className="w-1/4">
+                  <TableCell className="min-w-[200px]">
                     <Select
-                      placeholder="Select item"
+                      variant="bordered"
+                      className="!text-gray-300"
                       value={item.item}
                       onChange={(e) =>
                         handleProductSelect(item.id, e.target.value)
                       }
                     >
-                      {productsData.map((product: any) => (
-                        <SelectItem key={product._id} value={product._id}>
-                          {product.productName}
+                      {productsData?.map((product: any) => (
+                        <SelectItem
+                          key={product._id}
+                          value={product?._id}
+                          classNames={{
+                            title: "!text-gray-300",
+                            wrapper: "bg-gray-300",
+                          }}
+                        >
+                          {product?.productName}
                         </SelectItem>
                       ))}
                     </Select>
                   </TableCell>
 
                   {/* Quantity */}
-                  <TableCell>
-                    <Input
+                  <TableCell className="">
+                    <CommonInput
                       type="number"
+                      variant="bordered"
                       value={item.quantity.toString()}
                       onChange={(e) => {
                         const newQuantity = Number(e.target.value);
@@ -593,8 +579,9 @@ export default function InvoiceComponent({
                   </TableCell>
 
                   {/* HSN/SAC */}
-                  <TableCell>
-                    <Input
+                  <TableCell className="">
+                    <CommonInput
+                      variant="bordered"
                       value={item.hsnSac}
                       onChange={(e) =>
                         formik.setFieldValue(
@@ -606,9 +593,10 @@ export default function InvoiceComponent({
                   </TableCell>
 
                   {/* Price */}
-                  <TableCell>
-                    <Input
+                  <TableCell className="">
+                    <CommonInput
                       type="number"
+                      variant="bordered"
                       value={item.price.toString()}
                       onChange={(e) => {
                         const newPrice = Number(e.target.value);
@@ -631,9 +619,10 @@ export default function InvoiceComponent({
                   </TableCell>
 
                   {/* Product Discount */}
-                  <TableCell className="min-w-[50px]">
-                    <Input
+                  <TableCell className="">
+                    <CommonInput
                       type="number"
+                      variant="bordered"
                       value={item.productDiscount?.toString() || "0"}
                       onChange={(e) => {
                         const newProductDiscount = Number(e.target.value);
@@ -658,7 +647,11 @@ export default function InvoiceComponent({
                   </TableCell>
 
                   {/* Unit Price */}
-                  <TableCell>{item.unitPrice.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <div className="text-gray-300 font-semibold">
+                      {item.unitPrice.toFixed(2)}
+                    </div>
+                  </TableCell>
 
                   {/* GST */}
                   <TableCell>
@@ -669,7 +662,7 @@ export default function InvoiceComponent({
                   </TableCell>
 
                   {/* Total */}
-                  <TableCell className="min-w-[50px]">
+                  <TableCell className="text-gray-300 font-semibold">
                     ₹{item.total.toFixed(2)}
                   </TableCell>
 
@@ -691,10 +684,10 @@ export default function InvoiceComponent({
 
           {/* Add Item Button */}
           <Button
-            color="default"
-            variant="flat"
+            color="primary"
+            className="!mt-0 !mb-6 !ml-6"
+            variant="solid"
             onClick={addItem}
-            className="mt-4 text-primary"
             startContent={<Plus className="h-4 w-4" />}
           >
             Add Item
@@ -702,7 +695,7 @@ export default function InvoiceComponent({
 
           {/* Existing discount inputs */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-            <Input
+            <CommonInput
               type="number"
               variant="bordered"
               label="GST %"
@@ -710,7 +703,7 @@ export default function InvoiceComponent({
               value={formik.values.gstPercentage.toString()}
               onChange={formik.handleChange}
             />
-            <Input
+            <CommonInput
               type="number"
               variant="bordered"
               label="Discount rate %"
@@ -718,7 +711,7 @@ export default function InvoiceComponent({
               value={formik.values.discountRate.toString()}
               onChange={formik.handleChange}
             />
-            <Input
+            <CommonInput
               type="number"
               variant="bordered"
               label="Flat Discount"
@@ -729,7 +722,7 @@ export default function InvoiceComponent({
           </div>
 
           {/* Totals Section */}
-          <div className="mt-8 space-y-2 bg-gray-50 p-4 rounded-lg">
+          <div className="mt-8 space-y-2 p-4 rounded-lg text-gray-300">
             <div className="flex justify-between">
               <span className="font-medium">Untaxed Amount:</span>
               <span>₹{totalUntaxedAmount}</span>

@@ -73,7 +73,7 @@ const SessionProvider = ({ children }: any) => {
         isOpen={isOpen}
         onOpenChange={onClose}
       >
-        <ModalContent>
+        <ModalContent className="text-gray-300">
           <ModalHeader className="flex flex-col gap-1">
             Session Expired
           </ModalHeader>

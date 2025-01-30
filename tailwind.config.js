@@ -14,7 +14,12 @@ export default {
         secondary: "#fafcfb ",
         accent: "#3c5451 ",
         background: "#fafcfb ",
-        danger: "#ff0000",
+        danger: "#f31260",
+        foreground: "#fafcfb",
+        default: {
+          foreground: "#fafcfb",
+          600: "#fafcfb",
+        },
       },
       container: {
         center: true,

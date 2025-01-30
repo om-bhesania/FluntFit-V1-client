@@ -1,4 +1,4 @@
-import { Button, Spinner, Input } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import type {
   ColumnDef,
   PaginationState,
@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "../loader/Loader";
 
 interface ReactTableProps<T extends object> {
   data: T[];
@@ -115,7 +116,7 @@ function Table<T extends object>({
                 onClick={handleRediect}
                 variant="flat"
                 color="secondary"
-                className="text-primary max-md:text-xs max-md:px-1 max-md:mx-1"
+                className="text-white max-md:text-xs max-md:px-1 max-md:mx-1"
               >
                 <Plus className="max-md:h-5 max-md:w-5" />{" "}
                 <span className="max-md:hidden">Add Product</span>
@@ -124,7 +125,7 @@ function Table<T extends object>({
             <Button
               onClick={handleExport}
               variant="bordered"
-              color="primary"
+              color="secondary"
               className="max-md:text-xs max-md:px-1 max-md:mx-1"
             >
               <Download className="max-md:h-5 max-md:w-5" />{" "}
@@ -133,7 +134,7 @@ function Table<T extends object>({
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto shadow-xl rounded-lg tablee">
+      <div className="overflow-x-auto shadow-xl rounded-2xl tablee ">
         <div className="inline-block min-w-full">
           <div className="overflow-hidden rounded-2xl">
             <table
@@ -141,11 +142,11 @@ function Table<T extends object>({
             >
               <thead>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id} className="border-b bg-gray-300">
+                  <tr key={headerGroup.id} className=" bg-gray-700">
                     {headerGroup.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="py-3.5 px-3 text-left text-gray-600 cursor-pointer"
+                        className="py-3.5 px-3 text-left text-gray-300 font-semibold text-base cursor-pointer"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {header.isPlaceholder ? null : (
@@ -174,7 +175,7 @@ function Table<T extends object>({
                       colSpan={columns.length}
                       className="py-2.5 px-3 text-center"
                     >
-                      <Spinner size="lg" className="h-12 w-12 text-center" />
+                      <Loader size="lg" />
                     </td>
                   </tr>
                 ) : filteredData.length > 0 ? (
@@ -183,14 +184,14 @@ function Table<T extends object>({
                       <Fragment key={row.id}>
                         <tr
                           className={classNames(
-                            "hover:bg-gray-50 border-b-1 border-gray-500/20"
+                            "hover:bg-gray-800/30 border-b-1 border-gray-500/20"
                           )}
                           onClick={() => onRowClick && onRowClick(row.original)}
                         >
                           {row.getVisibleCells().map((cell) => (
                             <td
                               key={cell.id}
-                              className="py-2 px-3 whitespace-nowrap text-center"
+                              className="py-2 px-3 whitespace-nowrap text-center text-gray-300 text-sm"
                             >
                               {flexRender(
                                 cell.column.columnDef.cell,
@@ -214,7 +215,7 @@ function Table<T extends object>({
                   <tr>
                     <td
                       colSpan={columns.length}
-                      className="py-3.5 px-3 text-center"
+                      className="py-3.5 px-3 text-center text-gray-300"
                     >
                       No data found
                     </td>

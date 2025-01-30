@@ -13,11 +13,11 @@ export const AddProductApi = async (data: any, notify: any) => {
     });
   } catch (error: any) {
     const errorMessage = error?.response?.data.messages;
-
     notify(errorMessage?.[0], {
       type: "error",
     });
   }
+  throw new Error()
 };
 
 export const GetProductApi = async (notify: any) => {
@@ -25,7 +25,7 @@ export const GetProductApi = async (notify: any) => {
     const result: any = await service({
       method: "get",
       url: apiUrls.products.get,
-    });  
+    });
     return result;
   } catch (error: any) {
     const errorMessage = error?.response?.data.messages;
@@ -40,9 +40,6 @@ export const DeleteProductApi = async (id: string, notify: any) => {
     await service({
       method: "delete",
       url: `${apiUrls.products.delete}/${id}`,
-    });
-    notify("Product deleted successfully", {
-      type: "success",
     });
   } catch (error: any) {
     const errorMessage = error?.response?.data.messages;

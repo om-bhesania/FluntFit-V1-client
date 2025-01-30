@@ -2,7 +2,7 @@ import { Tooltip } from "@nextui-org/react";
 
 interface CustomTooltipTypes {
   content: string;
-  trigger: string;
+  trigger: any;
   className?: string;
 }
 
