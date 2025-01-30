@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
-import InvoiceHistoryComponent from "./InvoiceHistoryComponent";
-import { GetInvoiceApi } from "../InvoiceApis";
-import useToast from "../../../hooks/useToast";
 import { Button } from "@nextui-org/react";
 import { Receipt } from "lucide-react";
-import { DeleteIcon, EditIcon, EyeIcon } from "../../../assets/images/Icon";
-import CustomTooltip from "../../../components/tooltip/Tooltip";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { DeleteIcon, EyeIcon } from "../../../assets/images/Icon";
+import CustomTooltip from "../../../components/tooltip/Tooltip";
+import useToast from "../../../hooks/useToast";
+import { GetInvoiceApi } from "../InvoiceApis";
+import InvoiceHistoryComponent from "./InvoiceHistoryComponent";
 
 function InvoiceHistoryController() {
   const [data, setData] = useState<Array<any>>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null); // State for selected invoice
   const { notify } = useToast();
 
   useEffect(() => {
@@ -32,7 +31,6 @@ function InvoiceHistoryController() {
 
   const invokeAlert = () => {};
   const handleViewInvoice = (invoice: any) => {
-    setSelectedInvoice(invoice); // Store selected invoice data
     invokeAlert();
     Swal.fire({
       title: `Invoice: ${invoice.invoiceNumber}!`,
