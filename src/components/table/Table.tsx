@@ -49,7 +49,6 @@ function Table<T extends object>({
   renderSubComponent,
   pageIndex,
   pageSize,
-  pageCount,
   onPaginationChange,
   className,
   loading,
@@ -59,19 +58,23 @@ function Table<T extends object>({
   onRowClick,
 }: ReactTableProps<T>) {
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: pageIndex ?? 0,
-    pageSize: pageSize ?? 6, // Start pagination after 6 records
+    pageIndex: pageIndex || 0,
+    pageSize: pageSize || 6, // Set to 6 rows per page
   });
-  const [sorting, setSorting] = useState([{ id: "date", desc: true }]); // default sorting by "date" column in descending order
-  const [searchQuery, setSearchQuery] = useState(""); // Store global search query
+  const [sorting, setSorting] = useState([{ id: "date", desc: true }]);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter data based on the search query
   const filteredData = data.filter((item) => {
     return Object.values(item)
       .join(" ")
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
   });
+  // Slice the filteredData to display the correct page
+  const displayedData = filteredData.slice(
+    pagination.pageIndex * pagination.pageSize,
+    (pagination.pageIndex + 1) * pagination.pageSize
+  );
 
   const table = useReactTable({
     data: filteredData,
@@ -79,7 +82,7 @@ function Table<T extends object>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
-    pageCount,
+    pageCount: Math.ceil(displayedData.length / pagination.pageSize), // Use displayedData here
     state: {
       pagination,
       sorting,
@@ -93,10 +96,12 @@ function Table<T extends object>({
       onPaginationChange(pagination);
     }
   }, [pagination, onPaginationChange]);
+
   const nav = useNavigate();
   const handleRediect = () => {
     nav(btnLink);
   };
+
   return (
     <div className="flex flex-col my-5 overflow-x-auto">
       <div className="mb">
@@ -105,7 +110,7 @@ function Table<T extends object>({
             aria-label="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full max-w-[400px] flex-1"
+            className="w-full max-w-[400px] flex-1 !text-gray-300"
             placeholder="Search..."
             variant="bordered"
             startContent={<Search className="text-gray-400 " />}
@@ -142,7 +147,7 @@ function Table<T extends object>({
             >
               <thead>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id} className=" bg-gray-700">
+                  <tr key={headerGroup.id} className=" bg-gray-940">
                     {headerGroup.headers.map((header) => (
                       <th
                         key={header.id}
@@ -178,13 +183,13 @@ function Table<T extends object>({
                       <Loader size="lg" />
                     </td>
                   </tr>
-                ) : filteredData.length > 0 ? (
+                ) : displayedData.length > 0 ? (
                   <>
                     {table.getRowModel().rows.map((row) => (
                       <Fragment key={row.id}>
                         <tr
                           className={classNames(
-                            "hover:bg-gray-800/30 border-b-1 border-gray-500/20"
+                            "hover:bg-gray-800/30 border-b-1 border-gray-500/20 max-h-[500px] odd:bg-gray-940/20"
                           )}
                           onClick={() => onRowClick && onRowClick(row.original)}
                         >
@@ -226,7 +231,7 @@ function Table<T extends object>({
           </div>
         </div>
       </div>
-      {filteredData.length > 6 && (
+      {filteredData.length > pagination.pageSize && (
         <Pagination table={table} data={filteredData} />
       )}
     </div>
@@ -239,14 +244,13 @@ function Pagination<T>({
 }: React.PropsWithChildren<{ table: ReactTable<T>; data: any }>) {
   return (
     <>
-      {!data.length && (
+      {data.length > 0 && (
         <div className="flex items-center justify-between p-2 self-end mt-3">
           <div className="flex items-center gap-2">
             <Button
               isIconOnly
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
-              className="p-2 border-primary border-2"
               variant="ghost"
             >
               <ChevronLeftIcon className="h-5 w-5" />
@@ -255,23 +259,23 @@ function Pagination<T>({
               isIconOnly
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="p-2 border-primary border-2"
               variant="ghost"
             >
               <ChevronsLeft className="h-5 w-5" />
             </Button>
-            <span className="text-sm">
+            <span className="text-sm !text-gray-300">
               <span>Page </span>
-              <strong>
-                {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
+              <strong className="">
+                <span className="text-primary">
+                  {table.getState().pagination.pageIndex + 1}
+                </span>{" "}
+                of {table.getPageCount()}
               </strong>
             </span>
             <Button
               isIconOnly
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="p-2 border-primary border-2"
               variant="ghost"
             >
               <ChevronsRight className="h-5 w-5" />
@@ -280,7 +284,6 @@ function Pagination<T>({
               isIconOnly
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
-              className="p-2 border-primary border-2"
               variant="ghost"
             >
               <ChevronRightIcon className="h-5 w-5" />

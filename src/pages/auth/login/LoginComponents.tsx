@@ -45,7 +45,7 @@ const LoginPage: React.FC<LoginProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 py-12 px-4 sm:px-6 lg:px-8 dark">
       <div className="max-w-5xl w-full space-y-8 flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -95,7 +95,7 @@ const LoginPage: React.FC<LoginProps> = ({
                       <Field name="email">
                         {({ field }: any) => (
                           <Input
-                          variant="underlined"
+                          variant="flat"
                             {...field}
                             type="email"
                             placeholder="Enter your email"
@@ -118,7 +118,7 @@ const LoginPage: React.FC<LoginProps> = ({
                       <Field name="password">
                         {({ field }: any) => (
                           <Input
-                          variant="underlined"
+                          variant="flat"
                             {...field}
                             type={togglePassword ? "text" : "password"}
                             placeholder="Enter your password"

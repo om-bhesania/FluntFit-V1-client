@@ -20,8 +20,10 @@ const CommonCard: React.FC<CommonCardProps> = ({
 }) => {
   return (
     <Card
-      className={`mb-6 ${className}`}
-      classNames={{ base: classNames.base || "bg-gray-800/20 text-gray-300" }}
+      className={`mb-6 z-[5] ${className}`}
+      classNames={{
+        base: classNames.base || "z-[1] text-gray-300 bg-gray-960",
+      }}
     >
       {title && (
         <CardHeader className={classNames.header || ""}>

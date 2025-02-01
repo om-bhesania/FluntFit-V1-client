@@ -29,9 +29,7 @@ function InvoiceHistoryController() {
     }
   };
 
-  const invokeAlert = () => {};
   const handleViewInvoice = (invoice: any) => {
-    invokeAlert();
     Swal.fire({
       title: `Invoice: ${invoice.invoiceNumber}!`,
       width: "70%",

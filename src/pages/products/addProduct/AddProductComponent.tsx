@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import CommonCard from "../../../components/cards/CommonCard";
 import FileInput from "../../../components/fileUpload/FileInput";
 import CommonInput from "../../../components/input/CommonInput";
+import { darkSelectClassNames } from "../../../utils/utils";
 
 interface AddProductComponentProps {
   categories: { value: string; label: string }[];
@@ -188,7 +189,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Product Name *"
-              variant="underlined"
+              variant="flat"
               description={
                 formik.errors.productName && formik.touched.productName
                   ? String(formik.errors.productName)
@@ -204,7 +205,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Product Description"
-              variant="underlined"
+              variant="flat"
               title="Product Description"
             />
           </div>
@@ -212,7 +213,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         <CommonCard className="mb-6" title="Category & Classification">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
-              variant="underlined"
+              classNames={darkSelectClassNames}
+              variant="flat"
               onChange={(event) => {
                 const selectedValue = event.target.value;
                 formik.setFieldValue("category", selectedValue);
@@ -240,7 +242,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Enter subcategory *"
-              variant="underlined"
+              variant="flat"
               description={
                 formik.errors.subcategory && formik.touched.subcategory
                   ? String(formik.errors.subcategory)
@@ -256,7 +258,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Product Type *"
-              variant="underlined"
+              variant="flat"
               isInvalid={
                 !!(formik.errors.productType && formik.touched.productType)
               }
@@ -272,7 +274,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Product Brand *"
-              variant="underlined"
+              variant="flat"
               isInvalid={!!(formik.errors.brand && formik.touched.brand)}
               description={
                 formik.errors.brand && formik.touched.brand
@@ -290,7 +292,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Selling Price *"
-              variant="underlined"
+              variant="flat"
               description={
                 formik.errors.price && formik.touched.price
                   ? String(formik.errors.price)
@@ -304,7 +306,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Sale or Discounted Price (optional)"
-              variant="underlined"
+              variant="flat"
               description={
                 formik.errors.salePrice && formik.touched.salePrice
                   ? String(formik.errors.salePrice)
@@ -320,7 +322,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Cost Price *"
-              variant="underlined"
+              variant="flat"
               description={
                 formik.errors.costPrice && formik.touched.costPrice
                   ? String(formik.errors.costPrice)
@@ -331,7 +333,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               }
             />
             <Select
-              variant="underlined"
+              classNames={darkSelectClassNames}
+              variant="flat"
               onChange={(event) => {
                 const selectedValue = event.target.value;
                 formik.setFieldValue("gst", selectedValue);
@@ -356,7 +359,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
             <div className="">
               <div className={`flex items-center gap-3 rounded-xl pr-2`}>
                 <CommonInput
-                  variant="underlined"
+                  variant="flat"
                   name="sku"
                   value={formik.values.sku}
                   onChange={formik.handleChange}
@@ -386,7 +389,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Quantity in Stock *"
-              variant="underlined"
+              variant="flat"
               description={
                 formik.errors.quantityInStock && formik.touched.quantityInStock
                   ? String(formik.errors.quantityInStock)
@@ -413,7 +416,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
         <CommonCard className="mb-6" title="Additional Options">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
-              variant="underlined"
+              classNames={darkSelectClassNames}
+              variant="flat"
               label="Select Size *"
               placeholder="Select Size"
               aria-label="Select Size"
@@ -474,7 +478,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
             </div>
 
             <Select
-              variant="underlined"
+              classNames={darkSelectClassNames}
+              variant="flat"
               onChange={(event) => {
                 const selectedValue = event.target.value;
                 formik.setFieldValue("inventoryStatus", selectedValue); // Setting the value directly
@@ -508,7 +513,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               label="Care Instructions"
-              variant="underlined"
+              variant="flat"
             />
           </div>
         </CommonCard>

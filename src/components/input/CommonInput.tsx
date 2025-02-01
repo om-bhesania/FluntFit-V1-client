@@ -15,6 +15,7 @@ interface CommonInputProps {
   type?: string;
   min?: any;
   max?: any;
+  placeholder?: string;
 }
 
 const CommonInput: React.FC<CommonInputProps> = ({
@@ -23,7 +24,7 @@ const CommonInput: React.FC<CommonInputProps> = ({
   onChange,
   onBlur,
   label,
-  variant = "underlined",
+  variant = "flat",
   description = "",
   isInvalid = false,
   endContent,
@@ -31,12 +32,13 @@ const CommonInput: React.FC<CommonInputProps> = ({
   className,
   type,
   min,
-  max
+  max,
+  placeholder,
 }) => {
   return (
     <Input
       classNames={{
-        input: "!text-gray-300",
+        input: "",
       }}
       type={type}
       name={name}
@@ -52,6 +54,7 @@ const CommonInput: React.FC<CommonInputProps> = ({
       className={className}
       min={min}
       max={max}
+      placeholder={placeholder}
     />
   );
 };

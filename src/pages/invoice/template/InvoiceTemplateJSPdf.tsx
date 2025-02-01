@@ -291,7 +291,8 @@ const InvoicePDFGenerator = ({
   return (
     <>
       <Button
-        color="primary"
+        color="secondary"
+        className="text-gray-950"
         onClick={async () => {
           handleReviewInvoice(handleGeneratePDF);
         }}

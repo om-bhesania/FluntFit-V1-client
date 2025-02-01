@@ -11,7 +11,7 @@ import {
   TableCell,
   TableColumn,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { Plus, Trash2 } from "lucide-react";
@@ -20,6 +20,7 @@ import * as Yup from "yup";
 import Badge from "../../components/badge/Badge";
 import CommonInput from "../../components/input/CommonInput";
 import {
+  darkSelectClassNames,
   generateInvoiceNumber,
   getGSTColor,
   getInitialInvoiceNumber,
@@ -339,6 +340,9 @@ export default function InvoiceComponent({
     newItems.splice(index, 1);
     formik.setFieldValue("items", newItems);
   };
+  const removeAllItems = () => {
+    formik.setFieldValue("items", []);
+  };
 
   const handleProductSelect = (itemId: string, selectedProductId: string) => {
     const selectedProduct = productsData.find(
@@ -392,8 +396,9 @@ export default function InvoiceComponent({
     localStorage.setItem("lastInvoiceNumber", newInvoiceNumber);
     data && data();
     saveInvoice(invoiceData);
+    removeAllItems();
+    formik.resetForm(initialValues);
   };
-
   useEffect(() => {
     const savedInvoiceNumber = localStorage.getItem("lastInvoiceNumber");
     if (!savedInvoiceNumber) {
@@ -412,7 +417,7 @@ export default function InvoiceComponent({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <DatePicker
-                variant="bordered"
+                variant="flat"
                 label="Invoice Date"
                 color="default"
                 className="w-full"
@@ -431,7 +436,7 @@ export default function InvoiceComponent({
 
             <div>
               <CommonInput
-                variant="bordered"
+                variant="flat"
                 label="Invoice Number"
                 defaultValue={invoiceNumber}
                 value={formik.values.invoiceNumber}
@@ -449,7 +454,7 @@ export default function InvoiceComponent({
                 name="Cashier"
                 label="Cashier"
                 defaultValue="Pratik"
-                variant="bordered"
+                variant="flat"
                 value={formik.values.cashier}
                 onChange={(e) =>
                   formik.setFieldValue("cashier", e.target.value)
@@ -460,6 +465,7 @@ export default function InvoiceComponent({
 
             <div>
               <Autocomplete
+                classNames={darkSelectClassNames}
                 label="Customer:"
                 items={
                   Array.isArray(filteredCustomers) ? filteredCustomers : []
@@ -468,9 +474,9 @@ export default function InvoiceComponent({
                   handleCustomerSearch((e.target as HTMLInputElement).value)
                 }
                 onSelectionChange={handleCustomerSelect}
-                className="max-w-[400px] !text-gray-300"
+                className="max-w-[400px] "
                 placeholder="Search by name or phone number"
-                variant="bordered"
+                variant="flat"
                 color="default"
                 allowsCustomValue
               >
@@ -478,10 +484,6 @@ export default function InvoiceComponent({
                 {(item: any) => (
                   <AutocompleteItem
                     key={item._id}
-                    classNames={{
-                      title: "!text-gray-300",
-                      selectedIcon: "!text-gray-300",
-                    }}
                     textValue={
                       item.name === "Create New Customer" ? "" : item.name
                     }
@@ -489,13 +491,13 @@ export default function InvoiceComponent({
                   >
                     {item._id === "new" ? (
                       <div className="flex items-center gap-2 cursor-pointer">
-                        <Plus className="!h-4 !w-4 text-primary" />
+                        <Plus className="!h-4 !w-4 " />
                         {item.name}
                       </div>
                     ) : (
                       <div>
                         <p className="font-medium">{item.name}</p>
-                        <small className="text-gray-500">{item.phone}</small>
+                        <small className=" text-xs">{item.phone}</small>
                       </div>
                     )}
                   </AutocompleteItem>
@@ -508,7 +510,7 @@ export default function InvoiceComponent({
             classNames={{
               wrapper: "overflow-x-auto",
               table: "w-full",
-              th: "text-center bg-gray-800/80 text-gray-300",
+              th: "text-center bg-gray-940 text-gray-300",
               tr: "text-center",
               td: "text-center",
             }}
@@ -530,21 +532,19 @@ export default function InvoiceComponent({
                   {/* Product Selection */}
                   <TableCell className="min-w-[200px]">
                     <Select
-                      variant="bordered"
-                      className="!text-gray-300"
+                      classNames={darkSelectClassNames}
+                      variant="flat"
                       value={item.item}
                       onChange={(e) =>
                         handleProductSelect(item.id, e.target.value)
                       }
+                      placeholder="Select item"
                     >
                       {productsData?.map((product: any) => (
                         <SelectItem
                           key={product._id}
                           value={product?._id}
-                          classNames={{
-                            title: "!text-gray-300",
-                            wrapper: "bg-gray-300",
-                          }}
+                          className="bg-gray-950 text-white data-[hover=true]:bg-gray-800 data-[selected=true]:bg-blue-600"
                         >
                           {product?.productName}
                         </SelectItem>
@@ -556,7 +556,7 @@ export default function InvoiceComponent({
                   <TableCell className="">
                     <CommonInput
                       type="number"
-                      variant="bordered"
+                      variant="flat"
                       value={item.quantity.toString()}
                       onChange={(e) => {
                         const newQuantity = Number(e.target.value);
@@ -581,8 +581,9 @@ export default function InvoiceComponent({
                   {/* HSN/SAC */}
                   <TableCell className="">
                     <CommonInput
-                      variant="bordered"
+                      variant="flat"
                       value={item.hsnSac}
+                      placeholder="Add HSN/SAC"
                       onChange={(e) =>
                         formik.setFieldValue(
                           `items.${index}.hsnSac`,
@@ -596,7 +597,7 @@ export default function InvoiceComponent({
                   <TableCell className="">
                     <CommonInput
                       type="number"
-                      variant="bordered"
+                      variant="flat"
                       value={item.price.toString()}
                       onChange={(e) => {
                         const newPrice = Number(e.target.value);
@@ -622,7 +623,7 @@ export default function InvoiceComponent({
                   <TableCell className="">
                     <CommonInput
                       type="number"
-                      variant="bordered"
+                      variant="flat"
                       value={item.productDiscount?.toString() || "0"}
                       onChange={(e) => {
                         const newProductDiscount = Number(e.target.value);
@@ -656,8 +657,10 @@ export default function InvoiceComponent({
                   {/* GST */}
                   <TableCell>
                     <Badge
-                      content={`${item.gst}%`}
+                      content={`${item.gst}`}
                       color={getGSTColor(item.gst)}
+                      formik={formik}
+                      index={index}
                     />
                   </TableCell>
 
@@ -684,9 +687,9 @@ export default function InvoiceComponent({
 
           {/* Add Item Button */}
           <Button
-            color="primary"
-            className="!mt-0 !mb-6 !ml-6"
+            color="secondary"
             variant="solid"
+            className="text-gray-950"
             onClick={addItem}
             startContent={<Plus className="h-4 w-4" />}
           >
@@ -697,7 +700,7 @@ export default function InvoiceComponent({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
             <CommonInput
               type="number"
-              variant="bordered"
+              variant="flat"
               label="GST %"
               name="gstPercentage"
               value={formik.values.gstPercentage.toString()}
@@ -705,7 +708,7 @@ export default function InvoiceComponent({
             />
             <CommonInput
               type="number"
-              variant="bordered"
+              variant="flat"
               label="Discount rate %"
               name="discountRate"
               value={formik.values.discountRate.toString()}
@@ -713,7 +716,7 @@ export default function InvoiceComponent({
             />
             <CommonInput
               type="number"
-              variant="bordered"
+              variant="flat"
               label="Flat Discount"
               name="flatDiscount"
               value={formik.values.flatDiscount.toString()}
@@ -746,7 +749,7 @@ export default function InvoiceComponent({
                     <span className="inline-flex items-center">
                       <span className="mr-1">GST</span>
                       <span className="font-bold">
-                        ({parseInt(gstPercentage).toFixed(0)}%)
+                        {parseInt(gstPercentage).toFixed(0)}
                       </span>
                     </span>
                   }
@@ -761,7 +764,7 @@ export default function InvoiceComponent({
                     <span className="inline-flex items-center">
                       <span className="mr-1">Discount</span>
                       <span className="font-bold">
-                        ({invoiceData.discountRate}%)
+                        {invoiceData.discountRate}
                       </span>
                     </span>
                   }
@@ -792,7 +795,7 @@ export default function InvoiceComponent({
 
           {/* Submit Button */}
           <div className="text-end space-x-5">
-            {/* <Button color="primary" type="submit" variant="bordered">
+            {/* <Button color="primary" type="submit" variant="flat">
             Review Invoice
           </Button> */}
             <InvoicePDFGenerator

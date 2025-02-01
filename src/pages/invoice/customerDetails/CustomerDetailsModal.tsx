@@ -16,9 +16,12 @@ import {
 import { City, State } from "country-state-city";
 import { useFormik } from "formik";
 import { Mail, MapPin, Phone, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { parseDate } from "@internationalized/date";
+import { darkSelectClassNames } from "../../../utils/utils";
+import Loader from "../../../components/loader/Loader";
+
 export interface FormValues {
   name: string;
   phone: string;
@@ -44,6 +47,9 @@ function CustomerDetailsModal({
   handleSubmit,
 }: CustomerDetailsModalProps) {
   const [value, setValue] = useState<DateValue | null>(null);
+  useEffect(() => {
+    fetchStates();
+  }, []);
   const formik = useFormik({
     initialValues,
     validationSchema: Yup.object({
@@ -61,26 +67,52 @@ function CustomerDetailsModal({
     onSubmit: async (values) => {
       await handleSubmit(values);
       formik.resetForm();
-      formik.setFieldValue('dob' , '')
+      formik.setFieldValue("dob", "");
       formik.setFieldValue("state", "");
       formik.setFieldValue("city", "");
     },
   });
-  const [citiesOfState, setCitiesOfState] = useState<any>();
-  const states = State.getStatesOfCountry("IN");
-  const cities = City.getCitiesOfState("IN", citiesOfState);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [cities, setCities] = useState<any>([]);
+  const [states, setStates] = useState<any>([]);
   const currentDate = new Date().toISOString().split("T")[0];
+
+  const fetchStates = async () => {
+    setLoading(true);
+    try {
+      const stateList = State.getStatesOfCountry("IN");
+      setStates(stateList);
+    } catch {
+      return;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCities = async (StateId: string) => {
+    setLoading(true);
+    try {
+      let cityList = await City.getCitiesOfState("IN", StateId);
+      setCities(cityList);
+    } catch {
+      return;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} placement="center" backdrop="blur">
-      <ModalContent>
+      <ModalContent className="bg-gray-950 text-gray-300">
         <ModalHeader>
-          <h2 className="text-lg font-semibold">Customer Information</h2>
+          <h2 className="text-lg font-semibold text-gray-300">
+            Customer Information
+          </h2>
         </ModalHeader>
         <form onSubmit={formik.handleSubmit} className="container">
           <Card className="mb-6 h-full bg-transparent shadow-none">
             <CardBody>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 dark">
                 {/* Name Input */}
                 <Input
                   name="name"
@@ -157,11 +189,18 @@ function CustomerDetailsModal({
                   calendarProps={{
                     defaultFocusedValue: value || undefined,
                     nextButtonProps: {
-                      variant: "light",
+                      variant: "bordered",
                     },
                     prevButtonProps: {
-                      variant: "light",
+                      variant: "bordered",
                     },
+                  }}
+                  classNames={{
+                    base: "dark text-gray-950",
+                    calendar:
+                      "bg-gray-950 text-gray-300 disabled:!text-gray-200",
+                    helperWrapper: "bg-gray-950",
+                    calendarContent: "bg-gray-950 disabled:!text-gray-200",
                   }}
                   maxValue={parseDate(currentDate)}
                   showMonthAndYearPickers={true}
@@ -177,21 +216,24 @@ function CustomerDetailsModal({
                     setValue(newValue);
                     formik.setFieldValue("dob", formattedDate);
                   }}
-                  onBlur={formik.handleBlur} // Handle blur for Formik validation
+                  onBlur={formik.handleBlur}
                   aria-label="Date of Birth"
                 />
 
                 <Select
+                  classNames={darkSelectClassNames}
+                  variant="flat"
                   name="state"
                   placeholder="Select State"
                   value={formik.values?.state}
+                  isLoading={loading}
                   onChange={(event) => {
                     const selectedValue = event.target.value;
                     const selectedState = states.find(
-                      (state) => state.isoCode === selectedValue
+                      (state: any) => state.isoCode === selectedValue
                     )?.name;
                     formik.setFieldValue("state", selectedState);
-                    setCitiesOfState(selectedValue);
+                    fetchCities(selectedValue);
                   }}
                   onBlur={formik.handleBlur}
                   aria-label="State"
@@ -202,13 +244,19 @@ function CustomerDetailsModal({
                       : ""
                   }
                 >
-                  {states.map((item) => (
-                    <SelectItem key={item.isoCode} value={item.isoCode}>
-                      {item.name}
+                  {states.map((item: any) => (
+                    <SelectItem
+                      key={item.isoCode}
+                      value={item.isoCode}
+                      className="text-gray-300"
+                    >
+                      {loading ? <Loader size="lg" /> : item.name}
                     </SelectItem>
                   ))}
                 </Select>
                 <Select
+                  classNames={darkSelectClassNames}
+                  variant="flat"
                   name="city"
                   placeholder="Select City (optional)"
                   value={formik.values?.city} // Ensure this holds the city name
@@ -224,10 +272,15 @@ function CustomerDetailsModal({
                       ? String(formik.errors.city)
                       : ""
                   }
+                  disabled={loading}
                 >
-                  {cities.map((city) => (
-                    <SelectItem key={city.name} value={city.name}>
-                      {city.name}
+                  {cities.map((city: any) => (
+                    <SelectItem
+                      key={city.name}
+                      value={city.name}
+                      className="text-gray-300"
+                    >
+                      {loading ? <Loader size="lg" /> : city.name}
                     </SelectItem>
                   ))}
                 </Select>

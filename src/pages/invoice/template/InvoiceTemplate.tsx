@@ -3,10 +3,12 @@ const InvoiceTemplate = ({ invoiceData, className }: any) => {
     parseFloat(invoiceData?.totalUntaxedAmount) -
       parseFloat(invoiceData?.totalDiscount) || 0.0
   ).toFixed(2);
-  
 
   return (
     <div className="max-md:container">
+      <div className="bg-yellow-300 text-xs flex items-center justify-center">
+        <div className="py-0.5 font-bold">This is for Represantion purpose only</div>
+      </div>
       <div
         className={`${className} md:max-w-4xl max-w-full  md:mx-auto md:p-8 p-6 bg-white`}
       >
@@ -81,27 +83,31 @@ const InvoiceTemplate = ({ invoiceData, className }: any) => {
             </tr>
           </thead>
           <tbody>
-            {invoiceData?.items?.map((product: any, index: number) => 
-              product.item && product.item !== "" && (
-              <tr key={`${product.id}-${index}`}>
-                <td className="py-2 text-center">{product.item}</td>
-                <td className="py-2 text-center">{product.hsnSac || ""}</td>
-                <td className="py-2 text-center">
-                {product.quantity || 0.0}
-                </td>
-                <td className="py-2 text-center">₹{product?.price || 0.0}</td>
-                <td className="py-2 text-center">
-                {product?.productDiscount || 0.0}
-                </td>
-                <td className="py-2 text-center">
-                ₹ {parseInt(product?.total).toFixed(2) || 0.0}
-                </td>
-                <td className="py-2 text-center">{product?.gst || 0.0}%</td>
-                <td className="text-center py-2">
-                ₹{product?.total.toFixed(2) || 0.0}
-                </td>
-              </tr>
-              )
+            {invoiceData?.items?.map(
+              (product: any, index: number) =>
+                product.item &&
+                product.item !== "" && (
+                  <tr key={`${product.id}-${index}`}>
+                    <td className="py-2 text-center">{product.item}</td>
+                    <td className="py-2 text-center">{product.hsnSac || ""}</td>
+                    <td className="py-2 text-center">
+                      {product.quantity || 0.0}
+                    </td>
+                    <td className="py-2 text-center">
+                      ₹{product?.price || 0.0}
+                    </td>
+                    <td className="py-2 text-center">
+                      {product?.productDiscount || 0.0}
+                    </td>
+                    <td className="py-2 text-center">
+                      ₹ {parseInt(product?.total).toFixed(2) || 0.0}
+                    </td>
+                    <td className="py-2 text-center">{product?.gst || 0.0}%</td>
+                    <td className="text-center py-2">
+                      ₹{product?.total.toFixed(2) || 0.0}
+                    </td>
+                  </tr>
+                )
             )}
           </tbody>
         </table>

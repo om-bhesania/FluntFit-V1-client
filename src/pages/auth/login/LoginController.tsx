@@ -33,9 +33,12 @@ function LoginController({
     setLoading(true);
     try {
       const res: any = await LoginApi(data, notify);
-      sessionStorage.setItem("authToken", res.data.data.token);
-      sessionStorage.setItem("name", res.data.data.name);
-      sessionStorage.setItem("email", res.data.data.userEmail);
+      console.log("res", res.data.token);
+      sessionStorage.setItem("authToken", res.data.token);
+      console.log('first')
+      sessionStorage.setItem("name", res.data.name);
+      sessionStorage.setItem("email", res.data.userEmail);
+      sessionStorage.setItem("role", res.data.role);
       if (res.status === "Success" || res.status === "success") {
         nav("/products/all-products?isLogin=true");
       }

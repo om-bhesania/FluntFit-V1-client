@@ -19,7 +19,7 @@ function Router() {
   return (
     <SessionProvider>
       <Layout isLogin={isLogin || isAuthenticated}>
-        <div className="app-layout">
+        <div className="app-layout dark">
           <main className="app-content mt-6">
             <Routes>
               {/* Protected routes block */}

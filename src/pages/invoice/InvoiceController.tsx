@@ -63,12 +63,10 @@ function InvoiceController() {
   const loadData = async () => {
     try {
       const result: any = await GetProductApi(notify);
-      const response = await GetCustomerApi(notify);
-      // const invoiceHistoryData = await GetInvoiceApi(notify);
       setProductsData(result.products || []);
+      const response = await GetCustomerApi(notify);
       setCustomers(response);
       setFilteredCustomers(response);
-      // setInvoiceHistory(invoiceHistoryData);
     } catch (error: any) {
       notify(error?.response.data.message, { type: "error" });
     }
@@ -135,6 +133,9 @@ function InvoiceController() {
     setNewCustomerData(res.response.newCustomer);
     setIsNewCustomer(res.response.status === "Success" ? true : false);
     setModalOpen(false); // Close the modal
+    const response = await GetCustomerApi(notify);
+    setCustomers(response);
+    setFilteredCustomers(response);
   };
 
   // Open modal

@@ -33,8 +33,8 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
       : name?.[0]?.toUpperCase().repeat(2);
   return (
     <>
-      <div className="max-md:hidden bg-gray-950 border-b border-gray-800 pb-1">
-        <div className="flex w-full justify-between items-center container py-2">
+      <div className="max-md:hidden bg-gray-950 border-b border-gray-800 pb-1 sticky top-0 z-[20]">
+        <div className="flex w-full justify-between items-center container py-2.5">
           <div className="flex-1">
             <div className="flex items-center justify-start max-w-7xl mx-auto text-white leading-8">
               <Breadcrumbs />
@@ -48,7 +48,7 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
           </div>
           <div className="flex-1 flex items-center justify-end me-5">
             <Popover backdrop="blur" placement="bottom" offset={10}>
-              <PopoverTrigger className="border-1 border-black rounded-full p-1">
+              <PopoverTrigger className=" rounded-full p-1">
                 <div className="flex items-center gap-4">
                   <div className="text-gray-300">{name}</div>
                   <User className="text-white cursor-pointer border p-1 rounded-full hover:text-accent transition ease-in-out duration-200 h-8 w-8" />

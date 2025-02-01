@@ -28,6 +28,7 @@ const InvoiceHistoryComponent: React.FC<InvoiceHistoryComponentProps> = ({
         handleExport={handleExport}
         isAddBtnVisible={true}
         btnLink="/products/add-products"
+        pageSize={5}
       />
     </div>
   );

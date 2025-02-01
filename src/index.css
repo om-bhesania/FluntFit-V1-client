@@ -39,12 +39,12 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .tablee::-webkit-scrollbar-track {
-  @apply bg-gray-600;
+  @apply bg-gray-950;
 }
 
 /* Handle */
 .tablee::-webkit-scrollbar-thumb {
-  @apply bg-gray-900 rounded-md;
+  @apply bg-gray-960 rounded-md;
 }
 
 /* Handle on hover */
@@ -71,7 +71,47 @@ input[type="number"] {
 }
 
 
-.bg-content1{
+/* .bg-content1{
   background-color: #030712 !important;
 }
- 
+  */
+
+.dark .nextui-select__control {
+  @apply bg-gray-800 border-gray-700 text-white;
+}
+
+.dark .nextui-select__menu {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .nextui-select__option {
+  @apply text-white;
+}
+
+.dark .nextui-select__option--is-focused {
+  @apply bg-gray-700;
+}
+
+.dark .nextui-select__option--is-selected {
+  @apply bg-blue-600;
+}
+.chevron-icon{
+  @apply text-gray-800
+}
+
+.text-foreground{
+  @apply !text-gray-800
+}
+
+td span {
+  @apply text-gray-300
+}
+
+input{
+  @apply !text-gray-300
+}
+
+textarea{
+  @apply !text-gray-300
+}
+

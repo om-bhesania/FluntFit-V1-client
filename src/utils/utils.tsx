@@ -180,12 +180,35 @@ export const getInitialInvoiceNumber = () => {
 };
 
 export const generateInvoiceNumber = () => {
-  const currentYear = new Date().getFullYear();
-  const lastInvoiceNumber =
-    localStorage.getItem("lastInvoiceNumber") || `INV/${currentYear}/00001`;
-  const [prefix, year, sequence] = lastInvoiceNumber.split("/");
-  const newSequence = String(Number(sequence) + 1).padStart(5, "0");
+  const currentYear = new Date().getFullYear() || 2025;
+  const defaultInvoice = `INV/${currentYear}/00001`;
+
+  let lastInvoiceNumber =
+    localStorage.getItem("lastInvoiceNumber") || defaultInvoice;
+
+  // Ensure valid format
+  const parts = lastInvoiceNumber.split("/");
+  if (parts.length !== 3) {
+    lastInvoiceNumber = defaultInvoice;
+  }
+
+  const [prefix = "INV", year = String(currentYear), sequence = "00000"] =
+    lastInvoiceNumber.split("/");
+
+  // Ensure sequence is a valid number
+  const newSequence = String((parseInt(sequence, 10) || 0) + 1).padStart(
+    5,
+    "0"
+  );
+
   const newInvoiceNumber = `${prefix}/${year}/${newSequence}`;
   localStorage.setItem("lastInvoiceNumber", newInvoiceNumber);
+
   return newInvoiceNumber;
+};
+
+
+export const darkSelectClassNames = {
+  popoverContent: "!bg-gray-950 !text-gray-300",
+  selectorIcon: "!text-gray-400",
 };
