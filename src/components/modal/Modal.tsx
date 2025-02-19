@@ -1,15 +1,16 @@
 import {
-  Button,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   useDisclosure,
+  ModalProps,
+  Button,
 } from "@nextui-org/react";
 import { ModalComponentProps } from "../../utils/interfaces";
 
-const ModalComponent: React.FC<ModalComponentProps> = ({
+const ModalComponent: React.FC<ModalComponentProps & ModalProps> = ({
   title,
   bodyContent,
   footerButtons = [],
@@ -19,6 +20,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
   buttonClassName,
   variant,
   color,
+  ...props
 }) => {
   const { isOpen, onOpen: openModal, onOpenChange } = useDisclosure();
 
@@ -49,6 +51,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
         isDismissable={true}
         isKeyboardDismissDisabled={false}
         placement="center"
+        {...props}
       >
         <ModalContent>
           {(close) => (
@@ -66,7 +69,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
                     onPress={() => {
                       button.onPress();
                       close();
-                    }}
+                    }} 
                   >
                     {index === 0 ? "Cancel" : button.label}
                   </Button>

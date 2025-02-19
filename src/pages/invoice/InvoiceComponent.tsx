@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import Badge from "../../components/badge/Badge";
 import CommonInput from "../../components/input/CommonInput";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import {
   darkSelectClassNames,
   generateInvoiceNumber,
@@ -27,7 +28,7 @@ import {
 } from "../../utils/utils";
 import CustomerDetailsModal from "./customerDetails/CustomerDetailsModal";
 import InvoiceTemplate from "./template/InvoiceTemplate";
-import InvoicePDFGenerator from "./template/InvoiceTemplateJSPdf";
+import { InvoicePDFUtil } from "./template/InvoiceTemplateJSPdf";
 
 export interface InvoiceItem {
   id: string;
@@ -340,9 +341,9 @@ export default function InvoiceComponent({
     newItems.splice(index, 1);
     formik.setFieldValue("items", newItems);
   };
-  const removeAllItems = () => {
-    formik.setFieldValue("items", []);
-  };
+  // const removeAllItems = () => {
+  //   formik.setFieldValue("items", []);
+  // };
 
   const handleProductSelect = (itemId: string, selectedProductId: string) => {
     const selectedProduct = productsData.find(
@@ -388,19 +389,15 @@ export default function InvoiceComponent({
       formik.setFieldValue("customers", selectedCustomer.id);
     }
   }, [selectedCustomer]);
-
-  const handleReviewInvoice = (data?: Function) => {
+  const savedInvoiceNumber = useLocalStorage("lastInvoiceNumber");
+  const handleReviewInvoice = () => {
     const newInvoiceNumber = generateInvoiceNumber();
     setInvoiceNumber(newInvoiceNumber);
     formik.setFieldValue("invoiceNumber", newInvoiceNumber);
     localStorage.setItem("lastInvoiceNumber", newInvoiceNumber);
-    data && data();
-    saveInvoice(invoiceData);
-    removeAllItems();
-    formik.resetForm(initialValues);
   };
+
   useEffect(() => {
-    const savedInvoiceNumber = localStorage.getItem("lastInvoiceNumber");
     if (!savedInvoiceNumber) {
       handleReviewInvoice();
     }
@@ -734,11 +731,11 @@ export default function InvoiceComponent({
             <div className="ml-4">
               <div className="flex justify-between">
                 <span className="text-sm">- CGST:</span>
-                <span>₹{sgst || 0.0}</span>
+                <span>₹{cgst || 0.0}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm">- SGST:</span>
-                <span>₹{cgst || 0.0}</span>
+                <span>₹{sgst || 0.0}</span>
               </div>
             </div>
             {parseInt(gstPercentage) > 0 && (
@@ -798,10 +795,20 @@ export default function InvoiceComponent({
             {/* <Button color="primary" type="submit" variant="flat">
             Review Invoice
           </Button> */}
-            <InvoicePDFGenerator
-              invoiceData={invoiceData}
-              handleReviewInvoice={handleReviewInvoice}
-            />
+            <Button
+              type="button"
+              variant="solid"
+              color="primary"
+              onClick={() =>
+                InvoicePDFUtil.downloadAndSaveInvoice(
+                  invoiceData,
+                  handleReviewInvoice,
+                  saveInvoice
+                )
+              }
+            >
+              Download Invoice
+            </Button>
           </div>
         </form>
 

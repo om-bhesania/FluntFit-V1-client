@@ -42,7 +42,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           id: prefilledData._id || "",
           productName: prefilledData?.productName || "",
           productDescription: prefilledData?.productDescription || "",
-          category: prefilledData?.category || "",
+          category: prefilledData?.category || [],
           subcategory: prefilledData?.subcategory || "",
           productType: prefilledData?.productType || "",
           brand: prefilledData?.brand || "",
@@ -53,28 +53,28 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           mediaContent: prefilledData?.mediaContent || [],
           sizeOptions: prefilledData?.sizeOptions || [],
           careInstructions: prefilledData?.careInstructions || "",
-          inventoryStatus: prefilledData?.inventoryStatus || "",
-          gst: prefilledData?.gst || "",
+          inventoryStatus: prefilledData?.inventoryStatus || [],
+          gst: prefilledData?.gst || [],
           costPrice: prefilledData?.costPrice || "",
         }
       : {
           id: "",
           productName: "",
           productDescription: "",
-          category: "",
+          category: [],
           subcategory: "",
           productType: "",
           brand: "",
           price: "",
           salePrice: "",
           costPrice: "",
-          gst: "",
+          gst: [],
           sku: "",
           quantityInStock: "",
           mediaContent: [],
           sizeOptions: [],
           careInstructions: "",
-          inventoryStatus: "",
+          inventoryStatus: [],
         };
 
   const validationSchema = Yup.object().shape({
@@ -144,34 +144,35 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({
           gst: values.gst,
           costPrice: Number(values.costPrice),
         };
-        let response: any;
+
         if (!isEdit) {
-          response = await handleSubmit(formData);
+          await handleSubmit(formData);
         } else if (handleSaveEdit) {
           await handleSaveEdit(prefilledData._id, formData);
         }
-        // Reset form only if API response is successful
-        if (response?.status === 200 || response?.status === 201) {
-          // Clear specific fields after successful submission
-          setFieldValue("category", "", false);
-          setFieldValue("gst", "", false);
-          setFieldValue("sizeOptions", [], false);
-          setFieldValue("inventoryStatus", "", false);
-          setFieldValue("mediaContent", [], false); // Clear file input
 
-          // Optionally reset all fields
-          resetForm({
-            values: {
-              ...initialValues,
-              category: "",
-              subcategory: "",
-              inventoryStatus: "",
-              mediaContent: "",
-              gst: "",
-              sizeOptions: [],
-            },
-          });
-        }
+        // Optionally reset all fields
+        resetForm({
+          values: {
+            id: "",
+            productName: "",
+            productDescription: "",
+            category: [],
+            subcategory: "",
+            productType: "",
+            brand: "",
+            price: "",
+            salePrice: "",
+            costPrice: "",
+            gst: [],
+            sku: "",
+            quantityInStock: "",
+            mediaContent: [],
+            sizeOptions: [],
+            careInstructions: "",
+            inventoryStatus: [],
+          },
+        });
       } catch (error) {
         return;
       }

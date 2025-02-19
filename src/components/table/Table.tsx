@@ -41,6 +41,8 @@ interface ReactTableProps<T extends object> {
   isAddBtnVisible?: boolean;
   btnLink?: any;
   onRowClick?: any;
+  buttonLabel?: string;
+  noExport?: boolean;
 }
 
 function Table<T extends object>({
@@ -56,6 +58,8 @@ function Table<T extends object>({
   isAddBtnVisible,
   btnLink,
   onRowClick,
+  buttonLabel = "Add Product",
+  noExport = false,
 }: ReactTableProps<T>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndex || 0,
@@ -124,18 +128,20 @@ function Table<T extends object>({
                 className="text-white max-md:text-xs max-md:px-1 max-md:mx-1"
               >
                 <Plus className="max-md:h-5 max-md:w-5" />{" "}
-                <span className="max-md:hidden">Add Product</span>
+                <span className="max-md:hidden">{buttonLabel}</span>
               </Button>
             )}
-            <Button
-              onClick={handleExport}
-              variant="bordered"
-              color="secondary"
-              className="max-md:text-xs max-md:px-1 max-md:mx-1"
-            >
-              <Download className="max-md:h-5 max-md:w-5" />{" "}
-              <span className="max-md:hidden">Export as Csv</span>
-            </Button>
+            {noExport ? null : (
+              <Button
+                onClick={handleExport}
+                variant="bordered"
+                color="secondary"
+                className="max-md:text-xs max-md:px-1 max-md:mx-1"
+              >
+                <Download className="max-md:h-5 max-md:w-5" />{" "}
+                <span className="max-md:hidden">Export as Csv</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import service from "../../services/services";
-import apiUrls from "../../utils/apiUrls";
+import service from "../../../services/services";
+import apiUrls from "../../../utils/apiUrls";
 
 export const AddCustomersApi = async (data: any, notify: any) => {
   try {

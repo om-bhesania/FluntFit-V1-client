@@ -7,11 +7,11 @@ import { InvoiceGenerator } from "../pages/invoice";
 import { AddProducts } from "../pages/products/addProduct";
 import { DashAllCollection } from "../pages/products/all-collections";
 import ProtectedRoute from "../ProtectedRoutes";
-import { AuthContext } from "./auth/AuthProvider";
-import { AddCustomerDetails } from "../pages/customers";
+import { AuthContext } from "./auth/AuthProvider"; 
 import SessionProvider from "../services/SessionProvider";
 import { InvoiceHistory } from "../pages/invoice/history";
 import InvoiceController from "../pages/invoice/InvoiceController";
+import { EmployeeManagement, EmployeeTable } from "../pages/employee";
 
 function Router() {
   const { isAuthenticated } = useContext(AuthContext);
@@ -25,23 +25,24 @@ function Router() {
               {/* Protected routes block */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/" element={<Dashboard />} />
-                <Route
-                  path="/products/all-products"
-                  element={<DashAllCollection />}
-                />
+                <Route path="/products" element={<DashAllCollection />} />
                 <Route
                   path="/products/add-products"
                   element={<AddProducts />}
                 />
-                <Route path="/customers" element={<AddCustomerDetails />} />
+                <Route
+                  path="/employee-management"
+                  element={<EmployeeManagement />}
+                />
+                <Route
+                  path="/employee-management/listing"
+                  element={<EmployeeTable />}
+                />
                 <Route
                   path="/invoice/generate"
                   element={<InvoiceController />}
                 />
-                <Route
-                  path="/invoice/invoice-history"
-                  element={<InvoiceHistory />}
-                />
+                <Route path="/invoice" element={<InvoiceHistory />} />
                 <Route path="/*" element={<PageNotFound />} />
                 <Route
                   path="/invoice/generate"

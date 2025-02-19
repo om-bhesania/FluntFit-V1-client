@@ -6,15 +6,7 @@ const Breadcrumbs: React.FC = () => {
   const location = useLocation();
 
   // Generate breadcrumb items dynamically from the path
-  const items = location.pathname
-    .split("/")
-    .filter(Boolean) // Remove empty strings caused by leading/trailing slashes
-    .map((segment) =>
-      segment
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-    );
+  const pathSegments = location.pathname.split("/").filter(Boolean); // Remove empty strings
 
   return (
     <nav className="flex p-2" aria-label="Breadcrumb">
@@ -27,34 +19,40 @@ const Breadcrumbs: React.FC = () => {
           >
             Home
           </Link>
-          {items.length > 0 && (
+          {pathSegments.length > 0 && (
             <ChevronRight className="w-4 h-4 text-gray-400 mx-2 font-bold" />
           )}
         </li>
 
         {/* Add dynamic breadcrumbs */}
-        {items.map((item, index) => (
-          <li key={index} className="inline-flex items-center">
-            {index === items.length - 1 ? (
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                {item}
-              </span>
-            ) : (
-              <Link
-                to={`/${items
-                  .slice(0, index + 1)
-                  .join("/")
-                  .toLowerCase()}`}
-                className="text-sm font-semibold text-white hover:text-primary-dark"
-              >
-                {item}
-              </Link>
-            )}
-            {index < items.length - 1 && (
-              <ChevronRight className="w-4 h-4 text-gray-400 mx-2 font-bold" />
-            )}
-          </li>
-        ))}
+        {pathSegments.map((segment, index) => {
+          const formattedSegment = segment
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "); // Remove "-" only for display
+
+          const linkPath = `/${pathSegments.slice(0, index + 1).join("/")}`; // Keep original for routing
+
+          return (
+            <li key={index} className="inline-flex items-center">
+              {index === pathSegments.length - 1 ? (
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {formattedSegment}
+                </span>
+              ) : (
+                <Link
+                  to={linkPath}
+                  className="text-sm font-semibold text-white hover:text-primary-dark"
+                >
+                  {formattedSegment}
+                </Link>
+              )}
+              {index < pathSegments.length - 1 && (
+                <ChevronRight className="w-4 h-4 text-gray-400 mx-2 font-bold" />
+              )}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );

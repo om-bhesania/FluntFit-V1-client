@@ -16,6 +16,8 @@ interface CommonInputProps {
   min?: any;
   max?: any;
   placeholder?: string;
+  errorMessage?: any;
+  isRequired?: boolean;
 }
 
 const CommonInput: React.FC<CommonInputProps> = ({
@@ -34,6 +36,8 @@ const CommonInput: React.FC<CommonInputProps> = ({
   min,
   max,
   placeholder,
+  errorMessage,
+  isRequired,
 }) => {
   return (
     <Input
@@ -55,6 +59,8 @@ const CommonInput: React.FC<CommonInputProps> = ({
       min={min}
       max={max}
       placeholder={placeholder}
+      errorMessage={errorMessage}
+      required={isRequired}
     />
   );
 };

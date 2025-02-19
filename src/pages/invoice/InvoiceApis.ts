@@ -36,3 +36,21 @@ export const GetInvoiceApi = async (notify: any) => {
     return null;
   }
 };
+
+export const DeleteInvoiceApi = async (id: string, notify: any) => {
+  try {
+    const res: any = await service({
+      url: `${apiUrls.invoice.delete}/${id}`,
+      method: "delete",
+    });
+    notify(res.response.message, {
+      type: "success",
+    });
+  } catch (error: any) {
+    console.log(error);
+    notify(error.response.data.message, {
+      type: "error",
+    });
+    return null;
+  }
+};

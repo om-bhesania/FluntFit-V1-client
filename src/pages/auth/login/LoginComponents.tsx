@@ -71,7 +71,7 @@ const LoginPage: React.FC<LoginProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="mt-6 text-center text-3xl font-extrabold text-gray-300 bg-transparent" 
+              className="mt-6 text-center text-3xl font-extrabold text-gray-300 bg-transparent"
             >
               Admin Login
             </motion.h2>
@@ -95,14 +95,14 @@ const LoginPage: React.FC<LoginProps> = ({
                       <Field name="email">
                         {({ field }: any) => (
                           <Input
-                          variant="flat"
+                            variant="flat"
                             {...field}
                             type="email"
                             placeholder="Enter your email"
                             startContent={<Mail className="text-gray-300" />}
                             className="w-full"
                             classNames={{
-                              input:"!text-gray-300"
+                              input: "!text-gray-300",
                             }}
                             autoComplete="email"
                           />
@@ -118,7 +118,7 @@ const LoginPage: React.FC<LoginProps> = ({
                       <Field name="password">
                         {({ field }: any) => (
                           <Input
-                          variant="flat"
+                            variant="flat"
                             {...field}
                             type={togglePassword ? "text" : "password"}
                             placeholder="Enter your password"

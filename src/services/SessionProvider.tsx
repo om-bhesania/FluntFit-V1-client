@@ -15,84 +15,89 @@ import { PingApi } from "../pages/auth/login/AuthApis";
 
 const SessionProvider = ({ children }: any) => {
   const [isSessionExpired, setIsSessionExpired] = useState(false);
-  const navigate = useNavigate(); // Using useNavigate instead of useHistory
+  const navigate = useNavigate();
   const token = useSessionStorage("authToken");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { notify } = useToast();
-  const ping = async () => {
-    await PingApi(notify);
-  };
+
   useEffect(() => {
-    ping();
-    // Function to check the session expiry by decoding the token or using expiration time
+    const fetchAndValidatePermissions = async () => {
+      await PingApi(notify);
+      // await PermissionsApi(notify);
+    };
+
+    fetchAndValidatePermissions();
+
     const checkSessionExpiration = () => {
       if (!token) {
         setIsSessionExpired(true);
         return;
       }
 
-      // Example: decode token (e.g., JWT) and check if it has expired
-      const tokenPayload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
-      const expirationTime = tokenPayload.exp * 1000; // Convert expiration to milliseconds
-      const currentTime = Date.now();
-      if (currentTime > expirationTime) {
+      try {
+        const tokenPayload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+        const expirationTime = tokenPayload.exp * 1000;
+        if (Date.now() > expirationTime) {
+          setIsSessionExpired(true);
+        }
+      } catch (error) {
+        console.error("Invalid token format");
         setIsSessionExpired(true);
       }
     };
 
     checkSessionExpiration();
-
-    // Optionally, set a timer to check the session every minute
     const intervalId = setInterval(checkSessionExpiration, 60000);
 
-    return () => clearInterval(intervalId); // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
   }, [token]);
 
   useEffect(() => {
     if (isSessionExpired) {
-      onOpen(); // Automatically open the modal when session expires
+      onOpen();
     }
   }, [isSessionExpired, onOpen]);
 
   const handleSessionExpire = () => {
-    sessionStorage.clear(); // Clear all session storage
-    navigate("/login"); // Redirect to login page using useNavigate
+    sessionStorage.clear();
+    navigate("/login");
   };
 
   return (
     <>
-    <div className="top-bar"></div>
-      <div className="bg-yellow-300 text-black lowercase font-semibold text-center p-2 lg:hidden visible">
-        For optimal usage of the app, please use larger screen devices.
-      </div>
-      {children}
+      <div className="top-bar">
+        <div className="bg-yellow-300 text-black lowercase font-semibold text-center p-2 lg:hidden visible">
+          For optimal usage of the app, please use larger screen devices.
+        </div>
+        {children}
 
-      {/* Using key to re-mount the modal whenever the session expires */}
-      <Modal
-        key={isSessionExpired ? "session-expired-modal" : "no-modal"}
-        isOpen={isOpen}
-        onOpenChange={onClose}
-      >
-        <ModalContent className="text-gray-300">
-          <ModalHeader className="flex flex-col gap-1">
-            Session Expired
-          </ModalHeader>
-          <ModalBody>
-            <p>Your session has expired. Please log in again.</p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              color="primary"
-              onPress={() => {
-                handleSessionExpire();
-                onClose();
-              }}
-            >
-              Okay
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        <Modal
+          key={isSessionExpired ? "session-expired-modal" : "no-modal"}
+          isOpen={isOpen}
+          onOpenChange={onClose}
+          className="dark"
+        >
+          <ModalContent className="text-gray-300">
+            <ModalHeader className="flex flex-col gap-1">
+              Session Expired
+            </ModalHeader>
+            <ModalBody>
+              <p>Your session has expired. Please log in again.</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                color="primary"
+                onPress={() => {
+                  handleSessionExpire();
+                  onClose();
+                }}
+              >
+                Okay
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </div>
     </>
   );
 };

@@ -31,6 +31,7 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
       : name?.length > 1
       ? name?.slice(0, 2).toUpperCase()
       : name?.[0]?.toUpperCase().repeat(2);
+      const role = useSessionStorage('role')
   return (
     <>
       <div className="max-md:hidden bg-gray-950 border-b border-gray-800 pb-1 sticky top-0 z-[20]">
@@ -61,7 +62,7 @@ const TopBar: React.FC<BreadcrumbItemProps> = () => {
                   </div>
                   <div className="ml-3">
                     <h3 className="text-lg font-semibold text-gray-800">
-                      {name}
+                      {name} <sup>({role})</sup>
                     </h3>
                     <p className="text-sm text-gray-500">{email}</p>
                   </div>

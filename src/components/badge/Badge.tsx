@@ -122,7 +122,6 @@ const EditableBadge: React.FC<BadgeProps> = ({
 
   const baseClasses =
     "inline-flex items-center justify-center font-semibold rounded-full border px-3 py-0.5 text-xs";
-console.log(content)
   return (
     <span
       className={`${baseClasses} ${colorClasses[color]}`}

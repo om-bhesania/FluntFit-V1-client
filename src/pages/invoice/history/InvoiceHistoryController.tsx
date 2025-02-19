@@ -5,7 +5,10 @@ import Swal from "sweetalert2";
 import { DeleteIcon, EyeIcon } from "../../../assets/images/Icon";
 import CustomTooltip from "../../../components/tooltip/Tooltip";
 import useToast from "../../../hooks/useToast";
-import { GetInvoiceApi } from "../InvoiceApis";
+import { DeleteInvoiceApi, GetInvoiceApi } from "../InvoiceApis";
+import {
+  InvoicePDFUtil,
+} from "../template/InvoiceTemplateJSPdf";
 import InvoiceHistoryComponent from "./InvoiceHistoryComponent";
 
 function InvoiceHistoryController() {
@@ -132,8 +135,53 @@ function InvoiceHistoryController() {
       },
     });
   };
+  const handleDeleteInvoice = (invoice: any) => {
+    console.log(invoice);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      color: "#fff",
+      iconColor: "#dc2626",
+      background: "#1a1a1a",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      confirmButtonText: "Yes, delete it!",
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          DeleteInvoiceApi(invoice._id, notify);
+          Swal.fire({
+            color: "#fff",
+            iconColor: "#1ed760",
+            background: "#1a1a1a",
+            title: "Deleted!",
+            text: "Invoice has been deleted.",
+            icon: "success",
+            confirmButtonColor: "#1ed760",
+          });
+          loadData();
+        }
+      })
 
+      .catch((error) => {
+        Swal.fire("Error!", error, "error");
+      });
+  };
+  const handleInvoiceDownload = (invoice: any) => {
+    return InvoicePDFUtil.downloadInvoice(invoice);
+  };
   const columns = [
+    {
+      header: "Serial Number",
+      accessorKey: "id",
+      cell: ({ table, row }: any) => {
+        const pageIndex = table.getState().pagination.pageIndex;
+        const pageSize = table.getState().pagination.pageSize;
+        const serialNumber = pageIndex * pageSize + row.index + 1;
+        return serialNumber;
+      },
+    },
     {
       header: "Invoice Number",
       accessorKey: "invoiceNumber",
@@ -183,14 +231,27 @@ function InvoiceHistoryController() {
           >
             <EyeIcon />
           </Button>
-          <Button variant="solid" className="bg-transparent" isIconOnly>
+          <Button
+            variant="solid"
+            className="bg-transparent"
+            isIconOnly
+            onClick={() => {
+              handleDeleteInvoice(info.row.original);
+            }}
+          >
             <DeleteIcon />
           </Button>
-          <Button variant="solid" className="bg-transparent" isIconOnly>
+          <Button
+            variant="solid"
+            className="bg-transparent"
+            isIconOnly
+            onClick={() => handleInvoiceDownload(info.row.original)}
+          >
             <CustomTooltip
               content="Download Invoice"
               trigger={<Receipt className="text-gray-300" />}
               className="text-gray-300"
+              isDark
             />
           </Button>
         </>

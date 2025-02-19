@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useToast from "../../../hooks/useToast";
 import { LoginApi } from "./AuthApis";
 import LoginComponents from "./LoginComponents";
+import { useUserStore } from "../../../zustand";
 
 function LoginController({
   color,
@@ -25,22 +26,26 @@ function LoginController({
   useEffect(() => {
     const token = sessionStorage.getItem("authToken");
     if (token) {
-      nav("/products/all-products?isLogin=true");
+      nav("/products?isLogin=true");
     }
   }, [nav]); // This will run once when the component mounts
-
   const handleSubmit = async (data: any) => {
     setLoading(true);
     try {
       const res: any = await LoginApi(data, notify);
-      console.log("res", res.data.token);
-      sessionStorage.setItem("authToken", res.data.token);
-      console.log('first')
-      sessionStorage.setItem("name", res.data.name);
-      sessionStorage.setItem("email", res.data.userEmail);
-      sessionStorage.setItem("role", res.data.role);
+      console.log("res", res);
+      sessionStorage.setItem("authToken", res?.data.token);
+      sessionStorage.setItem("name", res?.data.username);
+      sessionStorage.setItem("email", res?.data.email);
+      sessionStorage.setItem("role", res?.data.roleName);
+      sessionStorage.setItem(
+        "loginPerms",
+        JSON.stringify(res?.data.permissions)
+      );
+      useUserStore.getState().setUser(res?.data);
+
       if (res.status === "Success" || res.status === "success") {
-        nav("/products/all-products?isLogin=true");
+        nav("/products?isLogin=true");
       }
     } catch (error: any) {
       // Handle error here

@@ -207,8 +207,43 @@ export const generateInvoiceNumber = () => {
   return newInvoiceNumber;
 };
 
-
 export const darkSelectClassNames = {
   popoverContent: "!bg-gray-950 !text-gray-300",
   selectorIcon: "!text-gray-400",
 };
+
+// Encryption key (store securely, e.g., in .env)
+
+/**
+ * Decrypts encrypted data using AES.
+ * @param {string} cipherText - The encrypted data string.
+ * @returns {any | null} - Returns the decrypted data as a JSON object or null if decryption fails.
+ */
+export const decryptData = (cipherText: string): any | null => {
+  const key = import.meta.env.VITE_ENCRYPT_KEY;
+  try {
+    const bytes = CryptoJS.AES.decrypt(cipherText, key);
+    const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+    return JSON.parse(decryptedText); // Convert decrypted text back to JSON
+  } catch (error) {
+    console.error("Decryption failed:", error);
+    return null; // Return null if decryption fails
+  }
+};
+
+
+export const formatToIST = (utcDateString: string): string => {
+  const date = new Date(utcDateString);
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  };
+  return new Intl.DateTimeFormat('en-IN', options).format(date);
+};
+

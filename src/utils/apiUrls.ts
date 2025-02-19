@@ -1,9 +1,9 @@
-export const baseUrl = "https://flauntfit-v1-server.onrender.com/v1/";
-// export const baseUrl = "http://localhost:3012/v1/";
+// export const baseUrl = "https://flauntfit-v1-server.onrender.com/v1/";
+export const baseUrl = "http://localhost:3012/v1/";
 const apiUrls = {
   baseUrl: baseUrl,
   users: {
-    get: "users/get",
+    get: "users/",
     post: "users/post",
   },
   auth: {
@@ -12,6 +12,8 @@ const apiUrls = {
     verify: "auth/verify-token",
     logout: "auth/logout",
     ping: "auth/ping",
+    permissions: "permissions/get-all",
+    currentUserPerms: "permissions/current-user-permissions",
   },
   products: {
     get: "products",
@@ -25,9 +27,18 @@ const apiUrls = {
     get: "customers",
     post: "customers",
   },
+  employee: {
+    create: "auth/register",
+    get: "users",
+    update: "users",
+  },
   invoice: {
     post: "invoices",
     get: "invoices",
+    delete: "invoices",
+  },
+  roles: {
+    get: "roles",
   },
 };
 export default apiUrls;

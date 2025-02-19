@@ -15,6 +15,7 @@ export default {
         secondary: "#fafcfb ",
         accent: "#3c5451 ",
         background: "#18181b ",
+        success: "#1ed760",
         danger: "#f31260",
         foreground: "#fafcfb",
         default: {

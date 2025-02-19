@@ -1,17 +1,17 @@
 import React from "react";
-import Table from "../../../components/table/Table";
-import { exportToCSV } from "../../../hooks/useExportCsv";
-
+import { exportToCSV } from "../../hooks/useExportCsv";
+import Table from "../../components/table/Table";
+ 
 interface InvoiceHistoryComponentProps {
   columns: any[];
   data: any[];
-  loading: boolean; 
+  loading: boolean;
 }
 
-const InvoiceHistoryComponent: React.FC<InvoiceHistoryComponentProps> = ({
+const EmployeeTable: React.FC<InvoiceHistoryComponentProps> = ({
   columns,
   data,
-  loading, 
+  loading,
 }) => {
   const handleExport = () => {
     exportToCSV(data, "AllCollections");
@@ -20,19 +20,19 @@ const InvoiceHistoryComponent: React.FC<InvoiceHistoryComponentProps> = ({
   return (
     <div className="container mt-6">
       <Table
-        data={data}
-        columns={columns}
-        pageCount={Math.ceil(data.length / 15)}
+        data={data || []}
+        columns={columns || []}
+        // pageCount={Math.ceil(data.length / 15)}
         className="text-black mt-6"
         loading={loading}
         handleExport={handleExport}
         isAddBtnVisible={true}
-        btnLink="/invoice/generate"
+        btnLink="/employee-management"
         pageSize={5}
-        noExport
+        buttonLabel="Add Employee"
       />
     </div>
   );
 };
 
-export default InvoiceHistoryComponent;
+export default EmployeeTable;

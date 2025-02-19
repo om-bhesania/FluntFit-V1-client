@@ -4,6 +4,7 @@ import {
   SelectProps as NextUISelectProps,
   SelectItem,
 } from "@nextui-org/react";
+import { darkSelectClassNames } from "../../utils/utils";
 
 export interface CommonSelectProps extends Omit<NextUISelectProps, "children"> {
   options?: Array<{
@@ -43,25 +44,13 @@ const CommonSelect: React.FC<CommonSelectProps> = ({
   classNames = {},
   ...props
 }) => {
-  const darkThemeClassNames = {
-    base: "max-w-full",
-    trigger:
-      "h-10 bg-gray-950 border border-gray-700 rounded-md shadow-sm px-4 py-2 text-sm text-white",
-    value: "text-white",
-    menu: "bg-gray-950 border border-gray-700 rounded-md shadow-lg",
-    item: "px-4 py-2 text-sm text-white cursor-pointer data-[hover=true]:bg-gray-700 data-[selected=true]:bg-blue-500 !outline-0",
-    ...classNames,
-  };
-
   // Handle the case where children are provided directly
   if (children) {
     return (
-      <NextUISelect {...props} classNames={darkThemeClassNames}>
+      <NextUISelect {...props} classNames={darkSelectClassNames}>
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child) && child.type === SelectItem) {
-            return React.cloneElement(child as React.ReactElement<any>, {
-              className: "bg-gray-800 text-white",
-            });
+            return React.cloneElement(child as React.ReactElement<any>, {});
           }
           return child;
         })}
@@ -71,7 +60,7 @@ const CommonSelect: React.FC<CommonSelectProps> = ({
 
   // Handle the case where options are provided
   return (
-    <NextUISelect {...props} classNames={darkThemeClassNames}>
+    <NextUISelect {...props} classNames={darkSelectClassNames}>
       {options.map((option) => (
         <SelectItem
           key={option[valueKey]}

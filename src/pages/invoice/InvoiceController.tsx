@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import useToast from "../../hooks/useToast";
-import { AddCustomersApi, GetCustomerApi } from "../customers/CustomerApis";
+import { AddCustomersApi, GetCustomerApi } from "./customerDetails/CustomerApis";
 import { GetProductApi } from "../products/ProductsApi";
 import { FormValues } from "./customerDetails/CustomerDetailsModal";
 import { AddInvoiceApi } from "./InvoiceApis";
@@ -73,9 +73,11 @@ function InvoiceController() {
   };
 
   const saveInvoice = async (data: any) => {
+    console.log("saveInvoice", data);
     try {
       await AddInvoiceApi(data, notify);
     } catch {
+      console.log('catcj')
       return true;
     }
   };

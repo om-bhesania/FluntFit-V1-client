@@ -47,3 +47,31 @@ export const PingApi = async (notify: any) => {
     });
   }
 };
+
+export const PermissionsApi = async (notify: any) => {
+  try {
+    const res = await service({
+      url: apiUrls.auth.currentUserPerms,
+      method: "get",
+    });
+    return res;
+  } catch (error: any) {
+    notify(error?.response?.data.message, {
+      type: "error",
+    });
+  }
+};
+
+export const RolesApi = async (notify: any) => {
+  try {
+    const res = await service({
+      url: apiUrls.roles.get,
+      method: "get",
+    });
+    return res;
+  } catch (error: any) {
+    notify(error?.response?.data.message, {
+      type: "error",
+    });
+  }
+};
